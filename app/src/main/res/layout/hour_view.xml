@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.example.weatherapp.ui.hours.HourViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_margin="10dp">
+
+        <TextView
+            android:id="@+id/hour_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@{viewmodel.hourValue}"
+            android:textSize="32sp"
+            app:layout_constraintBaseline_toBaselineOf="@id/hour_temperature"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="15:00h" />
+
+        <TextView
+            android:id="@+id/hour_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@{viewmodel.hourTemperature}"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/hour_value"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="23C" />
+
+        <TextView
+            android:id="@+id/hour_wind_speed"
+            drawableDirection="@{viewmodel.rotation}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:drawablePadding="10dp"
+            android:text="@{viewmodel.hourWindSpeed}"
+            android:textSize="32sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/hour_temperature"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="19km/h" />
+
+        <ImageView
+            android:id="@+id/hour_icon"
+            imgUrl="@{viewmodel.hourWeatherIconPath}"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/hour_wind_speed"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:background="@drawable/ic_launcher_background" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

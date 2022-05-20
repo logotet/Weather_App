@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Sofia Weather</string>
+
+    <string name="celsius_format">%s °C</string>
+    <string name="percentage_format">%s%</string>
+    <string name="hourly_forecast_title">Hourly forecast</string>
+    <string name="search">Search</string>
+    <string name="city">City</string>
+    <string name="metric">Metric</string>
+    <string name="standard">Standard</string>
+    <string name="imperial">Imperial</string>
+
+    //Measure format
+    <string name="temperature_format">%.0f%s</string>
+    <string name="speed_format">%.1f%s</string>
+    <string name="hour_format">%sh</string>
+
+    //Temperature signature
+    <string name="celsius_temperature_format">°C</string>
+    <string name="standard_temperature_format">K</string>
+    <string name="imperial_temperature_format">°C</string>
+
+    //Speed signatures
+    <string name="metric_standard_speed_format">m/s</string>
+    <string name="imperial_speed_format">mph</string>
+
+    //Humidity signatures
+    <string name="humidity_format"> %d%%</string>
+
+</resources>

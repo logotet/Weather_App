@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.weatherapp.ui.current.CityFragmentViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue">
+
+        <TextView
+            android:id="@+id/txt_city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.cityName}"
+            android:textSize="@dimen/city_name_text_size"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/img_weather"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:imgUrl="@{viewModel.iconPath}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_city_name" />
+
+        <TextView
+            android:id="@+id/txt_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_field_margin"
+            android:text="@{viewModel.temperature}"
+            android:textSize="@dimen/common_text_size"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/txt_description"
+            app:layout_constraintTop_toBottomOf="@id/img_weather" />
+
+        <TextView
+            android:id="@+id/txt_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_field_margin"
+            android:text="@{viewModel.description}"
+            android:textSize="@dimen/common_text_size"
+            app:layout_constraintLeft_toRightOf="@id/txt_temperature"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/img_weather" />
+
+        <TextView
+            android:id="@+id/txt_humidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_field_margin"
+            android:text="@{viewModel.humidity}"
+            android:textSize="@dimen/common_text_size"
+            app:layout_constraintLeft_toLeftOf="@id/txt_temperature"
+            app:layout_constraintTop_toBottomOf="@id/txt_temperature" />
+
+        <TextView
+            android:id="@+id/txt_wind_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_field_margin"
+            android:text="@{viewModel.windSpeed}"
+            android:textSize="@dimen/common_text_size"
+            android:drawablePadding="10dp"
+            drawableDirection="@{viewModel.rotation}"
+            app:layout_constraintLeft_toRightOf="@id/txt_temperature"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_description" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintBottom_toTopOf="@id/txt_hour_title"
+            app:layout_constraintTop_toBottomOf="@id/txt_wind_speed"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <TextView
+            android:id="@+id/txt_hour_title"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/standard_field_margin"
+            android:text="@string/hourly_forecast_title"
+            android:textAlignment="center"
+            android:textSize="@dimen/common_text_size"
+            app:layout_constraintLeft_toRightOf="@id/txt_temperature"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_wind_speed" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/hours_rec_view"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_hour_title"
+            app:measure="@{viewModel.measure}"
+            app:values="@{viewModel.hours}" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
