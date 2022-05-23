@@ -20,7 +20,6 @@ class Repository(
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
         val response = apiService.getCurrentWeather(city, measure)
-        val dfd = 0
         return try {
             val currentCityModel = response.body()!!.mapApiToCurrentModel()
             Success(currentCityModel)
