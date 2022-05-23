@@ -62,8 +62,10 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        val lat = cityViewModel.cityWeatherModel!!.lat
-        val lon = cityViewModel.cityWeatherModel!!.lon
-        googleMap.moveToLocation(lat, lon)
+        if(activityViewModel.model != null) {
+            val lat = activityViewModel.model!!.lat
+            val lon = activityViewModel.model!!.lon
+            googleMap.moveToLocation(lat, lon)
+        }
     }
 }
