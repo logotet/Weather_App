@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sofia Weather</string>
+    <string name="app_name">Weather</string>
 
     <string name="celsius_format">%s °C</string>
     <string name="percentage_format">%s%</string>
