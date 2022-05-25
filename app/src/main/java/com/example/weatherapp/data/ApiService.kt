@@ -12,10 +12,19 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    /*Get current weather for the city of Sofia*/
+    /*Get current weather with the name of a city*/
     @GET("weather")
-    suspend fun getCurrentWeather(
+    suspend fun getCurrentCityWeather(
         @Query("q") cityName: String?,
+        @Query("units") units: String,
+        @Query("appid") apiKey: String = API_KEY
+    ): Response<CurrentWeather>
+
+    /*Get current weather on chosen coordinates*/
+    @GET("weather")
+    suspend fun getCurrentCoordWeather(
+        @Query("lat") lat: String?,
+        @Query("lon") lon: String?,
         @Query("units") units: String,
         @Query("appid") apiKey: String = API_KEY
     ): Response<CurrentWeather>
@@ -25,10 +34,9 @@ interface ApiService {
     @GET("onecall")
     suspend fun getHourlyWeather(
         @Query("units") units: String,
-        @Query("lat") lat: String = SOFIA_LAT,
-        @Query("lon") lon: String = SOFIA_LON,
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
         @Query("exclude") exclude: String = EXCLUDE_HOUR_DATA,
         @Query("appid") apiKey: String = API_KEY
     ): Response<HourApiResponseModel>
-
 }

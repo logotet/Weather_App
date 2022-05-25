@@ -26,5 +26,8 @@
 
     //Humidity signatures
     <string name="humidity_format"> %d%%</string>
+    <string name="or">Or</string>
+    <string name="get_my_location">Get My Location</string>
+    <string name="location_denied">Location Access Denied</string>
 
 </resources>

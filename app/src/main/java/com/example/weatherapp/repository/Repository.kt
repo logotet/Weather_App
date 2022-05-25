@@ -19,7 +19,7 @@ class Repository(
         city: String,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        val response = apiService.getCurrentWeather(city, measure)
+        val response = apiService.getCurrentCityWeather(city, measure)
         return try {
             val currentCityModel = response.body()!!.mapApiToCurrentModel()
             Success(currentCityModel)
@@ -31,8 +31,29 @@ class Repository(
         }
     }
 
-    suspend fun getHourlyWeather(measure: String): NetworkResult<List<HourWeatherModel>> {
-        val response = apiService.getHourlyWeather(measure)
+    suspend fun getCurrentCoordWeatherResponse(
+        lat: Double,
+        lon: Double,
+        measure: String,
+    ): NetworkResult<CurrentWeatherModel> {
+        val response = apiService.getCurrentCoordWeather(lat.toString(), lon.toString(), measure)
+        return try {
+            val currentCityModel = response.body()!!.mapApiToCurrentModel()
+            Success(currentCityModel)
+        } catch (e: Exception) {
+            val gson = Gson()
+            val fromJson =
+                gson.fromJson(response.errorBody()?.string(), WeatherErrorResponse::class.java)
+            Error(fromJson.message)
+        }
+    }
+
+    suspend fun getHourlyWeather(
+        measure: String,
+        lat: Double,
+        lon: Double,
+    ): NetworkResult<List<HourWeatherModel>> {
+        val response = apiService.getHourlyWeather(measure, lat.toString(), lon.toString())
         return try {
             val hours = response.body().mapToHourWeatherModel()
             Success(hours)

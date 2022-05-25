@@ -33,14 +33,10 @@ fun setUpMeasure(recyclerView: RecyclerView, measure: Measure) {
 }
 
 fun getHourAdapter(recyclerView: RecyclerView): HourAdapter {
-    return if (recyclerView.adapter != null &&
-        recyclerView.adapter is HourAdapter
-    ) {
-        recyclerView.adapter as HourAdapter
-    } else {
+    return recyclerView.adapter as? HourAdapter ?: run {
         val adapter = HourAdapter()
         recyclerView.adapter = adapter
-        adapter
+       return@run adapter
     }
 }
 
