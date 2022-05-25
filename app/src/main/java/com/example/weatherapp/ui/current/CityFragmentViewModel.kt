@@ -18,17 +18,13 @@ class CityFragmentViewModel @Inject constructor(
 
     var hours: List<HourWeatherModel>? = null
 
-    var cityWeatherModel: CurrentWeatherModel? = null
+    private var cityWeatherModel: CurrentWeatherModel? = null
         set(value) {
             field = value
             notifyChange()
         }
 
     var measure: Measure = Measure.METRIC
-        set(value) {
-            field = value
-            getHourlyWeather()
-        }
 
     @get:Bindable
     val cityName: String?
@@ -61,9 +57,19 @@ class CityFragmentViewModel @Inject constructor(
 
     private fun getHourlyWeather() {
         viewModelScope.launch {
-            hours = getHourlyWeather.getHours(measure.value).data
+            hours = cityWeatherModel?.let {
+                getHourlyWeather.getHours(measure.value,
+                    it.lat,
+                    it.lon).data
+            }
             notifyChange()
         }
+    }
+
+    fun setUpData(cityWeatherModel: CurrentWeatherModel?, measure: Measure) {
+        this.cityWeatherModel = cityWeatherModel
+        this.measure = measure
+        getHourlyWeather()
     }
 
 

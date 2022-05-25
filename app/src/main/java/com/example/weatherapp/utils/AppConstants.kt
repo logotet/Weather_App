@@ -17,5 +17,7 @@ object AppConstants {
 
     const val EXCLUDE_HOUR_DATA = "daily, minutely, alerts"
 
+    const val CAMERA_STANDARD_ZOOM = 10F
+
 
 }

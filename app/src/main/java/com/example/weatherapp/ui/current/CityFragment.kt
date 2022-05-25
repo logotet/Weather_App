@@ -53,18 +53,18 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         hourAdapter = HourAdapter()
         hourAdapter!!.resourceProvider = resourceProvider
         binding.hoursRecView.adapter = hourAdapter
-        cityViewModel.measure = activityViewModel.measure
-        cityViewModel.cityWeatherModel = activityViewModel.model
 
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
+
+        cityViewModel.setUpData(activityViewModel.model, activityViewModel.measure)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        if(activityViewModel.model != null) {
-            val lat = activityViewModel.model!!.lat
-            val lon = activityViewModel.model!!.lon
+        activityViewModel.model?.let {
+            val lat = it.lat
+            val lon = it.lon
             googleMap.moveToLocation(lat, lon)
         }
     }

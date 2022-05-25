@@ -11,5 +11,5 @@ fun GoogleMap.moveToLocation(lat: Double, lon: Double){
         MarkerOptions()
             .position(location)
     )
-    this.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10f))
+    this.moveCamera(CameraUpdateFactory.newLatLngZoom(location, AppConstants.CAMERA_STANDARD_ZOOM))
 }

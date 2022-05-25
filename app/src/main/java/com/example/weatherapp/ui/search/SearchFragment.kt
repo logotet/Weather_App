@@ -4,9 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.RadioGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -15,20 +12,29 @@ import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.SearchFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import permissions.dispatcher.PermissionRequest
+import permissions.dispatcher.ktx.LocationPermission
+import permissions.dispatcher.ktx.constructLocationPermissionRequest
 
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
     private lateinit var binding: SearchFragmentBinding
+
     private val viewModel: SearchViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.search_fragment, container, false)
         binding = SearchFragmentBinding.bind(view)
@@ -39,10 +45,25 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.cityWeatherModel?.observe(viewLifecycleOwner, Observer {
-                activityViewModel.model = it
 
-                findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        val constructLocationPermissionRequest = constructLocationPermissionRequest(
+            LocationPermission.FINE,
+            onShowRationale = ::onGetLocationRationale,
+            onPermissionDenied = ::onLocationPermissionDenied,
+            requiresPermission = ::getCurrentLocation
+        )
+
+        viewModel.onLocationButtonPressed.observe(viewLifecycleOwner, Observer {
+            if (it) {
+                constructLocationPermissionRequest.launch()
+            }
+        })
+
+        viewModel.cityWeatherModel?.observe(viewLifecycleOwner, Observer {
+            activityViewModel.model = it
+            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment)
         })
 
         viewModel.sharedMeasure.observe(viewLifecycleOwner, Observer {
@@ -52,14 +73,31 @@ class SearchFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
             Snackbar.make(view, it, Snackbar.LENGTH_LONG).show()
         })
+    }
 
-        binding.rgTemperature.setOnCheckedChangeListener(object :RadioGroup.OnCheckedChangeListener{
-            override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
-                val view = requireView().findViewById<View>(checkedId) as RadioButton
-                val text = view.text.toString().toLowerCase()
-                Toast.makeText(context, text, Toast.LENGTH_LONG).show()
-            }
-        })
+    private fun onGetLocationRationale(permissionRequest: PermissionRequest) {
+        permissionRequest.proceed()
+    }
 
+    private fun getCurrentLocation() {
+        val cancellationTokenSource = CancellationTokenSource()
+        fusedLocationClient.getCurrentLocation(
+            com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,
+            cancellationTokenSource.token
+        ).addOnCompleteListener {
+            viewModel.getCoordWeather(it.result)
+        }
+    }
+
+    private fun onLocationPermissionDenied() {
+        this.view?.let {
+            Snackbar.make(it, getString(R.string.location_denied), Snackbar.LENGTH_LONG).show()
+
+        }
     }
 }
+
+
+
+
+

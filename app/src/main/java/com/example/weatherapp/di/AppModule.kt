@@ -2,7 +2,8 @@ package com.example.weatherapp.di
 
 import android.content.Context
 import com.example.weatherapp.data.remote.ApiService
-import com.example.weatherapp.interactors.GetCurrentWeather
+import com.example.weatherapp.interactors.GetCurrentCityWeather
+import com.example.weatherapp.interactors.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.GetHourlyWeather
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
@@ -42,8 +43,13 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesGetCurrentWeather(repository: Repository): GetCurrentWeather =
-        GetCurrentWeather(repository)
+    fun providesGetCurrentWeather(repository: Repository): GetCurrentCityWeather =
+        GetCurrentCityWeather(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetCoordWeather(repository: Repository): GetCurrentCoordWeather =
+        GetCurrentCoordWeather(repository)
 
     @Provides
     @Singleton
