@@ -97,8 +97,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/txt_wind_speed"
-            app:measure="@{viewModel.measure}"
-            app:values="@{viewModel.hours}" />
+        />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment_map"

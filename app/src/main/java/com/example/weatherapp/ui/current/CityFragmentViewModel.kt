@@ -16,7 +16,9 @@ class CityFragmentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
 ) : ObservableViewModel() {
 
-    var hours: List<HourWeatherModel>? = null
+    private var _hours = MutableLiveData<List<HourWeatherModel>>()
+    val hours: LiveData<List<HourWeatherModel>>
+    get() = _hours
 
     private var cityWeatherModel: CurrentWeatherModel? = null
         set(value) {
@@ -57,7 +59,7 @@ class CityFragmentViewModel @Inject constructor(
 
     private fun getHourlyWeather() {
         viewModelScope.launch {
-            hours = cityWeatherModel?.let {
+            _hours.value = cityWeatherModel?.let {
                 getHourlyWeather.getHours(measure.value,
                     it.lat,
                     it.lon).data
