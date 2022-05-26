@@ -5,5 +5,6 @@ class HourWeatherModel(
     val hourWindSpeed: Double,
     val hourIcon: String,
     val hour: Long,
-    val windDirection: Int
+    val windDirection: Int,
+    val timeZoneOffset: Int = 10800
 )

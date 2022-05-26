@@ -34,7 +34,7 @@ class HourViewModel @Inject constructor(
     @get:Bindable
     val hourValue: String?
         @RequiresApi(Build.VERSION_CODES.O)
-        get() = hourModel?.hour?.formatHour(resourceProvider)
+        get() = hourModel?.hour?.formatHour(resourceProvider, hourModel?.timeZoneOffset)
 
     @get:Bindable
     val rotation: Int?

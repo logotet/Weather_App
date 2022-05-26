@@ -7,7 +7,7 @@ import com.example.weatherapp.models.hourly.HourWeatherModel
 
 fun CurrentWeather.mapApiToCurrentModel(): CurrentWeatherModel {
     return CurrentWeatherModel(
-        this!!.name,
+        this.name,
         this.weather[0].description,
         this.main.temp,
         this.wind.speed,
@@ -20,18 +20,21 @@ fun CurrentWeather.mapApiToCurrentModel(): CurrentWeatherModel {
 }
 
 fun HourApiResponseModel?.mapToHourWeatherModel(): List<HourWeatherModel> {
-    val hoursApiResponse = this?.hourly
     val hours = mutableListOf<HourWeatherModel>()
-    hoursApiResponse?.forEach { h ->
-        hours.add(
-            HourWeatherModel(
-                h.temp,
-                h.wind_speed,
-                h.weather[0].icon,
-                h.dt.toLong(),
-                h.wind_deg
+    this?.let {
+        val hoursApiResponse = this?.hourly
+        hoursApiResponse.forEach { h ->
+            hours.add(
+                HourWeatherModel(
+                    h.temp,
+                    h.wind_speed,
+                    h.weather[0].icon,
+                    h.dt.toLong(),
+                    h.wind_deg,
+                    this.timezone_offset
+                )
             )
-        )
+        }
     }
     return hours
 }

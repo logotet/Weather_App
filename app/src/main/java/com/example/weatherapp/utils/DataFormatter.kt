@@ -1,10 +1,12 @@
 package com.example.weatherapp.utils
 
+import android.icu.util.TimeZone
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.weatherapp.R
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import java.util.*
 
 fun Double?.formatTemperature(
     resourceProvider: ResourceProvider,
@@ -33,7 +35,12 @@ fun Double?.formatSpeed(resourceProvider: ResourceProvider, measure: Measure): S
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun Long.formatHour(resourceProvider: ResourceProvider): String {
-    val dateTime = LocalDateTime.ofEpochSecond(this, 0, ZoneOffset.ofHours(3))
-    return resourceProvider.getString(R.string.hour_format, dateTime.hour.toString())
+fun Long.formatHour(resourceProvider: ResourceProvider, timeOffset: Int?): String {
+    var format = ""
+    timeOffset?.let {
+        val zoneOffset = ZoneOffset.ofTotalSeconds(timeOffset)
+        val dateTime = LocalDateTime.ofEpochSecond(this, 0, zoneOffset)
+        format = resourceProvider.getString(R.string.hour_format, dateTime.hour.toString())
+    }
+    return format
 }
