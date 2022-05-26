@@ -19,6 +19,11 @@
         android:id="@+id/currentWeatherFragment"
         android:name="com.example.weatherapp.ui.current.CityFragment"
         android:label="CurrentWeatherFragment"
-        tools:layout="@layout/city_weather_fragment"/>
+        tools:layout="@layout/city_weather_fragment">
+        <argument
+            android:name="measure"
+            app:argType="string"
+            android:defaultValue="metric" />
+    </fragment>
 
 </navigation>

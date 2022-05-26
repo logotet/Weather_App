@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -56,14 +57,13 @@ class SearchFragment : Fragment() {
         )
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner, Observer {
-            if (it) {
                 constructLocationPermissionRequest.launch()
-            }
         })
 
         viewModel.cityWeatherModel?.observe(viewLifecycleOwner, Observer {
             activityViewModel.model = it
-            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment)
+            val bundle = bundleOf("measure" to viewModel.measure.value)
+            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment, bundle)
         })
 
         viewModel.sharedMeasure.observe(viewLifecycleOwner, Observer {
@@ -92,7 +92,6 @@ class SearchFragment : Fragment() {
     private fun onLocationPermissionDenied() {
         this.view?.let {
             Snackbar.make(it, getString(R.string.location_denied), Snackbar.LENGTH_LONG).show()
-
         }
     }
 }

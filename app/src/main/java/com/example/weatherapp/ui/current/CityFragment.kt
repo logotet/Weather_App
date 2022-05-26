@@ -13,6 +13,7 @@ import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.utils.AppConstants
+import com.example.weatherapp.utils.Measure
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -58,7 +59,8 @@ class CityFragment : Fragment(), OnMapReadyCallback {
             childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        cityViewModel.setUpData(activityViewModel.model, activityViewModel.measure)
+        val measureString = arguments?.get("measure")
+        cityViewModel.setUpData(activityViewModel.model, Measure.getMeasure(measureString as? String))
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
