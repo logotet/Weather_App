@@ -27,7 +27,7 @@ fun Double?.formatSpeed(resourceProvider: ResourceProvider, measure: Measure): S
     val speedFormat = when (measure) {
         Measure.METRIC -> resourceProvider.getString(R.string.metric_standard_speed_format)
         Measure.STANDARD -> resourceProvider.getString(R.string.metric_standard_speed_format)
-        Measure.IMPERIAL -> resourceProvider.getString(R.string.imperial_temperature_format)
+        Measure.IMPERIAL -> resourceProvider.getString(R.string.imperial_speed_format)
     }
     return resourceProvider.getString(R.string.speed_format, this ?: 0.0, speedFormat)
 }

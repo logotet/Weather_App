@@ -41,14 +41,16 @@ class SearchViewModel @Inject constructor(
     val errorMessage: SingleLiveEvent<String>
         get() = _errorMessage
 
-    private var _onLocationButtonPressed = SingleLiveEvent<Boolean>()
-    val onLocationButtonPressed: SingleLiveEvent<Boolean>
+    private var _onLocationButtonPressed = SingleLiveEvent<Unit>()
+    val onLocationButtonPressed: SingleLiveEvent<Unit>
         get() = _onLocationButtonPressed
-
-    private var locationRequestGranted: Boolean = false
 
     init {
         _sharedMeasure.value = measure
+    }
+
+    fun onCurrentLocationPressed() {
+        _onLocationButtonPressed.call()
     }
 
     fun getCurrentCityWeather() {
@@ -58,21 +60,6 @@ class SearchViewModel @Inject constructor(
             }
             setResult(result)
         }
-    }
-
-    fun onCurrentLocationPressed() {
-        _onLocationButtonPressed.value = true
-    }
-
-    private fun setResult(result: NetworkResult<CurrentWeatherModel>?) {
-        when (result) {
-            is NetworkResult.Success -> {
-                _cityWeatherModel.value = result.data!!
-                _sharedMeasure.value = measure
-            }
-            is NetworkResult.Error -> _errorMessage.value = result.message!!
-        }
-        notifyChange()
     }
 
     fun getCoordWeather(location: Location) {
@@ -88,5 +75,16 @@ class SearchViewModel @Inject constructor(
             }
             setResult(result)
         }
+    }
+
+    private fun setResult(result: NetworkResult<CurrentWeatherModel>?) {
+        when (result) {
+            is NetworkResult.Success -> {
+                _cityWeatherModel.value = result.data!!
+                _sharedMeasure.value = measure
+            }
+            is NetworkResult.Error -> _errorMessage.value = result.message!!
+        }
+        notifyChange()
     }
 }
