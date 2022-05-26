@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.SearchFragmentBinding
+import com.example.weatherapp.ui.MainActivity
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -62,6 +63,9 @@ class SearchFragment : Fragment() {
 
         viewModel.cityWeatherModel?.observe(viewLifecycleOwner, Observer {
             activityViewModel.model = it
+
+            (activity as MainActivity).toggleProgressBar(true)
+
             val bundle = bundleOf("measure" to viewModel.measure.value)
             findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment, bundle)
         })

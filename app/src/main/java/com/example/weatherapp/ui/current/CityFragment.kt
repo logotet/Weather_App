@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
+import com.example.weatherapp.ui.MainActivity
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.utils.Measure
@@ -57,13 +58,14 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         })
 
         hourAdapter.updateMeasureUnit(measure)
-        hourAdapter!!.resourceProvider = resourceProvider
+        hourAdapter.resourceProvider = resourceProvider
         binding.hoursRecView.adapter = hourAdapter
 
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
+        (activity as MainActivity).toggleProgressBar(false)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
