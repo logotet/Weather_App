@@ -2,6 +2,7 @@ package com.example.weatherapp.utils
 
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RotateDrawable
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -20,25 +21,25 @@ fun setBackground(imgView: ImageView, url: String?) {
         .into(imgView)
 }
 
-@BindingAdapter("values")
-fun setUpData(recyclerView: RecyclerView, data: List<HourWeatherModel>?) {
-    val adapter: HourAdapter = getHourAdapter(recyclerView)
-    adapter.updateData(data)
-}
-
-@BindingAdapter("measure")
-fun setUpMeasure(recyclerView: RecyclerView, measure: Measure) {
-    val hourAdapter = getHourAdapter(recyclerView)
-    hourAdapter.measure = measure
-}
-
-fun getHourAdapter(recyclerView: RecyclerView): HourAdapter {
-    return recyclerView.adapter as? HourAdapter ?: run {
-        val adapter = HourAdapter()
-        recyclerView.adapter = adapter
-       return@run adapter
-    }
-}
+//@BindingAdapter("values")
+//fun setUpData(recyclerView: RecyclerView, data: List<HourWeatherModel>?) {
+//    val adapter: HourAdapter = getHourAdapter(recyclerView)
+//    adapter.updateData(data)
+//}
+//
+//@BindingAdapter("measure")
+//fun setUpMeasure(recyclerView: RecyclerView, measure: Measure) {
+//    val hourAdapter = getHourAdapter(recyclerView)
+//    hourAdapter.measure = measure
+//}
+//
+//fun getHourAdapter(recyclerView: RecyclerView): HourAdapter {
+//    return recyclerView.adapter as? HourAdapter ?: run {
+//        val adapter = HourAdapter()
+//        recyclerView.adapter = adapter
+//       return@run adapter
+//    }
+//}
 
 @BindingAdapter("drawableDirection")
 fun setUpDrawable(textView: TextView, rotation: Int) {
@@ -51,5 +52,14 @@ fun setUpDrawable(textView: TextView, rotation: Int) {
     rotateDrawable.toDegrees = rotation.toFloat()
     rotateDrawable.level = 1
     textView.setCompoundDrawablesWithIntrinsicBounds(null, null, rotateDrawable, null);
+}
+
+@BindingAdapter("visible")
+fun toggleVisibility(view: View, visible: Boolean) {
+    if (visible) {
+        view.visibility = View.VISIBLE
+    } else {
+        view.visibility = View.INVISIBLE
+    }
 }
 

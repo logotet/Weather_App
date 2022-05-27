@@ -18,12 +18,7 @@ class ResourceProvider(
 
     fun getDrawableResource(@DrawableRes drawableId: Int): Drawable? =
         ContextCompat.getDrawable(context, drawableId)
-//
-//    fun getDrawable(@DrawableRes drawableId: Int,vararg arg: Any): Drawable? =
-//        ContextCompat.getDrawable(context, drawableId)
-}
 
-//        val objectAnimator = ObjectAnimator.ofInt(drawable, "level", 0, 360)
-//            .setDuration(4000)
-//        objectAnimator.interpolator = LinearInterpolator()
-//        objectAnimator.start()
+    fun getDrawable(@DrawableRes drawableId: Int,vararg arg: Any): Drawable? =
+        ContextCompat.getDrawable(context, drawableId)
+}

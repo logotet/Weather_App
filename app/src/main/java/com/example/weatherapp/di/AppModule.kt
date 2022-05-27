@@ -8,7 +8,7 @@ import com.example.weatherapp.interactors.GetHourlyWeather
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
-import com.example.weatherapp.utils.Measure
+import com.example.weatherapp.models.Measure
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.Module
 import dagger.Provides

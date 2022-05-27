@@ -2,6 +2,7 @@ package com.example.weatherapp.utils
 
 import androidx.databinding.InverseMethod
 import com.example.weatherapp.R
+import com.example.weatherapp.models.Measure
 
 @InverseMethod("idToMeasure")
 fun measureToId(measure: Measure?): Int {
@@ -13,7 +14,7 @@ fun measureToId(measure: Measure?): Int {
     }
 }
 
-fun idToMeasure(selectedBtnId: Int): Measure{
+fun idToMeasure(selectedBtnId: Int): Measure {
     return when(selectedBtnId){
         R.id.btn_metric -> Measure.METRIC
         R.id.btn_standard -> Measure.STANDARD

@@ -11,10 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
-import com.example.weatherapp.ui.MainActivity
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
-import com.example.weatherapp.utils.Measure
+import com.example.weatherapp.models.Measure
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
 import com.google.android.gms.maps.GoogleMap
@@ -28,12 +27,11 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: CityFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
-    private lateinit var binding: CityWeatherFragmentBinding
+    private var binding: CityWeatherFragmentBinding? = null
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
 
-    private val hourAdapter: HourAdapter = HourAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,14 +39,15 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.city_weather_fragment, container, false)
-        binding = DataBindingUtil.bind(view)!!
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
+        binding = DataBindingUtil.bind(view)
+        binding?.viewModel = viewModel
+        binding?.lifecycleOwner = this
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val hourAdapter = HourAdapter(resourceProvider)
 
         val measure = Measure.getMeasure(arguments?.get("measure") as? String)
         viewModel.setUpData(activityViewModel.model, measure)
@@ -59,13 +58,13 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         hourAdapter.updateMeasureUnit(measure)
         hourAdapter.resourceProvider = resourceProvider
-        binding.hoursRecView.adapter = hourAdapter
+        binding?.hoursRecView?.adapter = hourAdapter
 
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
         mapFragment?.getMapAsync(this)
 
-        (activity as MainActivity).toggleProgressBar(false)
+        activityViewModel.barVisible = false
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

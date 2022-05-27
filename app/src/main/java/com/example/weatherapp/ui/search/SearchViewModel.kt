@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.GetCurrentCityWeather
 import com.example.weatherapp.interactors.GetCurrentCoordWeather
+import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
+import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -20,11 +22,11 @@ class SearchViewModel @Inject constructor(
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
 ) : ObservableViewModel() {
 
-    @Bindable
-    var cityName: String? = null
-
     var latitude: Double? = null
     var longitude: Double? = null
+
+    @Bindable
+    var cityName: String? = null
 
     @Bindable
     var measure: Measure = Measure.METRIC

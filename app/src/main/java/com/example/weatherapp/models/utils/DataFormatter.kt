@@ -1,12 +1,11 @@
 package com.example.weatherapp.utils
 
-import android.icu.util.TimeZone
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.weatherapp.R
+import com.example.weatherapp.models.Measure
 import java.time.LocalDateTime
 import java.time.ZoneOffset
-import java.util.*
 
 fun Double?.formatTemperature(
     resourceProvider: ResourceProvider,

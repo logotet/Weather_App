@@ -12,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.SearchFragmentBinding
-import com.example.weatherapp.ui.MainActivity
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -50,6 +49,7 @@ class SearchFragment : Fragment() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+
         val constructLocationPermissionRequest = constructLocationPermissionRequest(
             LocationPermission.FINE,
             onShowRationale = ::onGetLocationRationale,
@@ -57,18 +57,19 @@ class SearchFragment : Fragment() {
             requiresPermission = ::getCurrentLocation
         )
 
-        viewModel.onLocationButtonPressed.observe(viewLifecycleOwner, Observer {
-                constructLocationPermissionRequest.launch()
-        })
+        viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
+            activityViewModel.barVisible = true //TODO
 
-        viewModel.cityWeatherModel?.observe(viewLifecycleOwner, Observer {
+            constructLocationPermissionRequest.launch()
+        }
+
+        viewModel.cityWeatherModel?.observe(viewLifecycleOwner) {
             activityViewModel.model = it
 
-            (activity as MainActivity).toggleProgressBar(true)
-
             val bundle = bundleOf("measure" to viewModel.measure.value)
-            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment, bundle)
-        })
+            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment,
+                bundle)
+        }
 
         viewModel.sharedMeasure.observe(viewLifecycleOwner, Observer {
             activityViewModel.measure = it

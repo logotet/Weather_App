@@ -3,8 +3,10 @@ package com.example.weatherapp.ui.current
 import androidx.databinding.Bindable
 import androidx.lifecycle.*
 import com.example.weatherapp.interactors.GetHourlyWeather
+import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -55,7 +57,6 @@ class CityFragmentViewModel @Inject constructor(
     @get:Bindable
     val rotation: Int?
         get() = cityWeatherModel?.windDirection
-
 
     private fun getHourlyWeather() {
         viewModelScope.launch {
