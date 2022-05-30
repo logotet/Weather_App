@@ -86,7 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/standard_field_margin"
-            android:onClick="@{() -> viewModel.getCurrentCityWeather()}"
+            android:onClick="@{() -> viewModel.onSearchPressed()}"
             android:text="@string/search"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

@@ -17,6 +17,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.LocationPermission
@@ -31,6 +34,8 @@ class SearchFragment : Fragment() {
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val firebaseAnalytics = Firebase.analytics
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,9 +63,13 @@ class SearchFragment : Fragment() {
         )
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
+            firebaseAnalytics.logEvent("weather_location_button_pressed", null)
             activityViewModel.barVisible = true
-
             constructLocationPermissionRequest.launch()
+        }
+
+        viewModel.onSearchButtonPressed.observe(viewLifecycleOwner){
+            firebaseAnalytics.logEvent("weather_search_button_pressed", null)
         }
 
         viewModel.cityWeatherModel.observe(viewLifecycleOwner) {
