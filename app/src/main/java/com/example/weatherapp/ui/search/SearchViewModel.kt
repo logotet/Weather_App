@@ -48,12 +48,21 @@ class SearchViewModel @Inject constructor(
     val onLocationButtonPressed: SingleLiveEvent<Unit>
         get() = _onLocationButtonPressed
 
+    private var _onSearchButtonPressed = SingleLiveEvent<Unit>()
+    val onSearchButtonPressed: SingleLiveEvent<Unit>
+        get() = _onSearchButtonPressed
+
     init {
         _sharedMeasure.value = measure
     }
 
     fun onCurrentLocationPressed() {
         _onLocationButtonPressed.call()
+    }
+
+    fun onSearchPressed() {
+        _onSearchButtonPressed.call()
+        getCurrentCityWeather()
     }
 
     fun getCurrentCityWeather() {

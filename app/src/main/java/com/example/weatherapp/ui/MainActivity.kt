@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,4 +21,5 @@ class MainActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.viewModel = activityViewModel
     }
+
 }
