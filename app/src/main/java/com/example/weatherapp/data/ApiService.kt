@@ -23,9 +23,9 @@ interface ApiService {
     /*Get current weather on chosen coordinates*/
     @GET("weather")
     suspend fun getCurrentCoordWeather(
+        @Query("units") units: String,
         @Query("lat") lat: String?,
         @Query("lon") lon: String?,
-        @Query("units") units: String,
         @Query("appid") apiKey: String = API_KEY
     ): Response<CurrentWeather>
 

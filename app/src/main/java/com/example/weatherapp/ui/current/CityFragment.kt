@@ -19,6 +19,7 @@ import com.example.weatherapp.utils.moveToLocation
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -54,6 +55,10 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.hours.observe(viewLifecycleOwner, Observer {
             hourAdapter.updateData(it)
+        })
+
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
+            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         })
 
         hourAdapter.updateMeasureUnit(measure)

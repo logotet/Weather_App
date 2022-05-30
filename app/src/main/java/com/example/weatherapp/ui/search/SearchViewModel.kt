@@ -5,6 +5,7 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.data.checkResult
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.GetCurrentCityWeather
 import com.example.weatherapp.interactors.GetCurrentCoordWeather
@@ -36,11 +37,11 @@ class SearchViewModel @Inject constructor(
         get() = _sharedMeasure
 
     private var _cityWeatherModel = MutableLiveData<CurrentWeatherModel>()
-    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>?
+    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
         get() = _cityWeatherModel
 
-    private var _errorMessage = SingleLiveEvent<String>()
-    val errorMessage: SingleLiveEvent<String>
+    private var _errorMessage = SingleLiveEvent<String?>()
+    val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
 
     private var _onLocationButtonPressed = SingleLiveEvent<Unit>()
@@ -60,8 +61,9 @@ class SearchViewModel @Inject constructor(
             val result = cityName?.let {
                 getCurrentCityWeather.getCurrentWeather(it, measure.value)
             }
-            setResult(result)
+            checkCurrentWeatherResult(result)
         }
+        notifyChange()
     }
 
     fun getCoordWeather(location: Location) {
@@ -75,18 +77,21 @@ class SearchViewModel @Inject constructor(
                         measure.value)
                 }
             }
-            setResult(result)
+            checkCurrentWeatherResult(result)
+            notifyChange()
         }
     }
 
-    private fun setResult(result: NetworkResult<CurrentWeatherModel>?) {
-        when (result) {
-            is NetworkResult.Success -> {
-                _cityWeatherModel.value = result.data!!
+    private fun checkCurrentWeatherResult(result: NetworkResult<CurrentWeatherModel>?) {
+        result?.checkResult(
+            {
+                _cityWeatherModel.value = it
                 _sharedMeasure.value = measure
+            },
+            {
+                _errorMessage.value = it.message
             }
-            is NetworkResult.Error -> _errorMessage.value = result.message!!
-        }
-        notifyChange()
+        )
     }
+
 }

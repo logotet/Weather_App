@@ -2,6 +2,8 @@ package com.example.weatherapp.ui.current
 
 import androidx.databinding.Bindable
 import androidx.lifecycle.*
+import com.example.weatherapp.data.checkResult
+import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.GetHourlyWeather
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
@@ -19,8 +21,8 @@ class CityFragmentViewModel @Inject constructor(
 ) : ObservableViewModel() {
 
     private var _hours = MutableLiveData<List<HourWeatherModel>>()
-    val hours: LiveData<List<HourWeatherModel>>
-    get() = _hours
+    val hours: MutableLiveData<List<HourWeatherModel>>
+        get() = _hours
 
     private var cityWeatherModel: CurrentWeatherModel? = null
         set(value) {
@@ -29,6 +31,10 @@ class CityFragmentViewModel @Inject constructor(
         }
 
     var measure: Measure = Measure.METRIC
+
+    private var _errorMessage = SingleLiveEvent<String?>()
+    val errorMessage: SingleLiveEvent<String?>
+        get() = _errorMessage
 
     @get:Bindable
     val cityName: String?
@@ -60,10 +66,18 @@ class CityFragmentViewModel @Inject constructor(
 
     private fun getHourlyWeather() {
         viewModelScope.launch {
-            _hours.value = cityWeatherModel?.let {
-                getHourlyWeather.getHours(measure.value,
+            cityWeatherModel?.let {
+                val result = getHourlyWeather.getHours(measure.value,
                     it.lat,
-                    it.lon).data
+                    it.lon)
+                result.checkResult(
+                    {
+                        _hours.value = it
+                    },
+                    {
+                        _errorMessage.value = it.message
+                    }
+                )
             }
             notifyChange()
         }
@@ -74,6 +88,4 @@ class CityFragmentViewModel @Inject constructor(
         this.measure = measure
         getHourlyWeather()
     }
-
-
 }

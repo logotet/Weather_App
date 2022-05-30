@@ -58,12 +58,12 @@ class SearchFragment : Fragment() {
         )
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
-            activityViewModel.barVisible = true //TODO
+            activityViewModel.barVisible = true
 
             constructLocationPermissionRequest.launch()
         }
 
-        viewModel.cityWeatherModel?.observe(viewLifecycleOwner) {
+        viewModel.cityWeatherModel.observe(viewLifecycleOwner) {
             activityViewModel.model = it
 
             val bundle = bundleOf("measure" to viewModel.measure.value)
@@ -76,7 +76,7 @@ class SearchFragment : Fragment() {
         })
 
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
-            Snackbar.make(view, it, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         })
     }
 
