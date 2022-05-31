@@ -12,6 +12,6 @@ class GetCurrentCoordWeather(
         lon: Double,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        return repository.getCurrentCoordWeatherResponse(lat, lon, measure)
+        return repository.getCoordWeatherNetwork(lat, lon, measure)
     }
 }

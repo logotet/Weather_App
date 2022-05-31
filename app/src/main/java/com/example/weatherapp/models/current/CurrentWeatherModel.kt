@@ -1,6 +1,6 @@
 package com.example.weatherapp.models.current
 
-open class CurrentWeatherModel(
+class CurrentWeatherModel(
     val name: String,
     val description: String,
     val temperature: Double,

@@ -5,7 +5,7 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.data.checkResult
+import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.GetCurrentCityWeather
 import com.example.weatherapp.interactors.GetCurrentCoordWeather

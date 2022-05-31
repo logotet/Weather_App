@@ -11,6 +11,6 @@ class GetCurrentCityWeather(
         city: String,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        return repository.getCurrentWeatherResponse(city, measure)
+        return repository.getCityNetworkWeather(city, measure)
     }
 }

@@ -1,8 +1,10 @@
 package com.example.weatherapp.repository
 
+import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.remote.ApiService
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.data.remote.NetworkResult.*
+import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.example.weatherapp.models.hourly.HourWeatherModel
@@ -16,34 +18,24 @@ import retrofit2.Response
 import java.lang.Exception
 
 class Repository(
-    private val apiService: ApiService,
+    private val weatherLocalDataSource: WeatherLocalDataSource,
+    private val weatherNetworkDataSource: WeatherNetworkDataSource
 ) {
 
-    suspend fun getCurrentWeatherResponse(
+
+    suspend fun getCityNetworkWeather(
         city: String,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        return withContext(Dispatchers.IO) {
-            getResultData{ apiService.getCurrentCityWeather(city, measure) }
-                .mapSuccess {
-                    it.mapApiToCurrentModel()
-                }
-        }
+        return weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
     }
 
-    suspend fun getCurrentCoordWeatherResponse(
+    suspend fun getCoordWeatherNetwork(
         lat: Double,
         lon: Double,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        return withContext(Dispatchers.IO) {
-            getResultData {
-                apiService.getCurrentCoordWeather(measure, lat.toString(), lon.toString())
-            }
-                .mapSuccess {
-                   it.mapApiToCurrentModel()
-                }
-        }
+        return weatherNetworkDataSource.getCurrentCoordWeatherResponse(lat, lon, measure)
     }
 
     suspend fun getHourlyWeather(
@@ -51,44 +43,7 @@ class Repository(
         lat: Double,
         lon: Double,
     ): NetworkResult<List<HourWeatherModel>> {
-        return withContext(Dispatchers.IO) {
-            getResultData {
-                apiService.getHourlyWeather(measure, lat.toString(), lon.toString())
-            }
-                .mapSuccess {
-                    it.mapToHourWeatherModel()
-                }
-        }
-    }
-
-    private fun <T, R> NetworkResult<T>.mapSuccess(mapper: (T) -> R): NetworkResult<R> =
-        if (this is Success) {
-            Success(mapper(data))
-        } else {
-            Error<R>((this as Error).message)
-        }
-
-    private suspend fun <T> getResultData(
-        getData: suspend () -> Response<T>,
-    ): NetworkResult<T> {
-        return try {
-            val apiResult = getData.invoke()
-            Success(apiResult.body()!!)
-        } catch (e: Exception) {
-            if (e is HttpException) {
-                mapError(e)
-            } else {
-                Error(e.message)
-            }
-        }
-    }
-
-    private fun <T> mapError(exception: HttpException): NetworkResult.Error<T> {
-        val gson = Gson()
-        val fromJson =
-            gson.fromJson(exception.response()?.errorBody()?.string(),
-                WeatherErrorResponse::class.java)
-        return Error(fromJson.message)
+        return weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
     }
 }
 

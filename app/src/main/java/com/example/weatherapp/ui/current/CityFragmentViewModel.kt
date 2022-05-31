@@ -2,8 +2,7 @@ package com.example.weatherapp.ui.current
 
 import androidx.databinding.Bindable
 import androidx.lifecycle.*
-import com.example.weatherapp.data.checkResult
-import com.example.weatherapp.data.remote.NetworkResult
+import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.interactors.GetHourlyWeather
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel

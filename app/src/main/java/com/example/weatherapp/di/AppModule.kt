@@ -1,7 +1,9 @@
 package com.example.weatherapp.di
 
 import android.content.Context
+import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.remote.ApiService
+import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.interactors.GetCurrentCityWeather
 import com.example.weatherapp.interactors.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.GetHourlyWeather
@@ -38,8 +40,11 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesRepository(apiService: ApiService): Repository =
-        Repository(apiService)
+    fun providesRepository(
+        weatherLocalDataSource: WeatherLocalDataSource,
+        weatherNetworkDataSource: WeatherNetworkDataSource,
+    ): Repository =
+        Repository(weatherLocalDataSource, weatherNetworkDataSource)
 
     @Provides
     @Singleton
@@ -65,4 +70,14 @@ class AppModule {
     @Singleton
     fun providesStringProvider(@ApplicationContext context: Context): ResourceProvider =
         ResourceProvider(context)
+
+    @Provides
+    @Singleton
+    fun providesWeatherNetworkDataSource(apiService: ApiService): WeatherNetworkDataSource =
+        WeatherNetworkDataSource(apiService)
+
+    @Provides
+    @Singleton
+    fun providesWeatherLocalDataSource(): WeatherLocalDataSource =
+        WeatherLocalDataSource()
 }
