@@ -52,6 +52,10 @@ class SearchViewModel @Inject constructor(
     val onSearchButtonPressed: SingleLiveEvent<Unit>
         get() = _onSearchButtonPressed
 
+    private var _navigationFired = SingleLiveEvent<Unit>()
+    val navigationFired: SingleLiveEvent<Unit>
+    get() = _navigationFired
+
     init {
         _sharedMeasure.value = measure
     }
@@ -96,6 +100,7 @@ class SearchViewModel @Inject constructor(
             {
                 _cityWeatherModel.value = it
                 _sharedMeasure.value = measure
+                _navigationFired.call()
             },
             {
                 _errorMessage.value = it.message

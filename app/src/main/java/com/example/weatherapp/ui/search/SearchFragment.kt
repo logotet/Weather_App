@@ -74,10 +74,6 @@ class SearchFragment : Fragment() {
 
         viewModel.cityWeatherModel.observe(viewLifecycleOwner) {
             activityViewModel.model = it
-
-            val bundle = bundleOf("measure" to viewModel.measure.value)
-            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment,
-                bundle)
         }
 
         viewModel.sharedMeasure.observe(viewLifecycleOwner, Observer {
@@ -87,6 +83,13 @@ class SearchFragment : Fragment() {
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         })
+
+        viewModel.navigationFired.observe(viewLifecycleOwner){
+
+            val bundle = bundleOf("measure" to viewModel.measure.value)
+            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment,
+                bundle)
+        }
     }
 
     private fun onGetLocationRationale(permissionRequest: PermissionRequest) {

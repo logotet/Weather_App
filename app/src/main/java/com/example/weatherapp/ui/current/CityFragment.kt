@@ -50,11 +50,6 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            findNavController().navigate(R.id.searchFragment)
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-
         val hourAdapter = HourAdapter(resourceProvider)
 
         val measure = Measure.getMeasure(arguments?.get("measure") as? String)
