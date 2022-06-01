@@ -1,16 +1,17 @@
-package com.example.weatherapp.interactors
+package com.example.weatherapp.interactors.apicalls
 
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.repository.Repository
 
-class GetCurrentCityWeather(
+class GetCurrentCoordWeather(
     private val repository: Repository,
 ) {
-    suspend fun getCurrentWeather(
-        city: String,
+    suspend fun getCurrentCoordWeather(
+        lat: Double,
+        lon: Double,
         measure: String,
     ): NetworkResult<CurrentWeatherModel> {
-        return repository.getCurrentWeatherResponse(city, measure)
+        return repository.getCoordWeatherNetwork(lat, lon, measure)
     }
 }

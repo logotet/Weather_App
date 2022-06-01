@@ -19,5 +19,7 @@ object AppConstants {
 
     const val CAMERA_STANDARD_ZOOM = 10F
 
+    const val DATABASE = "weather_db"
+
 
 }

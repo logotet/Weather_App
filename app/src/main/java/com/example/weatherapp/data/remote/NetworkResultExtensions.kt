@@ -1,6 +1,4 @@
-package com.example.weatherapp.data
-
-import com.example.weatherapp.data.remote.NetworkResult
+package com.example.weatherapp.data.remote
 
 fun <T> NetworkResult<T>.checkResult(
     onSuccess: (T) -> Unit,
