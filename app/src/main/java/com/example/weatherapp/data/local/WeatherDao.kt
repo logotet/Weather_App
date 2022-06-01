@@ -2,24 +2,29 @@ package com.example.weatherapp.data.local
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.weatherapp.models.local.LocalHour
+import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.utils.AppConstants
+import com.example.weatherapp.utils.AppConstants.DATABASE
 
 @Dao
 interface WeatherDao {
 
-//    @Insert
-//    fun insert(localWeatherModel: Unit)
-//
-//    @Query("SELECT * FROM ...")
-//    fun getAll(): List<...>
-//
-//    @Query("SELECT * FROM ... WHERE ... LIKE :cityName")
-//    fun getCity(cityName: String)
-//
-//    @Query("DELETE FROM ... WHERE ... LIKE :cityName")
-//    fun deleteCity(cityName: String)
-//
-//    @Query("DELETE FROM ... ")
-//    fun deleteAll()
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+   suspend fun insert(localWeatherModel: LocalWeatherModel)
+
+    @Query("SELECT * FROM localweathermodel")
+    suspend fun getAll(): List<LocalWeatherModel>
+
+    @Query("SELECT * FROM localweathermodel WHERE name LIKE :cityName")
+    suspend fun getCity(cityName: String): LocalWeatherModel?
+
+    @Query("DELETE FROM localweathermodel WHERE name LIKE :cityName")
+    suspend fun deleteCity(cityName: String)
+
+    @Query("DELETE FROM localweathermodel")
+    suspend fun deleteAll()
 
 }

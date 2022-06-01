@@ -8,6 +8,7 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.utils.mapApiToCurrentModel
 import com.example.weatherapp.utils.mapToHourWeatherModel
 import com.google.gson.Gson
@@ -19,10 +20,8 @@ import java.lang.Exception
 
 class Repository(
     private val weatherLocalDataSource: WeatherLocalDataSource,
-    private val weatherNetworkDataSource: WeatherNetworkDataSource
+    private val weatherNetworkDataSource: WeatherNetworkDataSource,
 ) {
-
-
     suspend fun getCityNetworkWeather(
         city: String,
         measure: String,
@@ -44,6 +43,16 @@ class Repository(
         lon: Double,
     ): NetworkResult<List<HourWeatherModel>> {
         return weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
+    }
+
+
+    //Local
+    suspend fun insertData(dataModel: LocalWeatherModel) {
+        weatherLocalDataSource.insert(dataModel)
+    }
+
+    suspend fun loadCity(city: String): LocalWeatherModel? {
+        return weatherLocalDataSource.loadCity(city)
     }
 }
 

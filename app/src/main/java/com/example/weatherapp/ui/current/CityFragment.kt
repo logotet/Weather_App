@@ -1,9 +1,7 @@
 package com.example.weatherapp.ui.current
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.addCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -35,6 +33,11 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     @Inject
     lateinit var resourceProvider: ResourceProvider
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,6 +66,11 @@ class CityFragment : Fragment(), OnMapReadyCallback {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         })
 
+        //TODO experimenting
+        viewModel.cityDb.observe(viewLifecycleOwner){
+            Snackbar.make(view, it.name + " " + it.humidity, Snackbar.LENGTH_LONG).show()
+        }
+
         hourAdapter.updateMeasureUnit(measure)
         hourAdapter.resourceProvider = resourceProvider
         binding?.hoursRecView?.adapter = hourAdapter
@@ -80,5 +88,9 @@ class CityFragment : Fragment(), OnMapReadyCallback {
             val lon = it.lon
             googleMap.moveToLocation(lat, lon)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.current_weather_menu, menu)
     }
 }

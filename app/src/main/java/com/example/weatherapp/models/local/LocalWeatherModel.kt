@@ -1,5 +1,8 @@
 package com.example.weatherapp.models.local
 
+import androidx.room.Entity
+
+@Entity(primaryKeys = ["lat", "lon"])
 data class LocalWeatherModel(
     val name: String,
     val description: String,

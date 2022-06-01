@@ -1,12 +1,16 @@
 package com.example.weatherapp.di
 
 import android.content.Context
+import androidx.room.Room
+import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.remote.ApiService
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
-import com.example.weatherapp.interactors.GetCurrentCityWeather
-import com.example.weatherapp.interactors.GetCurrentCoordWeather
-import com.example.weatherapp.interactors.GetHourlyWeather
+import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
+import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
+import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
+import com.example.weatherapp.interactors.localcalls.GetLocationByName
+import com.example.weatherapp.interactors.localcalls.InsertIntoDatabase
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
@@ -78,6 +82,25 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesWeatherLocalDataSource(): WeatherLocalDataSource =
-        WeatherLocalDataSource()
+    fun providesWeatherRoomDatabase(@ApplicationContext context: Context): WeatherDatabase =
+        Room.databaseBuilder(
+            context,
+            WeatherDatabase::class.java,
+            "weather_db"
+        ).build()
+
+    @Provides
+    @Singleton
+    fun providesWeatherLocalDataSource(weatherDatabase: WeatherDatabase): WeatherLocalDataSource =
+        WeatherLocalDataSource(weatherDatabase)
+
+    @Provides
+    @Singleton
+    fun providesInsertIntoDatabase(repository: Repository): InsertIntoDatabase =
+        InsertIntoDatabase(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetLocationFromDatabase(repository: Repository): GetLocationByName =
+        GetLocationByName(repository)
 }

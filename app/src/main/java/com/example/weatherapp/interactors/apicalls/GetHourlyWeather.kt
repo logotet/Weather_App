@@ -1,4 +1,4 @@
-package com.example.weatherapp.interactors
+package com.example.weatherapp.interactors.apicalls
 
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.models.hourly.HourWeatherModel
