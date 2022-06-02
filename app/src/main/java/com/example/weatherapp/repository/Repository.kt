@@ -1,22 +1,12 @@
 package com.example.weatherapp.repository
 
 import com.example.weatherapp.data.local.WeatherLocalDataSource
-import com.example.weatherapp.data.remote.ApiService
 import com.example.weatherapp.data.remote.NetworkResult
-import com.example.weatherapp.data.remote.NetworkResult.*
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.models.local.LocalWeatherModel
-import com.example.weatherapp.utils.mapApiToCurrentModel
-import com.example.weatherapp.utils.mapToHourWeatherModel
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import retrofit2.Response
-import java.lang.Exception
+import kotlinx.coroutines.flow.Flow
 
 class Repository(
     private val weatherLocalDataSource: WeatherLocalDataSource,
@@ -53,6 +43,18 @@ class Repository(
 
     suspend fun loadCity(city: String): LocalWeatherModel? {
         return weatherLocalDataSource.loadCity(city)
+    }
+
+    suspend fun getAllLocations(): List<LocalWeatherModel>? {
+        return weatherLocalDataSource.getAllLocations()
+    }
+
+    suspend fun getRecentLocations(): Flow<List<LocalWeatherModel>> {
+        return weatherLocalDataSource.getRecentLocations()
+    }
+
+    suspend fun getFavoriteLocations(): List<LocalWeatherModel>? {
+        return weatherLocalDataSource.getFavoriteLocations()
     }
 }
 

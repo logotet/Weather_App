@@ -30,12 +30,16 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     private var binding: CityWeatherFragmentBinding? = null
 
+    private lateinit var measure: Measure
+
     @Inject
     lateinit var resourceProvider: ResourceProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        measure = Measure.getMeasure(arguments?.get("measure") as? String)
+        viewModel.setUpData(activityViewModel.model, measure)
     }
 
     override fun onCreateView(
@@ -55,9 +59,6 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         val hourAdapter = HourAdapter(resourceProvider)
 
-        val measure = Measure.getMeasure(arguments?.get("measure") as? String)
-        viewModel.setUpData(activityViewModel.model, measure)
-
         viewModel.hours.observe(viewLifecycleOwner, Observer {
             hourAdapter.updateData(it)
         })
@@ -65,11 +66,6 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         })
-
-        //TODO experimenting
-        viewModel.cityDb.observe(viewLifecycleOwner){
-            Snackbar.make(view, it.name + " " + it.humidity, Snackbar.LENGTH_LONG).show()
-        }
 
         hourAdapter.updateMeasureUnit(measure)
         hourAdapter.resourceProvider = resourceProvider
@@ -92,5 +88,13 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.current_weather_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_save){
+            viewModel.insertLocationAsSaved()
+                Snackbar.make(requireActivity().window.decorView, "Location saved", Snackbar.LENGTH_LONG).show()
+        }
+        return true
     }
 }

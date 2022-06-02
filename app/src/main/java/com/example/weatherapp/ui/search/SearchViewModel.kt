@@ -9,11 +9,14 @@ import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
+import com.example.weatherapp.interactors.localcalls.GetRecentLocations
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
+import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,6 +24,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
+    private val getRecentLocations: GetRecentLocations
 ) : ObservableViewModel() {
 
     var latitude: Double? = null
@@ -40,6 +44,9 @@ class SearchViewModel @Inject constructor(
     val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
         get() = _cityWeatherModel
 
+    private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
+    val locations: StateFlow<List<LocalWeatherModel>> = _locations
+
     private var _errorMessage = SingleLiveEvent<String?>()
     val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
@@ -58,6 +65,7 @@ class SearchViewModel @Inject constructor(
 
     init {
         _sharedMeasure.value = measure
+        getRecentLocations()
     }
 
     fun onCurrentLocationPressed() {
@@ -106,6 +114,14 @@ class SearchViewModel @Inject constructor(
                 _errorMessage.value = it.message
             }
         )
+    }
+
+    fun getRecentLocations(){
+        viewModelScope.launch {
+            getRecentLocations.getRecentLocations().collect {
+                _locations.value = it
+            }
+         }
     }
 
 }

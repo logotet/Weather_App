@@ -1,9 +1,11 @@
 package com.example.weatherapp.models.local
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Entity(primaryKeys = ["lat", "lon"])
+@Entity()
 data class LocalWeatherModel(
+    @PrimaryKey(autoGenerate = false)
     val name: String,
     val description: String,
     val temperature: Double,
@@ -13,7 +15,9 @@ data class LocalWeatherModel(
     val lat: Double,
     val lon: Double,
     val windDirection: Int,
-    var hours: List<LocalHour>? = null
+    var hours: List<LocalHour>? = null,
+    val addedAt: Long = System.currentTimeMillis(),
+    var saved: Boolean = false
 )
 
 data class LocalHour(

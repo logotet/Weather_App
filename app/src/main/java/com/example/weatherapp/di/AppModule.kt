@@ -9,8 +9,7 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
-import com.example.weatherapp.interactors.localcalls.GetLocationByName
-import com.example.weatherapp.interactors.localcalls.InsertIntoDatabase
+import com.example.weatherapp.interactors.localcalls.*
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
@@ -103,4 +102,19 @@ class AppModule {
     @Singleton
     fun providesGetLocationFromDatabase(repository: Repository): GetLocationByName =
         GetLocationByName(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetAllLocations(repository: Repository): GetAllLocations =
+        GetAllLocations(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetRecentLocations(repository: Repository): GetRecentLocations =
+        GetRecentLocations(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetFavoriteLocations(repository: Repository): GetFavoriteLocations =
+        GetFavoriteLocations(repository)
 }

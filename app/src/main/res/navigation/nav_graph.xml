@@ -25,5 +25,10 @@
             app:argType="string"
             android:defaultValue="metric" />
     </fragment>
+    <fragment
+        android:id="@+id/savedLocationsFragment"
+        android:name="com.example.weatherapp.ui.saved.SavedLocationsFragment"
+        android:label="SavedLocationsFragment" />
+    <action android:id="@+id/action_global_savedLocationsFragment" app:destination="@id/savedLocationsFragment" />
 
 </navigation>
