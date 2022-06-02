@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -8,114 +9,143 @@
             name="viewModel"
             type="com.example.weatherapp.ui.search.SearchViewModel" />
 
-        <import type="com.example.weatherapp.utils.BindingConvertersKt"/>
+        <import type="com.example.weatherapp.utils.BindingConvertersKt" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RadioGroup
-            android:id="@+id/rg_temperature"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginHorizontal="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="8dp"
-            android:orientation="horizontal"
-            android:checkedButton="@={BindingConvertersKt.measureToId(viewModel.measure)}"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/edt_city">
+            android:layout_height="match_parent">
 
-            <RadioButton
-                android:id="@+id/btn_metric"
-                android:layout_width="0dp"
-                android:background="@drawable/drawable_tab_selector_left"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:button="@null"
-                android:checked="true"
-                android:gravity="center"
-                android:text="@string/metric"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+            <RadioGroup
+                android:id="@+id/rg_temperature"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginHorizontal="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="80dp"
+                android:layout_marginEnd="8dp"
+                android:checkedButton="@={BindingConvertersKt.measureToId(viewModel.measure)}"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <RadioButton
-                android:background="@drawable/drawable_tab_selector"
-                android:id="@+id/btn_standard"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:text="@string/standard"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <RadioButton
+                    android:id="@+id/btn_metric"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_tab_selector_left"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="@string/metric"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-            <RadioButton
-                android:background="@drawable/drawable_tab_selector_right"
-                android:id="@+id/btn_imperial"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:text="@string/imperial"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <RadioButton
+                    android:id="@+id/btn_standard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_tab_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="@string/standard"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-        </RadioGroup>
+                <RadioButton
+                    android:id="@+id/btn_imperial"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/drawable_tab_selector_right"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="@string/imperial"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/edt_city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/standard_field_margin"
-            android:hint="@string/city"
-            android:text="@={viewModel.cityName}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            </RadioGroup>
 
-        <Button
-            android:id="@+id/btn_search"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/standard_field_margin"
-            android:onClick="@{() -> viewModel.onSearchPressed()}"
-            android:text="@string/search"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edt_city" />
+            <EditText
+                android:id="@+id/edt_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:hint="@string/city"
+                android:text="@={viewModel.cityName}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rg_temperature" />
 
-        <TextView
-            android:id="@+id/txt_or"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/standard_field_margin"
-            android:onClick="@{() -> viewModel.getCurrentCityWeather()}"
-            android:text="@string/or"
-            android:textAllCaps="true"
-            android:textAlignment="center"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_search" />
+            <Button
+                android:id="@+id/btn_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/standard_field_margin"
+                android:onClick="@{() -> viewModel.onSearchPressed()}"
+                android:text="@string/search"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/edt_city" />
 
-        <Button
-            android:id="@+id/btn_current_location"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/standard_field_margin"
-            android:text="@string/get_my_location"
-            android:onClick="@{() -> viewModel.onCurrentLocationPressed()}"
-            android:drawableEnd="@drawable/ic_location"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_or" />
+            <TextView
+                android:id="@+id/txt_or"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:onClick="@{() -> viewModel.getCurrentCityWeather()}"
+                android:text="@string/or"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_search" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/btn_current_location"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:drawableEnd="@drawable/ic_location"
+                android:onClick="@{() -> viewModel.onCurrentLocationPressed()}"
+                android:text="@string/get_my_location"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_or" />
+
+            <TextView
+                android:id="@+id/txt_recently_searched"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:onClick="@{() -> viewModel.getCurrentCityWeather()}"
+                android:text="@string/recently_searched_locations"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:visibility="invisible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_current_location"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/recently_viewed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_recently_searched">
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

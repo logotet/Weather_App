@@ -4,6 +4,7 @@ import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.utils.mapApiToCurrentModel
 
 fun CurrentWeatherModel.mapApiToCurrentModel(): LocalWeatherModel {
     return LocalWeatherModel(
@@ -16,6 +17,20 @@ fun CurrentWeatherModel.mapApiToCurrentModel(): LocalWeatherModel {
         lat,
         lon,
         windDirection
+    )
+}
+
+fun LocalWeatherModel.mapLocalToCurrentModel(): CurrentWeatherModel{
+    return CurrentWeatherModel(
+        this.name,
+        this.description,
+        this.temperature,
+        this.windSpeed,
+        this.humidity,
+        this.icon,
+        this.lat,
+        this.lon,
+        this.windDirection
     )
 }
 

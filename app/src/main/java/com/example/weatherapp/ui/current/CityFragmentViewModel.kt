@@ -1,15 +1,14 @@
 package com.example.weatherapp.ui.current
 
 import androidx.databinding.Bindable
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
-import com.example.weatherapp.interactors.localcalls.GetLocationByName
 import com.example.weatherapp.interactors.localcalls.InsertIntoDatabase
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
-import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class CityFragmentViewModel @Inject constructor(
     private val getHourlyWeather: GetHourlyWeather,
     private val insertIntoDatabase: InsertIntoDatabase,
-    private val getLocationByName: GetLocationByName,
     private val resourceProvider: ResourceProvider,
 ) : ObservableViewModel() {
 
@@ -34,10 +32,6 @@ class CityFragmentViewModel @Inject constructor(
             field = value
             notifyChange()
         }
-
-    private var _cityDb = SingleLiveEvent<LocalWeatherModel>()
-    val cityDb: SingleLiveEvent<LocalWeatherModel>
-        get() = _cityDb
 
     var measure: Measure = Measure.METRIC
 
@@ -82,6 +76,7 @@ class CityFragmentViewModel @Inject constructor(
                 result.checkResult(
                     {
                         _hours.value = it
+                        insertLocation()
                     },
                     {
                         _errorMessage.value = it.message
@@ -92,17 +87,21 @@ class CityFragmentViewModel @Inject constructor(
         }
     }
 
-    fun insertCityDataToDatabase() {
+    fun insertLocationAsSaved() {
         viewModelScope.launch {
             cityWeatherModel?.let {
-                insertIntoDatabase.insertData(it.mapApiToCurrentModel())
+                val localModel = it.mapApiToCurrentModel()
+                localModel.saved = true
+                insertIntoDatabase.insertData(localModel)
             }
         }
     }
 
-    fun loadCity(){
+    private fun insertLocation() {
         viewModelScope.launch {
-            _cityDb.value = getLocationByName.getCity("Varna")
+            cityWeatherModel?.let {
+                insertIntoDatabase.insertData(it.mapApiToCurrentModel())
+            }
         }
     }
 
