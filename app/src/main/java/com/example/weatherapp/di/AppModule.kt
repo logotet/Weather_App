@@ -69,11 +69,6 @@ class AppModule {
     fun providesHourViewModel(measure: Measure, resourceProvider: ResourceProvider): HourViewModel =
         HourViewModel(measure, resourceProvider)
 
-//    @Provides
-//    @Singleton
-//    fun providesRecentLocationsViewModel(measure: Measure, resourceProvider: ResourceProvider): HourViewModel =
-//        HourViewModel(measure, resourceProvider)
-
     @Provides
     @Singleton
     fun providesStringProvider(@ApplicationContext context: Context): ResourceProvider =
