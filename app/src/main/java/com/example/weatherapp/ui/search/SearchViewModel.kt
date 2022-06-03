@@ -9,9 +9,12 @@ import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
+import com.example.weatherapp.interactors.localcalls.GetRecentCityNames
 import com.example.weatherapp.interactors.localcalls.GetRecentLocations
+import com.example.weatherapp.interactors.localcalls.InsertCityName
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
+import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
@@ -24,8 +27,8 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
-    private val getRecentLocations: GetRecentLocations
-) : ObservableViewModel() {
+    private val getRecentCityNames: GetRecentCityNames,
+) : ObservableViewModel(), OnRecentClickListener {
 
     var latitude: Double? = null
     var longitude: Double? = null
@@ -47,6 +50,9 @@ class SearchViewModel @Inject constructor(
     private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
     val locations: StateFlow<List<LocalWeatherModel>> = _locations
 
+    private var _cityNames = MutableStateFlow(emptyList<City>())
+    val cityNames: StateFlow<List<City>> = _cityNames
+
     private var _errorMessage = SingleLiveEvent<String?>()
     val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
@@ -61,11 +67,11 @@ class SearchViewModel @Inject constructor(
 
     private var _navigationFired = SingleLiveEvent<Unit>()
     val navigationFired: SingleLiveEvent<Unit>
-    get() = _navigationFired
+        get() = _navigationFired
 
     init {
         _sharedMeasure.value = measure
-        getRecentLocations()
+        getRecentCityNames()
     }
 
     fun onCurrentLocationPressed() {
@@ -116,12 +122,17 @@ class SearchViewModel @Inject constructor(
         )
     }
 
-    fun getRecentLocations(){
+    private fun getRecentCityNames() {
         viewModelScope.launch {
-            getRecentLocations.getRecentLocations().collect {
-                _locations.value = it
+            getRecentCityNames.getRecentCityNames().collect {
+                _cityNames.value = it
             }
-         }
+        }
+    }
+
+    override fun onItemClicked(city: String) {
+        cityName = city
+        getCurrentCityWeather()
     }
 
 }

@@ -69,6 +69,11 @@ class AppModule {
     fun providesHourViewModel(measure: Measure, resourceProvider: ResourceProvider): HourViewModel =
         HourViewModel(measure, resourceProvider)
 
+//    @Provides
+//    @Singleton
+//    fun providesRecentLocationsViewModel(measure: Measure, resourceProvider: ResourceProvider): HourViewModel =
+//        HourViewModel(measure, resourceProvider)
+
     @Provides
     @Singleton
     fun providesStringProvider(@ApplicationContext context: Context): ResourceProvider =
@@ -117,4 +122,14 @@ class AppModule {
     @Singleton
     fun providesGetFavoriteLocations(repository: Repository): GetFavoriteLocations =
         GetFavoriteLocations(repository)
+
+    @Provides
+    @Singleton
+    fun providesInsertCityName(repository: Repository): InsertCityName =
+        InsertCityName(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetRecentCityNames(repository: Repository): GetRecentCityNames =
+        GetRecentCityNames(repository)
 }

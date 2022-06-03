@@ -5,6 +5,7 @@ import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import kotlinx.coroutines.flow.Flow
 
@@ -37,6 +38,7 @@ class Repository(
 
 
     //Local
+    //LocalWeatherModel
     suspend fun insertData(dataModel: LocalWeatherModel) {
         weatherLocalDataSource.insert(dataModel)
     }
@@ -49,12 +51,21 @@ class Repository(
         return weatherLocalDataSource.getAllLocations()
     }
 
-    suspend fun getRecentLocations(): Flow<List<LocalWeatherModel>> {
+    fun getRecentLocations(): Flow<List<LocalWeatherModel>> {
         return weatherLocalDataSource.getRecentLocations()
     }
 
     suspend fun getFavoriteLocations(): List<LocalWeatherModel>? {
         return weatherLocalDataSource.getFavoriteLocations()
+    }
+
+    //City
+    suspend fun insertCityName(city: City) {
+        weatherLocalDataSource.insertCityName(city)
+    }
+
+    fun getRecentCityNames(): Flow<List<City>> {
+        return weatherLocalDataSource.getRecentCityNames()
     }
 }
 

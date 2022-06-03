@@ -5,10 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
+import com.example.weatherapp.interactors.localcalls.InsertCityName
 import com.example.weatherapp.interactors.localcalls.InsertIntoDatabase
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.utils.*
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class CityFragmentViewModel @Inject constructor(
     private val getHourlyWeather: GetHourlyWeather,
     private val insertIntoDatabase: InsertIntoDatabase,
+    private val insertCityName: InsertCityName,
     private val resourceProvider: ResourceProvider,
 ) : ObservableViewModel() {
 
@@ -77,6 +80,7 @@ class CityFragmentViewModel @Inject constructor(
                     {
                         _hours.value = it
                         insertLocation()
+                        insertRecentCity()
                     },
                     {
                         _errorMessage.value = it.message
@@ -101,6 +105,14 @@ class CityFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             cityWeatherModel?.let {
                 insertIntoDatabase.insertData(it.mapApiToCurrentModel())
+            }
+        }
+    }
+
+    private fun insertRecentCity(){
+        viewModelScope.launch {
+            cityWeatherModel?.let {
+                insertCityName.insertCityName(City(it.name))
             }
         }
     }
