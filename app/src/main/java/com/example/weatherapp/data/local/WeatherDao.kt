@@ -23,7 +23,7 @@ interface WeatherDao {
     suspend fun getFavorites(saved: Boolean = true): List<LocalWeatherModel>
 
     @Query("SELECT * FROM localweathermodel WHERE name LIKE :cityName")
-    suspend fun getCity(cityName: String): LocalWeatherModel?
+    fun getCity(cityName: String): Flow<LocalWeatherModel?>
 
     @Query("DELETE FROM localweathermodel WHERE name LIKE :cityName")
     suspend fun deleteCity(cityName: String)

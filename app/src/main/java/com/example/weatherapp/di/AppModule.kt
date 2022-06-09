@@ -127,4 +127,9 @@ class AppModule {
     @Singleton
     fun providesGetRecentCityNames(repository: Repository): GetRecentCityNames =
         GetRecentCityNames(repository)
+
+    @Provides
+    @Singleton
+    fun providesRemoveLocationFromFavorites(repository: Repository): RemoveLocationFromFavorites =
+        RemoveLocationFromFavorites(repository)
 }

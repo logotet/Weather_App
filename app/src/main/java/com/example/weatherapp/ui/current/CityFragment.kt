@@ -1,19 +1,20 @@
 package com.example.weatherapp.ui.current
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
-import androidx.activity.addCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.models.Measure
+import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
 import com.google.android.gms.maps.GoogleMap
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -31,6 +33,8 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     private var binding: CityWeatherFragmentBinding? = null
 
     private lateinit var measure: Measure
+
+    private var saved: Boolean? = null
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
@@ -56,6 +60,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.checkSavedLocation(activityViewModel.model!!.name)
 
         val hourAdapter = HourAdapter(resourceProvider)
 
@@ -90,11 +95,46 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         inflater.inflate(R.menu.current_weather_menu, menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        val saveItem = menu.findItem(R.id.action_save)
+        toggleSavedIcon(saveItem)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.action_save){
-            viewModel.insertLocationAsSaved()
-                Snackbar.make(requireActivity().window.decorView, "Location saved", Snackbar.LENGTH_LONG).show()
+        when (item.itemId) {
+            R.id.action_save -> {
+                saved?.let {
+                    if (!it) {
+                        item.setDrawable(context, R.drawable.ic_heart_full)
+                        viewModel.insertLocationAsSaved()
+                                            Snackbar.make(requireActivity().window.decorView,
+                        "Location saved to favorites",
+                        Snackbar.LENGTH_LONG).show()
+                    }else{
+                        item.setDrawable(context, R.drawable.ic_heart_empty)
+                        viewModel.removeLocationFromFavorites()
+                        Snackbar.make(requireActivity().window.decorView,
+                            "Location removed from favorites",
+                            Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
         }
         return true
+    }
+
+    private fun toggleSavedIcon(saveItem: MenuItem) {
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.cityLocalModel.collect { dataModel ->
+                saved = if (dataModel != null) {
+                    saveItem.setDrawable(context, R.drawable.ic_heart_full)
+                    true
+                } else {
+                    saveItem.setDrawable(context, R.drawable.ic_heart_empty)
+                    false
+                }
+            }
+        }
     }
 }
