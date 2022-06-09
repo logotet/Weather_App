@@ -60,6 +60,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //TODO see how to remove this check when room data is loaded
         viewModel.checkSavedLocation(activityViewModel.model!!.name)
 
         val hourAdapter = HourAdapter(resourceProvider)
