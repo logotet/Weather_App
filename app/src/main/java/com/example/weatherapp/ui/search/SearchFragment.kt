@@ -23,6 +23,7 @@ import com.example.weatherapp.databinding.SearchFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.utils.ResourceProvider
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest.*
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.snackbar.Snackbar
@@ -44,6 +45,8 @@ class SearchFragment : Fragment() {
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var gpsActivationLaunched: Boolean = false
+    private val cancellationTokenSource = CancellationTokenSource()
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
@@ -51,9 +54,6 @@ class SearchFragment : Fragment() {
     private val firebaseAnalytics = Firebase.analytics
 
     private var viewGroup: ViewGroup? = null
-
-    private var gpsActivated: Boolean = false
-    private var gpsActivationLaunched: Boolean = false
 
     override fun onResume() {
         super.onResume()
@@ -144,22 +144,24 @@ class SearchFragment : Fragment() {
     }
 
     private fun getCurrentLocation() {
-        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        gpsActivated = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
-        if (gpsActivated) {
+        if (isGPSEnabled()) {
             activityViewModel.barVisible = true
-            val cancellationTokenSource = CancellationTokenSource()
+
             fusedLocationClient.getCurrentLocation(
-                com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,
+                PRIORITY_HIGH_ACCURACY,
                 cancellationTokenSource.token
-            ).addOnCompleteListener {
-                viewModel.getCoordWeather(it.result)
+            ).addOnCompleteListener {task ->
+                viewModel.getCoordWeather(task.result)
             }
         } else {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             gpsActivationLaunched = true
         }
+    }
+
+    private fun isGPSEnabled(): Boolean {
+        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return  locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     private fun onLocationPermissionDenied() {
