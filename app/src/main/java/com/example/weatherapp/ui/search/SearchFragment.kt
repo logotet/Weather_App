@@ -57,9 +57,6 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        gpsActivated = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-
         if (gpsActivationLaunched) {
             getCurrentLocation()
         }
@@ -147,6 +144,9 @@ class SearchFragment : Fragment() {
     }
 
     private fun getCurrentLocation() {
+        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        gpsActivated = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
         if (gpsActivated) {
             activityViewModel.barVisible = true
             val cancellationTokenSource = CancellationTokenSource()
