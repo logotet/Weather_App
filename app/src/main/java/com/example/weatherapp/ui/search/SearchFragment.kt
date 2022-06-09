@@ -1,6 +1,10 @@
 package com.example.weatherapp.ui.search
 
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -48,6 +52,17 @@ class SearchFragment : Fragment() {
 
     private var viewGroup: ViewGroup? = null
 
+    private var gpsActivated: Boolean = false
+    private var gpsActivationLaunched: Boolean = false
+
+    override fun onResume() {
+        super.onResume()
+        if (gpsActivationLaunched) {
+            getCurrentLocation()
+        }
+        gpsActivationLaunched = false
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,7 +81,6 @@ class SearchFragment : Fragment() {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
-
         val constructLocationPermissionRequest = constructLocationPermissionRequest(
             LocationPermission.FINE,
             onShowRationale = ::onGetLocationRationale,
@@ -78,7 +92,7 @@ class SearchFragment : Fragment() {
             viewModel.cityNames.collectLatest { recentLocations ->
                 if (recentLocations.isNotEmpty()) {
                     binding.txtRecentlySearched.visibility = VISIBLE
-                }else{
+                } else {
                     binding.txtRecentlySearched.visibility = INVISIBLE
                 }
 
@@ -99,7 +113,6 @@ class SearchFragment : Fragment() {
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
             firebaseAnalytics.logEvent("weather_location_button_pressed", null)
-            activityViewModel.barVisible = true
             constructLocationPermissionRequest.launch()
         }
 
@@ -131,18 +144,28 @@ class SearchFragment : Fragment() {
     }
 
     private fun getCurrentLocation() {
-        val cancellationTokenSource = CancellationTokenSource()
-        fusedLocationClient.getCurrentLocation(
-            com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,
-            cancellationTokenSource.token
-        ).addOnCompleteListener {
-            viewModel.getCoordWeather(it.result)
+        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        gpsActivated = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (gpsActivated) {
+            activityViewModel.barVisible = true
+            val cancellationTokenSource = CancellationTokenSource()
+            fusedLocationClient.getCurrentLocation(
+                com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY,
+                cancellationTokenSource.token
+            ).addOnCompleteListener {
+                viewModel.getCoordWeather(it.result)
+            }
+        } else {
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            gpsActivationLaunched = true
         }
     }
 
     private fun onLocationPermissionDenied() {
         this.view?.let {
             Snackbar.make(it, getString(R.string.location_denied), Snackbar.LENGTH_LONG).show()
+            activityViewModel.barVisible = false
         }
     }
 }
