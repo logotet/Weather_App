@@ -1,4 +1,4 @@
-package com.example.weatherapp.ui.locations
+package com.example.weatherapp.ui.saved.locations
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
@@ -8,8 +8,9 @@ import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.formatTemperature
 
 class LocationRowViewModel(
-private val resourceProvider: ResourceProvider
-): BaseObservable() {
+    private val resourceProvider: ResourceProvider,
+    private val onSavedLocationClickedListener: OnSavedLocationClickedListener,
+) : BaseObservable() {
 
     var location: LocalWeatherModel? = null
         set(value) {
@@ -22,10 +23,16 @@ private val resourceProvider: ResourceProvider
 
     @get:Bindable
     val cityName: String?
-    get() = location?.name
+        get() = location?.name
 
     @get:Bindable
     val cityTemperature: String?
+        get() = location?.temperature.formatTemperature(resourceProvider, measure)
 
-    get() = location?.temperature.formatTemperature(resourceProvider, measure)
+    fun onItemClicked() {
+        cityName?.let {
+            onSavedLocationClickedListener.onSavedLocationClicked(it)
+        }
+    }
+
 }

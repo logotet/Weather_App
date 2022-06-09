@@ -1,4 +1,4 @@
-package com.example.weatherapp.ui.locations
+package com.example.weatherapp.ui.saved.locations
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,6 +9,7 @@ import com.example.weatherapp.utils.ResourceProvider
 
 class LocationAdapter(
     private val resourceProvider: ResourceProvider,
+    private val onSavedLocationClickedListener: OnSavedLocationClickedListener
 ) : RecyclerView.Adapter<LocationAdapter.LocationHolder>() {
 
     private var locations: List<LocalWeatherModel> = emptyList()
@@ -24,7 +25,7 @@ class LocationAdapter(
             parent,
             false
         )
-        return LocationHolder(binding, resourceProvider)
+        return LocationHolder(binding, resourceProvider, onSavedLocationClickedListener)
     }
 
     override fun onBindViewHolder(holder: LocationHolder, position: Int) {
@@ -38,9 +39,10 @@ class LocationAdapter(
     inner class LocationHolder(
         binding: LocationRowBinding,
         resourceProvider: ResourceProvider,
+        onSavedLocationClickedListener: OnSavedLocationClickedListener
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private val locationViewModel: LocationRowViewModel = LocationRowViewModel(resourceProvider)
+        private val locationViewModel: LocationRowViewModel = LocationRowViewModel(resourceProvider, onSavedLocationClickedListener)
 
         init {
             binding.viewmodel = locationViewModel
