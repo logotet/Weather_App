@@ -124,13 +124,13 @@ class SearchFragment : Fragment() {
             activityViewModel.model = it
         }
 
-        viewModel.sharedMeasure.observe(viewLifecycleOwner, Observer {
+        viewModel.sharedMeasure.observe(viewLifecycleOwner) {
             activityViewModel.measure = it
-        })
+        }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
+        viewModel.errorMessage.observe(viewLifecycleOwner) {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-        })
+        }
 
         viewModel.navigationFired.observe(viewLifecycleOwner) {
             val bundle = bundleOf("measure" to viewModel.measure.value)

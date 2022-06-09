@@ -64,13 +64,13 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         val hourAdapter = HourAdapter(resourceProvider)
 
-        viewModel.hours.observe(viewLifecycleOwner, Observer {
+        viewModel.hours.observe(viewLifecycleOwner) {
             hourAdapter.updateData(it)
-        })
+        }
 
-        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
+        viewModel.errorMessage.observe(viewLifecycleOwner) {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-        })
+        }
 
         hourAdapter.updateMeasureUnit(measure)
         hourAdapter.resourceProvider = resourceProvider
@@ -108,10 +108,10 @@ class CityFragment : Fragment(), OnMapReadyCallback {
                     if (!it) {
                         item.setDrawable(context, R.drawable.ic_heart_full)
                         viewModel.insertLocationAsSaved()
-                                            Snackbar.make(requireActivity().window.decorView,
-                        "Location saved to favorites",
-                        Snackbar.LENGTH_LONG).show()
-                    }else{
+                        Snackbar.make(requireActivity().window.decorView,
+                            "Location saved to favorites",
+                            Snackbar.LENGTH_LONG).show()
+                    } else {
                         item.setDrawable(context, R.drawable.ic_heart_empty)
                         viewModel.removeLocationFromFavorites()
                         Snackbar.make(requireActivity().window.decorView,
