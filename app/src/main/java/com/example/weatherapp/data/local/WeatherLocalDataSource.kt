@@ -15,10 +15,8 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         }
     }
 
-    suspend fun loadCity(city: String): LocalWeatherModel? {
-        return withContext(Dispatchers.IO) {
-            weatherDatabase.weatherDao().getCity(city)
-        }
+    fun loadCity(city: String): Flow<LocalWeatherModel?> {
+        return weatherDatabase.weatherDao().getCity(city)
     }
 
     suspend fun getAllLocations(): List<LocalWeatherModel>? {
@@ -35,6 +33,10 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return withContext(Dispatchers.IO) {
             weatherDatabase.weatherDao().getFavorites()
         }
+    }
+
+    suspend fun deleteLocation(cityName: String) {
+        weatherDatabase.weatherDao().deleteCity(cityName)
     }
 
     //City

@@ -43,7 +43,7 @@ class Repository(
         weatherLocalDataSource.insert(dataModel)
     }
 
-    suspend fun loadCity(city: String): LocalWeatherModel? {
+    fun loadCity(city: String): Flow<LocalWeatherModel?> {
         return weatherLocalDataSource.loadCity(city)
     }
 
@@ -58,6 +58,11 @@ class Repository(
     suspend fun getFavoriteLocations(): List<LocalWeatherModel>? {
         return weatherLocalDataSource.getFavoriteLocations()
     }
+
+    suspend fun deleteLocation(cityName: String) {
+        weatherLocalDataSource.deleteLocation(cityName)
+    }
+
 
     //City
     suspend fun insertCityName(city: City) {
