@@ -4,17 +4,23 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.SavedLocationsFragmentBinding
-import com.example.weatherapp.ui.locations.LocationAdapter
+import com.example.weatherapp.ui.MainActivityViewModel
+import com.example.weatherapp.ui.saved.locations.LocationAdapter
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SavedLocationsFragment : Fragment() {
+class SavedLocationsFragment : Fragment(){
     private val viewModel: SavedLocationsFragmentViewModel by viewModels()
+    private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private var binding: SavedLocationsFragmentBinding? = null
 
@@ -41,13 +47,20 @@ class SavedLocationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val locationAdapter = LocationAdapter(resourceProvider)
+        val locationAdapter = LocationAdapter(resourceProvider, viewModel)
 
         viewModel.locations.observe(viewLifecycleOwner) {
             locationAdapter.updateData(it)
         }
 
         binding?.locationsRecView?.adapter = locationAdapter
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.selectedLocation.collectLatest{
+                activityViewModel.model = it
+                findNavController().navigate(R.id.action_savedLocationsFragment_to_currentWeatherFragment)
+            }
+        }
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
