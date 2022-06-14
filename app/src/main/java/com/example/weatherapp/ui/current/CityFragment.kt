@@ -14,6 +14,7 @@ import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.models.Measure
+import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
@@ -99,6 +100,9 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val saveItem = menu.findItem(R.id.action_save)
+        if(!this.isNetworkAvailable(context)){
+            saveItem.isVisible = false
+        }
         toggleSavedIcon(saveItem)
     }
 
@@ -108,7 +112,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
                 saved?.let {
                     if (!it) {
                         item.setDrawable(context, R.drawable.ic_heart_full)
-                        viewModel.insertLocationAsSaved()
+                        viewModel.saveWeatherData()
                         Snackbar.make(requireActivity().window.decorView,
                             "Location saved to favorites",
                             Snackbar.LENGTH_LONG).show()

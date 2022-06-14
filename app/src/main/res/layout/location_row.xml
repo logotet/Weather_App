@@ -7,7 +7,7 @@
 
         <variable
             name="viewmodel"
-            type="com.example.weatherapp.ui.locations.LocationRowViewModel" />
+            type="com.example.weatherapp.ui.saved.locations.LocationRowViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

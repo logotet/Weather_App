@@ -5,18 +5,18 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.R
 import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.data.remote.NetworkResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
-import com.example.weatherapp.interactors.localcalls.GetRecentCityNames
-import com.example.weatherapp.interactors.localcalls.GetRecentLocations
-import com.example.weatherapp.interactors.localcalls.InsertCityName
+import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.ui.ObservableViewModel
+import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -28,6 +28,7 @@ class SearchViewModel @Inject constructor(
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getRecentCityNames: GetRecentCityNames,
+    private val resourceProvider: ResourceProvider,
 ) : ObservableViewModel(), OnRecentClickListener {
 
     var latitude: Double? = null
@@ -69,6 +70,8 @@ class SearchViewModel @Inject constructor(
     val navigationFired: SingleLiveEvent<Unit>
         get() = _navigationFired
 
+    var isNetworkAvailable: Boolean = true
+
     init {
         _sharedMeasure.value = measure
         getRecentCityNames()
@@ -80,33 +83,50 @@ class SearchViewModel @Inject constructor(
 
     fun onSearchPressed() {
         _onSearchButtonPressed.call()
+        //TODO check if this could be removed
         getCurrentCityWeather()
     }
 
     fun getCurrentCityWeather() {
-        viewModelScope.launch {
-            val result = cityName?.let {
-                getCurrentCityWeather.getCurrentWeather(it, measure.value)
-            }
-            checkCurrentWeatherResult(result)
-        }
-        notifyChange()
+        this.onNetworkAvailability(isNetworkAvailable,
+            {
+                viewModelScope.launch {
+                    val result = cityName?.let {
+                        getCurrentCityWeather.getCurrentWeather(it, measure.value)
+                    }
+                    checkCurrentWeatherResult(result)
+                }
+                notifyChange()
+            },
+            {
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
+            })
+
     }
 
     fun getCoordWeather(location: Location) {
-        latitude = location.latitude
-        longitude = location.longitude
-        viewModelScope.launch {
-            val result = latitude?.let { lat ->
-                longitude?.let { lon ->
-                    getCurrentCoordWeather.getCurrentCoordWeather(lat,
-                        lon,
-                        measure.value)
+        this.onNetworkAvailability(
+            isNetworkAvailable,
+            {
+                latitude = location.latitude
+                longitude = location.longitude
+                viewModelScope.launch {
+                    val result = latitude?.let { lat ->
+                        longitude?.let { lon ->
+                            getCurrentCoordWeather.getCurrentCoordWeather(lat,
+                                lon,
+                                measure.value)
+                        }
+                    }
+                    checkCurrentWeatherResult(result)
+                    notifyChange()
                 }
+            },
+            {
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
             }
-            checkCurrentWeatherResult(result)
-            notifyChange()
-        }
+        )
+
     }
 
     private fun checkCurrentWeatherResult(result: NetworkResult<CurrentWeatherModel>?) {

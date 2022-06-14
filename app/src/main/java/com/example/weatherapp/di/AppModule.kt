@@ -9,7 +9,12 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
-import com.example.weatherapp.interactors.localcalls.*
+import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
+import com.example.weatherapp.interactors.localcalls.citynames.GetRecentLocations
+import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
+import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
+import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
+import com.example.weatherapp.interactors.localcalls.locations.*
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
@@ -132,4 +137,14 @@ class AppModule {
     @Singleton
     fun providesRemoveLocationFromFavorites(repository: Repository): RemoveLocationFromFavorites =
         RemoveLocationFromFavorites(repository)
+
+    @Provides
+    @Singleton
+    fun providesInsertListOfHours(repository: Repository): InsertListOfHours =
+        InsertListOfHours(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetLocationHours(repository: Repository): GetLocationHours =
+        GetLocationHours(repository)
 }

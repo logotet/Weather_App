@@ -12,6 +12,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.SavedLocationsFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.saved.locations.LocationAdapter
+import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -26,6 +27,11 @@ class SavedLocationsFragment : Fragment(){
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.isNetworkAvailable = this.isNetworkAvailable(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

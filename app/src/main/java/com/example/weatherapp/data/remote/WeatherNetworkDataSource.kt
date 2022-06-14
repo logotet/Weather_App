@@ -15,7 +15,6 @@ import java.lang.Exception
 class WeatherNetworkDataSource(
     private val apiService: ApiService,
 ) {
-
     suspend fun getCurrentWeatherResponse(
         city: String,
         measure: String,
@@ -56,35 +55,5 @@ class WeatherNetworkDataSource(
                     it.mapToHourWeatherModel()
                 }
         }
-    }
-
-    private fun <T, R> NetworkResult<T>.mapSuccess(mapper: (T) -> R): NetworkResult<R> =
-        if (this is NetworkResult.Success) {
-            NetworkResult.Success(mapper(data))
-        } else {
-            NetworkResult.Error((this as NetworkResult.Error).message)
-        }
-
-    private suspend fun <T> getResultData(
-        getData: suspend () -> Response<T>,
-    ): NetworkResult<T> {
-        return try {
-            val apiResult = getData.invoke()
-            NetworkResult.Success(apiResult.body()!!)
-        } catch (e: Exception) {
-            if (e is HttpException) {
-                mapError(e)
-            } else {
-                NetworkResult.Error(e.message)
-            }
-        }
-    }
-
-    private fun <T> mapError(exception: HttpException): NetworkResult.Error<T> {
-        val gson = Gson()
-        val fromJson =
-            gson.fromJson(exception.response()?.errorBody()?.string(),
-                WeatherErrorResponse::class.java)
-        return NetworkResult.Error(fromJson.message)
     }
 }

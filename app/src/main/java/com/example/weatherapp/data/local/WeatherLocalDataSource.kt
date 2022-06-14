@@ -1,6 +1,7 @@
 package com.example.weatherapp.data.local
 
 import com.example.weatherapp.models.local.City
+import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +12,7 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
     //LocalWeatherModel
     suspend fun insert(dataModel: LocalWeatherModel) {
         withContext(Dispatchers.IO) {
-            weatherDatabase.weatherDao().insert(dataModel)
+            weatherDatabase.weatherDao().insertLocationWeather(dataModel)
         }
     }
 
@@ -37,6 +38,17 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
 
     suspend fun deleteLocation(cityName: String) {
         weatherDatabase.weatherDao().deleteCity(cityName)
+    }
+
+    //LocalHour
+    suspend fun insertLocalHours(localHours: List<LocalHour>) {
+        withContext(Dispatchers.IO) {
+            weatherDatabase.weatherDao().insertLocationHours(localHours)
+        }
+    }
+
+    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>>> {
+        return weatherDatabase.weatherDao().getLocationHours(cityName)
     }
 
     //City

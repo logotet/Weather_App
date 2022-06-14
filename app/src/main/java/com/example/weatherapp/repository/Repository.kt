@@ -6,6 +6,7 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.models.local.City
+import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
 import kotlinx.coroutines.flow.Flow
 
@@ -63,6 +64,14 @@ class Repository(
         weatherLocalDataSource.deleteLocation(cityName)
     }
 
+    //LocalHours
+    suspend fun insertLocalHours(localHours: List<LocalHour>) {
+            weatherLocalDataSource.insertLocalHours(localHours)
+    }
+
+    fun getLocationHours(city: String): Flow<Map<LocalWeatherModel?, List<LocalHour>>> {
+        return weatherLocalDataSource.getLocationHours(city)
+    }
 
     //City
     suspend fun insertCityName(city: City) {

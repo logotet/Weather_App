@@ -34,11 +34,29 @@ fun LocalWeatherModel.mapLocalToCurrentModel(): CurrentWeatherModel{
     )
 }
 
-fun List<HourWeatherModel>.mapToLocalHours(): List<LocalHour> {
+fun List<HourWeatherModel>.mapToLocalHours(cityName: String): List<LocalHour> {
     val hours = mutableListOf<LocalHour>()
     this.forEach { h ->
         hours.add(
             LocalHour(
+                cityName,
+                h.hourTemperature,
+                h.hourWindSpeed,
+                h.hourIcon,
+                h.hour,
+                h.windDirection,
+                h.timeZoneOffset
+            )
+        )
+    }
+    return hours
+}
+
+fun List<LocalHour>.mapToCurrentHours(): List<HourWeatherModel> {
+    val hours = mutableListOf<HourWeatherModel>()
+    this.forEach { h ->
+        hours.add(
+            HourWeatherModel(
                 h.hourTemperature,
                 h.hourWindSpeed,
                 h.hourIcon,

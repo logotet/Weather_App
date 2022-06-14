@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +22,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.RecentLocationViewBinding
 import com.example.weatherapp.databinding.SearchFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
+import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest.*
@@ -57,6 +59,8 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.isNetworkAvailable = this.isNetworkAvailable(context)
+
         if (gpsActivationLaunched) {
             getCurrentLocation()
         }

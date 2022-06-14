@@ -33,4 +33,7 @@
     <string name="favourites">Favourites</string>
     <string name="recently_searched_locations">Recently searched locations:</string>
 
+    //Network
+    <string name="no_network_message">No network detected</string>
+
 </resources>
