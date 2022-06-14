@@ -49,6 +49,8 @@ class SearchFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var gpsActivationLaunched: Boolean = false
     private val cancellationTokenSource = CancellationTokenSource()
+    private var lat: String? = null
+    private var lon: String? = null
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
@@ -115,32 +117,24 @@ class SearchFragment : Fragment() {
             }
         }
 
+        viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
+            firebaseAnalytics.logEvent("weather_search_button_pressed", null)
+            setNavigationWithData()
+        }
+
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
             firebaseAnalytics.logEvent("weather_location_button_pressed", null)
             constructLocationPermissionRequest.launch()
         }
+    }
 
-        viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
-            firebaseAnalytics.logEvent("weather_search_button_pressed", null)
-        }
-
-        viewModel.cityWeatherModel.observe(viewLifecycleOwner) {
-            activityViewModel.model = it
-        }
-
-        viewModel.sharedMeasure.observe(viewLifecycleOwner) {
-            activityViewModel.measure = it
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) {
-            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-        }
-
-        viewModel.navigationFired.observe(viewLifecycleOwner) {
-            val bundle = bundleOf("measure" to viewModel.measure.value)
-            findNavController().navigate(R.id.action_searchFragment_to_currentWeatherFragment,
-                bundle)
-        }
+    private fun setNavigationWithData() {
+        findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
+            viewModel.measure.value,
+            viewModel.cityName,
+            lat,
+            lon
+        ))
     }
 
     private fun onGetLocationRationale(permissionRequest: PermissionRequest) {
@@ -154,8 +148,10 @@ class SearchFragment : Fragment() {
             fusedLocationClient.getCurrentLocation(
                 PRIORITY_HIGH_ACCURACY,
                 cancellationTokenSource.token
-            ).addOnCompleteListener {task ->
-                viewModel.getCoordWeather(task.result)
+            ).addOnCompleteListener { task ->
+                lat = task.result.latitude.toString()
+                lon = task.result.longitude.toString()
+                setNavigationWithData()
             }
         } else {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
@@ -165,7 +161,7 @@ class SearchFragment : Fragment() {
 
     private fun isGPSEnabled(): Boolean {
         val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return  locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     private fun onLocationPermissionDenied() {

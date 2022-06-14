@@ -37,7 +37,6 @@ class Repository(
         return weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
     }
 
-
     //Local
     //LocalWeatherModel
     suspend fun insertData(dataModel: LocalWeatherModel) {

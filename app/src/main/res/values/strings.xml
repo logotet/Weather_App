@@ -33,7 +33,8 @@
     <string name="favourites">Favourites</string>
     <string name="recently_searched_locations">Recently searched locations:</string>
 
-    //Network
+    //Error messages
     <string name="no_network_message">No network detected</string>
+    <string name="no_location_found">There is no location with that name</string>
 
 </resources>

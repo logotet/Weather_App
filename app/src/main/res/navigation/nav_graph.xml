@@ -22,17 +22,34 @@
         tools:layout="@layout/city_weather_fragment">
         <argument
             android:name="measure"
+            android:defaultValue="metric"
+            app:argType="string" />
+        <argument
+            android:name="location"
+            android:defaultValue="pleven"
             app:argType="string"
-            android:defaultValue="metric" />
+            app:nullable="true" />
+        <argument
+            android:name="lat"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="lon"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/savedLocationsFragment"
         android:name="com.example.weatherapp.ui.saved.SavedLocationsFragment"
-        android:label="SavedLocationsFragment" >
+        android:label="SavedLocationsFragment">
         <action
             android:id="@+id/action_savedLocationsFragment_to_currentWeatherFragment"
             app:destination="@id/currentWeatherFragment" />
     </fragment>
-    <action android:id="@+id/action_global_savedLocationsFragment" app:destination="@id/savedLocationsFragment" />
+    <action
+        android:id="@+id/action_global_savedLocationsFragment"
+        app:destination="@id/savedLocationsFragment" />
 
 </navigation>
