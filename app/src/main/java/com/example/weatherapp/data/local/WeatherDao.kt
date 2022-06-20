@@ -26,7 +26,7 @@ interface WeatherDao {
 
     @Query("SELECT * FROM location_weather JOIN location_hours " +
             "ON name = cityName WHERE name LIKE :cityName")
-    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>>>
+    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>>
 
     @Query("SELECT * FROM location_weather")
     suspend fun getAll(): List<LocalWeatherModel>
@@ -39,6 +39,15 @@ interface WeatherDao {
 
     @Query("SELECT * FROM location_weather WHERE name LIKE :cityName")
     fun getCity(cityName: String): Flow<LocalWeatherModel?>
+
+    @Query("SELECT * FROM location_weather WHERE lat LIKE :lat AND lon LIKE :lon")
+    fun getCityByCoords(lat: Double, lon: Double): Flow<LocalWeatherModel?>
+
+    @Query("SELECT * FROM location_weather WHERE name LIKE :cityName AND saved LIKE :saved")
+    fun getFavoriteCity(cityName: String, saved: Boolean = true): Flow<LocalWeatherModel?>
+
+    @Query("SELECT * FROM location_weather WHERE currentLocation LIKE :savedAsCurrent ORDER BY addedAt DESC LIMIT 1")
+    fun getCurrentLocation(savedAsCurrent: Boolean = true): Flow<LocalWeatherModel?>
 
     @Query("DELETE FROM location_weather WHERE name LIKE :cityName")
     suspend fun deleteCity(cityName: String)

@@ -16,8 +16,21 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         }
     }
 
-    fun loadCity(city: String): Flow<LocalWeatherModel?> {
+    fun getCity(city: String): Flow<LocalWeatherModel?> {
         return weatherDatabase.weatherDao().getCity(city)
+    }
+
+    fun getCityByCoords(lat: Double, lon: Double): Flow<LocalWeatherModel?> {
+        val cityByCoords = weatherDatabase.weatherDao().getCityByCoords(lat, lon)
+        return cityByCoords
+    }
+
+    fun getFavoriteCity(city: String): Flow<LocalWeatherModel?> {
+        return weatherDatabase.weatherDao().getFavoriteCity(city)
+    }
+
+    fun getCurrentLocation(): Flow<LocalWeatherModel?> {
+        return weatherDatabase.weatherDao().getCurrentLocation()
     }
 
     suspend fun getAllLocations(): List<LocalWeatherModel>? {
@@ -47,7 +60,7 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         }
     }
 
-    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>>> {
+    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>> {
         return weatherDatabase.weatherDao().getLocationHours(cityName)
     }
 

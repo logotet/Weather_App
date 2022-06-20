@@ -1,13 +1,13 @@
 package com.example.weatherapp.models.local
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "location_weather")
+@Entity(tableName = "location_weather",
+    primaryKeys = ["name", "saved"],
+    indices = [Index(value = ["name"], unique = true)])
 data class LocalWeatherModel(
-    @PrimaryKey(autoGenerate = false)
+//    @PrimaryKey(autoGenerate = false)
     val name: String,
     val description: String,
     val temperature: Double,
@@ -20,15 +20,17 @@ data class LocalWeatherModel(
     var hours: List<LocalHour>? = null,
     val addedAt: Long = System.currentTimeMillis(),
     var saved: Boolean = false,
+    var currentLocation: Boolean = false,
 )
 
 @Entity(tableName = "location_hours",
-        foreignKeys = [ForeignKey(entity = LocalWeatherModel::class,
-    parentColumns = ["name"],
-    childColumns = ["cityName"],
-    onDelete = CASCADE,
-    onUpdate = CASCADE
-)])
+    foreignKeys = [ForeignKey(entity = LocalWeatherModel::class,
+        parentColumns = ["name", "saved"],
+        childColumns = ["cityName", "saved"],
+        onDelete = CASCADE,
+        onUpdate = CASCADE
+    )]
+)
 data class LocalHour(
     val cityName: String,
     val hourTemperature: Double,
@@ -37,6 +39,7 @@ data class LocalHour(
     val hour: Long,
     val windDirection: Int,
     val timeZoneOffset: Int = 10800,
+    val saved: Boolean = true
 ) {
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0

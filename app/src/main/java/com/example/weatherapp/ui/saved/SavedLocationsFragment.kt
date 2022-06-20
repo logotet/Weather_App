@@ -21,7 +21,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SavedLocationsFragment : Fragment(){
     private val viewModel: SavedLocationsFragmentViewModel by viewModels()
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private var binding: SavedLocationsFragmentBinding? = null
 
@@ -64,7 +63,7 @@ class SavedLocationsFragment : Fragment(){
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.selectedLocation.collectLatest{
                 findNavController().navigate(SavedLocationsFragmentDirections.actionSavedLocationsFragmentToCurrentWeatherFragment(
-                    location = it.name
+                    location = it
                 ))
             }
         }

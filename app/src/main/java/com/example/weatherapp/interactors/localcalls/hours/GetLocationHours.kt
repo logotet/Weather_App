@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class GetLocationHours(
     private val repository: Repository
 ) {
-    fun getLocationHours(city: String): Flow<Map<LocalWeatherModel?, List<LocalHour>>> {
+    fun getLocationHours(city: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>> {
         return repository.getLocationHours(city)
     }
 }

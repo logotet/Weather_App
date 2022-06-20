@@ -45,7 +45,7 @@ fun List<HourWeatherModel>.mapToLocalHours(cityName: String): List<LocalHour> {
                 h.hourIcon,
                 h.hour,
                 h.windDirection,
-                h.timeZoneOffset
+                h.timeZoneOffset,
             )
         )
     }

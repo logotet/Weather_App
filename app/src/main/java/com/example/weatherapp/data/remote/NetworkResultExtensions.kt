@@ -1,5 +1,6 @@
 package com.example.weatherapp.data.remote
 
+import com.example.weatherapp.data.Result
 import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
@@ -8,52 +9,54 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
 
-fun <T> NetworkResult<T>.checkResult(
+fun <T> Result<T>.checkResult(
     onSuccess: (T) -> Unit,
-    onError: (NetworkResult.Error<T>) -> Unit,
+    onError: (Result.Error<T>) -> Unit,
 ) {
     when (this) {
-        is NetworkResult.Success -> onSuccess(data)
-        is NetworkResult.Error -> onError(this)
+        is Result.Success -> onSuccess(data)
+        is Result.Error -> onError(this)
     }
 }
 
-fun <T, R> NetworkResult<T>.mapSuccess(mapper: (T) -> R): NetworkResult<R> =
-    if (this is NetworkResult.Success) {
-        NetworkResult.Success(mapper(data))
+fun <T, R> Result<T>.mapSuccess(mapper: (T) -> R): Result<R> =
+    if (this is Result.Success) {
+        Result.Success(mapper(data))
     } else {
-        NetworkResult.Error((this as NetworkResult.Error).message)
+        Result.Error((this as Result.Error).message)
     }
 
-suspend fun <T> getResultData(
+suspend fun <T> getResult(
     getData: suspend () -> Response<T>,
-): NetworkResult<T> {
+): Result<T> {
     return try {
         val apiResult = getData.invoke()
-        NetworkResult.Success(apiResult.body()!!)
+        Result.Success(apiResult.body()!!)
     } catch (e: Exception) {
         if (e is HttpException) {
             mapError(e)
         } else {
-            NetworkResult.Error(e.message)
+            Result.Error(e.message)
         }
     }
 }
 
-fun <T> mapError(exception: HttpException): NetworkResult.Error<T> {
+fun <T> mapError(exception: HttpException): Result.Error<T> {
     val gson = Gson()
     val fromJson =
         gson.fromJson(exception.response()?.errorBody()?.string(),
             WeatherErrorResponse::class.java)
-    return NetworkResult.Error(fromJson.message)
+    return Result.Error(fromJson.message)
 }
 
-//fun <R, T> Flow<Result<R>>.mapResultData( mapToLocal: (R) -> T): Flow<Result<T>> {
-//    this.transform {
-//        if (it is Result.Success) {
-//            emit(Result.Success(mapToLocal.invoke(it.data)))
-//        } else {
-//            emit(Result.Error<T>("D"))
-//        }
-//    }
-//}
+
+fun <T> Flow<T>.mapToResult(): Flow<Result<T>> {
+    return this.transform {
+        it.toString()
+        if(it != null){
+            emit(Result.Success(it))
+        }else{
+            emit(Result.Error())
+        }
+    }
+}

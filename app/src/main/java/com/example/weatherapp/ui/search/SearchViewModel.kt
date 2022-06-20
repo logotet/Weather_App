@@ -1,15 +1,12 @@
 package com.example.weatherapp.ui.search
 
-import android.location.Location
 import androidx.databinding.Bindable
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
-import com.example.weatherapp.data.remote.checkResult
-import com.example.weatherapp.data.remote.NetworkResult
+import com.example.weatherapp.data.Result
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
+import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.CurrentWeatherModel
@@ -25,14 +22,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val getCurrentCityWeather: GetCurrentCityWeather,
-    private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getRecentCityNames: GetRecentCityNames,
-    private val resourceProvider: ResourceProvider,
+    private val getLocationNameByCoords: GetLocationNameByCoords,
+    private val resourceProvider: ResourceProvider
 ) : ObservableViewModel(), OnRecentClickListener {
-
-    var latitude: Double? = null
-    var longitude: Double? = null
 
     @Bindable
     var cityName: String? = null
@@ -53,6 +46,11 @@ class SearchViewModel @Inject constructor(
     private var _onSearchButtonPressed = SingleLiveEvent<Unit>()
     val onSearchButtonPressed: SingleLiveEvent<Unit>
         get() = _onSearchButtonPressed
+
+    private var _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String>
+        get() = _errorMessage.asSharedFlow()
+
 
     var isNetworkAvailable: Boolean = true
 
@@ -76,9 +74,19 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun getCityNameByCoords(lat: Double, lon: Double){
+        viewModelScope.launch {
+            val locationResult = getLocationNameByCoords.getLocationName(lat, lon)
+            if(locationResult is Result.Success<String>){
+
+            }else{
+                _errorMessage.emit(resourceProvider.getString(R.string.no_location_found))
+            }
+        }
+    }
+
     override fun onItemClicked(city: String) {
         cityName = city
         onSearchPressed()
     }
-
 }

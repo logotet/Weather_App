@@ -7,6 +7,7 @@ object AppConstants {
 
     const val API_KEY = "658767b0ae936b022f59a69f44868419"
     const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    const val BASE_URL_GEOCODING = "https://api.openweathermap.org/geo/1.0/"
     const val IMG_URL = "https://openweathermap.org/img/wn/"
     const val IMG_URL_SUFFIX = "@2x.png"
 

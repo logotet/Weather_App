@@ -1,22 +1,18 @@
 package com.example.weatherapp.ui.current
 
-import android.location.Location
 import androidx.databinding.Bindable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
-import com.example.weatherapp.data.remote.NetworkResult
+import com.example.weatherapp.data.Result
 import com.example.weatherapp.data.remote.checkResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
-import com.example.weatherapp.interactors.localcalls.*
 import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
 import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
-import com.example.weatherapp.interactors.localcalls.locations.GetLocationByName
-import com.example.weatherapp.interactors.localcalls.locations.InsertIntoDatabase
-import com.example.weatherapp.interactors.localcalls.locations.RemoveLocationFromFavorites
+import com.example.weatherapp.interactors.localcalls.locations.*
 import com.example.weatherapp.models.Measure
 import com.example.weatherapp.models.current.Coord
 import com.example.weatherapp.models.current.CurrentWeatherModel
@@ -24,14 +20,13 @@ import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
+import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,18 +38,20 @@ class CityFragmentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val removeLocationFromFavorites: RemoveLocationFromFavorites,
     private val getLocationByName: GetLocationByName,
+    private val getFavoriteLocationByName: GetFavoriteLocationByName,
     private val insertListOfHours: InsertListOfHours,
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getLocationHours: GetLocationHours,
+    private val getSavedLocationByCoords: GetSavedLocationByCoords,
 ) : ObservableViewModel() {
 
     private var _cityLocalModel = MutableStateFlow<LocalWeatherModel?>(null)
     val cityLocalModel: StateFlow<LocalWeatherModel?> = _cityLocalModel
 
-    private var _cityWeatherModel = MutableLiveData<CurrentWeatherModel>()
-    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
-        get() = _cityWeatherModel
+//    private var _cityWeatherModel = MutableLiveData<CurrentWeatherModel>()
+//    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
+//        get() = _cityWeatherModel
 
     private var _hours = MutableLiveData<List<HourWeatherModel>>()
     val hours: MutableLiveData<List<HourWeatherModel>>
@@ -75,7 +72,7 @@ class CityFragmentViewModel @Inject constructor(
 
     var measure: Measure = Measure.METRIC
 
-    var isNetworkAvailable: Boolean = true
+    private var isNetworkAvailable: Boolean = true
 
     var latitude: Double? = null
     var longitude: Double? = null
@@ -114,13 +111,109 @@ class CityFragmentViewModel @Inject constructor(
 
     init {
         weatherModel?.let {
-            checkSavedLocation(it.name)
+            getSavedLocation(it.name)
         }
+    }
+
+    fun setUpData(city: String?, lat: Double?, lon: Double?, measure: Measure) {
+        this.measure = measure
+
+        city?.let {
+            if (city.isNotEmpty()) {
+                getCurrentCityWeather(city)
+                getSavedLocation(city)
+            }
+        }
+
+        lat?.let {
+            lon?.let {
+                getCoordWeather(lat, lon)
+                getSavedLocationByCoords(lat, lon)
+            }
+        }
+    }
+
+    fun getSavedLocation(city: String) {
+        viewModelScope.launch {
+            getLocationByName.getCity(city).collect { result ->
+                checkLocalResult(result)
+            }
+        }
+    }
+
+    private fun getSavedLocationByCoords(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            getSavedLocationByCoords.getCityByCoords(lat, lon).collect { result ->
+                checkLocalResult(result)
+            }
+        }
+    }
+
+    private fun checkLocalResult(result: Result<LocalWeatherModel?>) {
+        result.checkResult(
+            {
+                _cityLocalModel.value = it
+                weatherModel = it?.mapLocalToCurrentModel()
+            },
+            {
+                return@checkResult
+            }
+        )
+    }
+
+    private fun getCurrentCityWeather(city: String?) {
+        this.onNetworkAvailability(isNetworkAvailable,
+            {
+                viewModelScope.launch {
+                    city?.let {
+                        getCurrentCityWeather.getCurrentWeather(it, measure.value)
+                            .collect { result ->
+                                checkNetworkResult(result)
+                            }
+                    }
+                }
+                notifyChange()
+            },
+            {
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
+            })
+    }
+
+    private fun getCoordWeather(lat: Double?, lon: Double?) {
+        this.onNetworkAvailability(
+            isNetworkAvailable,
+            {
+                latitude = lat
+                longitude = lon
+                viewModelScope.launch {
+                    latitude?.let { lat ->
+                        longitude?.let { lon ->
+                            getCurrentCoordWeather.getCurrentCoordWeather(lat,
+                                lon,
+                                measure.value).collect {
+                                checkNetworkResult(it)
+                            }
+                        }
+                    }
+                    notifyChange()
+                }
+            },
+            {
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
+            }
+        )
+    }
+
+    private fun checkNetworkResult(result: Result<Unit>) {
+        result.checkResult(
+            {},
+            { _errorMessage.value = it.message }
+        )
     }
 
     private fun getHourlyWeather() {
         viewModelScope.launch {
-            weatherModel?.let {model ->
+            weatherModel?.let { model ->
                 val result = getHourlyWeather.getHours(measure.value,
                     model.lat,
                     model.lon)
@@ -156,7 +249,7 @@ class CityFragmentViewModel @Inject constructor(
                 val localModel = it.mapApiToCurrentModel()
                 localModel.saved = true
                 insertIntoDatabase.insertData(localModel)
-                checkSavedLocation(it.name)
+                getSavedLocation(it.name)
             }
         }
     }
@@ -173,7 +266,7 @@ class CityFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             weatherModel?.let {
                 removeLocationFromFavorites.removeFromFavorites(it.name)
-                checkSavedLocation(it.name)
+                getSavedLocation(it.name)
             }
         }
     }
@@ -184,72 +277,5 @@ class CityFragmentViewModel @Inject constructor(
                 insertCityName.insertCityName(City(it.name))
             }
         }
-    }
-
-    private fun checkSavedLocation(city: String) {
-        viewModelScope.launch {
-            getLocationByName.getCity(city).collect {
-                _cityLocalModel.value = it
-            }
-        }
-    }
-
-    fun setUpData(city: String?, lat: Double?, lon: Double?, measure: Measure) {
-        this.measure = measure
-        getCurrentCityWeather(city)
-        getCoordWeather(lat, lon)
-    }
-
-    ////NEW
-    private fun getCurrentCityWeather(city: String?) {
-        this.onNetworkAvailability(isNetworkAvailable,
-            {
-                viewModelScope.launch {
-                    val result = city?.let {
-                        getCurrentCityWeather.getCurrentWeather(it, measure.value)
-                    }
-                    checkCurrentWeatherResult(result)
-                }
-                notifyChange()
-            },
-            {
-                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
-            })
-
-    }
-
-    private fun getCoordWeather(lat: Double?, lon: Double?) {
-        this.onNetworkAvailability(
-            isNetworkAvailable,
-            {
-                latitude = lat
-                longitude = lon
-                viewModelScope.launch {
-                    val result = latitude?.let { lat ->
-                        longitude?.let { lon ->
-                            getCurrentCoordWeather.getCurrentCoordWeather(lat,
-                                lon,
-                                measure.value)
-                        }
-                    }
-                    checkCurrentWeatherResult(result)
-                    notifyChange()
-                }
-            },
-            {
-                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
-            }
-        )
-    }
-
-    private fun checkCurrentWeatherResult(result: NetworkResult<CurrentWeatherModel>?) {
-        result?.checkResult(
-            {
-                weatherModel = it
-            },
-            {
-                _errorMessage.value = resourceProvider.getString(R.string.no_location_found)
-            }
-        )
     }
 }

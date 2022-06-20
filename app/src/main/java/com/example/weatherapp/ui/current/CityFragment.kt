@@ -1,16 +1,12 @@
 package com.example.weatherapp.ui.current
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
@@ -36,7 +32,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: CityFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
-    private val args:CityFragmentArgs by navArgs()
+    private val args: CityFragmentArgs by navArgs()
 
     private var binding: CityWeatherFragmentBinding? = null
 
@@ -75,10 +71,8 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         lat = args.lat?.toDouble()
         lon = args.lon?.toDouble()
         viewModel.setUpData(cityName, lat, lon, measure)
-        Log.d("ARGUMENTS", arguments?.get("lat").toString())
 
-//        //TODO see how to remove this check when room data is loaded
-//        viewModel.checkSavedLocation(activityViewModel.model!!.name)
+        cityName?.let { viewModel.getSavedLocation(it) }
 
         val hourAdapter = HourAdapter(resourceProvider)
 
@@ -88,7 +82,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-            activity?.onBackPressed()
+//            activity?.onBackPressed()
         }
 
         hourAdapter.updateMeasureUnit(measure)
@@ -119,7 +113,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val saveItem = menu.findItem(R.id.action_save)
-        if(!this.isNetworkAvailable(context)){
+        if (!this.isNetworkAvailable(context)) {
             saveItem.isVisible = false
         }
         toggleSavedIcon(saveItem)
@@ -151,13 +145,14 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     private fun toggleSavedIcon(saveItem: MenuItem) {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.cityLocalModel.collect { dataModel ->
-                saved = if (dataModel != null) {
+                dataModel?.let {   saved = if (dataModel.saved) {
                     saveItem.setDrawable(context, R.drawable.ic_heart_full)
                     true
                 } else {
                     saveItem.setDrawable(context, R.drawable.ic_heart_empty)
                     false
-                }
+                } }
+
             }
         }
     }
