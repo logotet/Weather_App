@@ -39,7 +39,7 @@ data class LocalHour(
     val hour: Long,
     val windDirection: Int,
     val timeZoneOffset: Int = 10800,
-    val saved: Boolean = true
+    val saved: Boolean = false
 ) {
     @PrimaryKey(autoGenerate = true)
     var uid: Int = 0

@@ -21,6 +21,7 @@ import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapLocalToCurrentModel
+import com.example.weatherapp.models.utils.mapToCurrentHours
 import com.example.weatherapp.models.utils.mapToLocalHours
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
@@ -38,7 +39,6 @@ class CityFragmentViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val removeLocationFromFavorites: RemoveLocationFromFavorites,
     private val getLocationByName: GetLocationByName,
-    private val getFavoriteLocationByName: GetFavoriteLocationByName,
     private val insertListOfHours: InsertListOfHours,
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
@@ -53,8 +53,8 @@ class CityFragmentViewModel @Inject constructor(
 //    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
 //        get() = _cityWeatherModel
 
-    private var _hours = MutableLiveData<List<HourWeatherModel>>()
-    val hours: MutableLiveData<List<HourWeatherModel>>
+    private var _hours = MutableStateFlow<List<HourWeatherModel>?>(null)
+    val hours: StateFlow<List<HourWeatherModel>?>
         get() = _hours
 
     private var _coords = MutableStateFlow<Coord?>(null)
@@ -66,7 +66,7 @@ class CityFragmentViewModel @Inject constructor(
             value?.let {
                 _coords.value = Coord(value.lon, value.lat)
             }
-            getHourlyWeather()
+            getNetworkHours()
             notifyChange()
         }
 
@@ -74,8 +74,8 @@ class CityFragmentViewModel @Inject constructor(
 
     private var isNetworkAvailable: Boolean = true
 
-    var latitude: Double? = null
-    var longitude: Double? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     private var _errorMessage = SingleLiveEvent<String?>()
     val errorMessage: SingleLiveEvent<String?>
@@ -211,31 +211,38 @@ class CityFragmentViewModel @Inject constructor(
         )
     }
 
-    private fun getHourlyWeather() {
+    private fun getNetworkHours() {
         viewModelScope.launch {
             weatherModel?.let { model ->
-                val result = getHourlyWeather.getHours(measure.value,
+             getHourlyWeather.getHours(measure.value,
                     model.lat,
-                    model.lon)
-                result.checkResult(
-                    {
-                        _hours.value = it
-                        insertRecentCity()
-                    },
-                    {
-                        _errorMessage.value = it.message
-                    }
-                )
+                    model.lon,
+                    model.name).collect {result ->
+                    result
+                        .checkResult(
+                        {
+//                            _hours.value = it
+                            insertRecentCity()
+                            getLocalHours()
+                        },
+                        {
+                            _errorMessage.value = it.message
+                        }
+                    )
+                }
             }
-//            //TODO experimental
-//            viewModelScope.launch {
-//                getLocationHours.getLocationHours("sofia").collect { map ->
-//                    val hours = map.values.first()
-//                    _hours.value = hours.mapToCurrentHours()
-//                }
-//            }
             notifyChange()
         }
+    }
+
+    private fun getLocalHours(){
+//        TODO experimental
+            viewModelScope.launch {
+                getLocationHours.getLocationHours("sofia").collect { map ->
+                    val hours = map.values.first()
+                    hours?.mapToCurrentHours()?.let { _hours.emit(it) }
+                }
+            }
     }
 
     fun saveWeatherData() {
@@ -257,7 +264,7 @@ class CityFragmentViewModel @Inject constructor(
     private fun insertLocationHoursAsSaved() {
         viewModelScope.launch {
             hours.value?.let {
-                insertListOfHours.insertHours(it.mapToLocalHours(weatherModel!!.name))
+//                insertListOfHours.insertHours(it.mapToLocalHours(weatherModel!!.name))
             }
         }
     }

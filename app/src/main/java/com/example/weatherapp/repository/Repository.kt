@@ -11,6 +11,7 @@ import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
+import com.example.weatherapp.models.utils.mapToLocalHours
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -41,8 +42,10 @@ class Repository(
         measure: String,
         lat: Double,
         lon: Double,
-    ): Result<List<HourWeatherModel>> {
-        return weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
+        city: String,
+    ): Flow<Result<Unit>> {
+        val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
+        return saveSuccess2(hourlyWeather, city)
     }
 
     suspend fun getCityNameByCoords(
@@ -114,6 +117,20 @@ class Repository(
             val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
             dataModel.currentLocation = isCurrentLocation
             insertData(dataModel)
+            flowOf(Success(Unit))
+        } else {
+            flowOf(Error((cityNetworkWeather as Error).message))
+        }
+    }
+
+    private suspend fun saveSuccess2(
+        cityNetworkWeather: Result<List<HourWeatherModel>>,
+        city: String,
+    ): Flow<Result<Unit>> {
+        return if (cityNetworkWeather is Success) {
+            val dataModel = cityNetworkWeather.data.mapToLocalHours(city)
+//            dataModel.currentLocation = isCurrentLocation
+            insertLocalHours(dataModel)
             flowOf(Success(Unit))
         } else {
             flowOf(Error((cityNetworkWeather as Error).message))

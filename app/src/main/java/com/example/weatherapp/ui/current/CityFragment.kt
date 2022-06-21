@@ -76,8 +76,10 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         val hourAdapter = HourAdapter(resourceProvider)
 
-        viewModel.hours.observe(viewLifecycleOwner) {
-            hourAdapter.updateData(it)
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated{
+            viewModel.hours.collectLatest {
+                hourAdapter.updateData(it)
+            }
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
