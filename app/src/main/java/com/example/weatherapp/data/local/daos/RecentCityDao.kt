@@ -1,4 +1,4 @@
-package com.example.weatherapp.data.local
+package com.example.weatherapp.data.local.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -9,7 +9,7 @@ import com.example.weatherapp.models.local.LocalWeatherModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CityDao {
+interface RecentCityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(city: City)

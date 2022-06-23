@@ -20,43 +20,29 @@ import javax.inject.Inject
 @HiltViewModel
 class SavedLocationsFragmentViewModel @Inject constructor(
     private val getFavoriteLocations: GetFavoriteLocations,
-    private val getLocationHours: GetLocationHours,
 ) : ObservableViewModel(), OnSavedLocationClickedListener {
 
-    private var _locations = MutableLiveData<List<LocalWeatherModel>>()
-    val locations: LiveData<List<LocalWeatherModel>>
+    private var _locations = MutableSharedFlow<List<LocalWeatherModel>>()
+    val locations: SharedFlow<List<LocalWeatherModel>>
         get() = _locations
 
     private var _selectedLocation = MutableSharedFlow<String>()
     val selectedLocation: SharedFlow<String>
         get() = _selectedLocation.asSharedFlow()
 
-    private var resultData: CurrentWeatherModel? = null
-
     var isNetworkAvailable: Boolean = false
 
-    init {
-        loadData()
-    }
-
-    private fun loadData() {
+    fun loadData() {
         viewModelScope.launch {
-            _locations.value = getFavoriteLocations.getFavoriteLocations()
+            getFavoriteLocations.getFavoriteLocations().collect {
+                _locations.emit(it)
+            }
         }
     }
 
     override fun onSavedLocationClicked(cityName: String) {
-                getWeatherFromDatabase(cityName)
-    }
-
-    private fun getWeatherFromDatabase(cityName: String) {
         viewModelScope.launch {
-            getLocationHours.getLocationHours(cityName).collect { map ->
-                val localDataModel = map.keys.first()
-                localDataModel?.let {
-                    _selectedLocation.emit(localDataModel.name)
-                }
-            }
+            _selectedLocation.emit(cityName)
         }
     }
 }

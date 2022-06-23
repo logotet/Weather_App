@@ -1,4 +1,4 @@
-package com.example.weatherapp.data.local
+package com.example.weatherapp.data.local.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -11,22 +11,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WeatherDao {
 
-    //TODO LiveData with Flow
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLocationWeather(localWeatherModel: LocalWeatherModel)
-
-    @Insert
-    suspend fun insertLocationHour(localHour: LocalHour)
-
-    @Insert
-    suspend fun insertLocationHours(localHours: List<LocalHour>)
-
-    @Query("SELECT * FROM location_hours WHERE cityName LIKE :locationName")
-    fun getLocationHours2(locationName: String): Flow<List<LocalHour>>
-
-    @Query("SELECT * FROM location_weather JOIN location_hours " +
-            "ON name = cityName WHERE name LIKE :cityName")
-    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>>
 
     @Query("SELECT * FROM location_weather")
     suspend fun getAll(): List<LocalWeatherModel>
@@ -34,8 +20,8 @@ interface WeatherDao {
     @Query("SELECT * FROM location_weather ORDER BY addedAt DESC LIMIT 5 ")
     fun getRecent(): Flow<List<LocalWeatherModel>>
 
-    @Query("SELECT * FROM location_weather WHERE saved LIKE :saved")
-    suspend fun getFavorites(saved: Boolean = true): List<LocalWeatherModel>
+    @Query("SELECT * FROM location_weather WHERE name IN (:names)")
+    fun getFavoritesByNames(names: List<String>): Flow<List<LocalWeatherModel>>
 
     @Query("SELECT * FROM location_weather WHERE name LIKE :cityName")
     fun getCity(cityName: String): Flow<LocalWeatherModel?>
@@ -43,16 +29,22 @@ interface WeatherDao {
     @Query("SELECT * FROM location_weather WHERE lat LIKE :lat AND lon LIKE :lon")
     fun getCityByCoords(lat: Double, lon: Double): Flow<LocalWeatherModel?>
 
-    @Query("SELECT * FROM location_weather WHERE name LIKE :cityName AND saved LIKE :saved")
-    fun getFavoriteCity(cityName: String, saved: Boolean = true): Flow<LocalWeatherModel?>
-
-    @Query("SELECT * FROM location_weather WHERE currentLocation LIKE :savedAsCurrent ORDER BY addedAt DESC LIMIT 1")
-    fun getCurrentLocation(savedAsCurrent: Boolean = true): Flow<LocalWeatherModel?>
-
     @Query("DELETE FROM location_weather WHERE name LIKE :cityName")
     suspend fun deleteCity(cityName: String)
 
     @Query("DELETE FROM location_weather")
     suspend fun deleteAll()
 
+    //Hours
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocationHour(localHour: LocalHour)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocationHours(localHours: List<LocalHour>)
+
+    @Query("SELECT * FROM location_hours WHERE cityName LIKE :locationName")
+    fun getLocationHours2(locationName: String): Flow<List<LocalHour>>
+
+    @Query("SELECT * FROM location_hours WHERE cityName LIKE :cityName")
+    fun getLocationHours(cityName: String): Flow<List<LocalHour>>
 }

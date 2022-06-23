@@ -146,14 +146,14 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     private fun toggleSavedIcon(saveItem: MenuItem) {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.cityLocalModel.collect { dataModel ->
-                dataModel?.let {   saved = if (dataModel.saved) {
+            viewModel.locationName.collect { name ->
+                  saved = if (name != null) {
                     saveItem.setDrawable(context, R.drawable.ic_heart_full)
                     true
                 } else {
                     saveItem.setDrawable(context, R.drawable.ic_heart_empty)
                     false
-                } }
+                }
 
             }
         }

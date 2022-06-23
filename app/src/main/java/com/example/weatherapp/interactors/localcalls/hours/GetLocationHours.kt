@@ -6,9 +6,9 @@ import com.example.weatherapp.repository.Repository
 import kotlinx.coroutines.flow.Flow
 
 class GetLocationHours(
-    private val repository: Repository
+    private val repository: Repository,
 ) {
-    fun getLocationHours(city: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>> {
+    fun     getLocationHours(city: String): Flow<List<LocalHour>> {
         return repository.getLocationHours(city)
     }
 }

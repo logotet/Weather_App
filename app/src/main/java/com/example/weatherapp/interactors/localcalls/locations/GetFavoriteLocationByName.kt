@@ -5,7 +5,7 @@ import com.example.weatherapp.repository.Repository
 import kotlinx.coroutines.flow.Flow
 
 class GetFavoriteLocationByName(private val repository: Repository) {
-    fun getCity(city: String): Flow<LocalWeatherModel?> {
-        return repository.getFavoriteCity(city)
+    fun getSavedLocation(name: String): Flow<String> {
+        return repository.getSavedLocation(name)
     }
 }

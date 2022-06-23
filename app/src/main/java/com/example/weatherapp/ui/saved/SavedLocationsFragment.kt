@@ -15,6 +15,7 @@ import com.example.weatherapp.ui.saved.locations.LocationAdapter
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
@@ -54,8 +55,12 @@ class SavedLocationsFragment : Fragment(){
 
         val locationAdapter = LocationAdapter(resourceProvider, viewModel)
 
-        viewModel.locations.observe(viewLifecycleOwner) {
-            locationAdapter.updateData(it)
+        viewModel.loadData()
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.locations.collect {
+                locationAdapter.updateData(it)
+            }
         }
 
         binding?.locationsRecView?.adapter = locationAdapter

@@ -7,9 +7,7 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.data.remote.mapToResult
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
-import com.example.weatherapp.models.local.City
-import com.example.weatherapp.models.local.LocalHour
-import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours
 import kotlinx.coroutines.flow.Flow
@@ -45,7 +43,7 @@ class Repository(
         city: String,
     ): Flow<Result<Unit>> {
         val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
-        return saveSuccess2(hourlyWeather, city)
+        return saveSuccessHours(hourlyWeather, city)
     }
 
     suspend fun getCityNameByCoords(
@@ -65,12 +63,8 @@ class Repository(
         return weatherLocalDataSource.getCity(city).mapToResult()
     }
 
-    fun getFavoriteCity(city: String): Flow<LocalWeatherModel?> {
-        return weatherLocalDataSource.getFavoriteCity(city)
-    }
-
-    fun getCityByCoords(lat: Double, lon: Double): Flow<Result<LocalWeatherModel?>> {
-        val cityByCoords = weatherLocalDataSource.getCurrentLocation()
+    suspend fun getCityByCoords(): Flow<Result<LocalWeatherModel?>> {
+        val cityByCoords = weatherLocalDataSource.getCityByCoords()
         return cityByCoords.mapToResult()
     }
 
@@ -82,10 +76,6 @@ class Repository(
         return weatherLocalDataSource.getRecentLocations()
     }
 
-    suspend fun getFavoriteLocations(): List<LocalWeatherModel>? {
-        return weatherLocalDataSource.getFavoriteLocations()
-    }
-
     suspend fun deleteLocation(cityName: String) {
         weatherLocalDataSource.deleteLocation(cityName)
     }
@@ -95,7 +85,7 @@ class Repository(
         weatherLocalDataSource.insertLocalHours(localHours)
     }
 
-    fun getLocationHours(city: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>> {
+    fun getLocationHours(city: String): Flow<List<LocalHour>> {
         return weatherLocalDataSource.getLocationHours(city)
     }
 
@@ -108,14 +98,22 @@ class Repository(
         return weatherLocalDataSource.getRecentCityNames()
     }
 
+    //Saved Location
+    fun getSavedLocation(name: String): Flow<String> {
+        return weatherLocalDataSource.getSavedLocation(name)
+    }
+
     //
     private suspend fun saveSuccess(
         cityNetworkWeather: Result<CurrentWeatherModel>,
-        isCurrentLocation: Boolean,
+        currentLocation: Boolean
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
-            dataModel.currentLocation = isCurrentLocation
+            if(currentLocation) {
+                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
+                    dataModel.lon))
+            }
             insertData(dataModel)
             flowOf(Success(Unit))
         } else {
@@ -123,18 +121,27 @@ class Repository(
         }
     }
 
-    private suspend fun saveSuccess2(
+    //TODO refactor
+    private suspend fun saveSuccessHours(
         cityNetworkWeather: Result<List<HourWeatherModel>>,
         city: String,
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val dataModel = cityNetworkWeather.data.mapToLocalHours(city)
-//            dataModel.currentLocation = isCurrentLocation
             insertLocalHours(dataModel)
             flowOf(Success(Unit))
         } else {
             flowOf(Error((cityNetworkWeather as Error).message))
         }
+    }
+
+    suspend fun getFavoriteLocations(): Flow<List<LocalWeatherModel>> {
+        val savedLocationsNames = weatherLocalDataSource.getSavedLocations()
+        return weatherLocalDataSource.getFavoritesLocationsByName(savedLocationsNames)
+    }
+
+    suspend fun insertAsSavedOrNot(savedLocation: SavedLocation) {
+        weatherLocalDataSource.insertAsSavedOrNot(savedLocation)
     }
 }
 

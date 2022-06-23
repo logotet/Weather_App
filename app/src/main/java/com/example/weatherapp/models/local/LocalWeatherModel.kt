@@ -4,10 +4,9 @@ import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 
 @Entity(tableName = "location_weather",
-    primaryKeys = ["name", "saved"],
-    indices = [Index(value = ["name"], unique = true)])
+    primaryKeys = ["name"],
+)
 data class LocalWeatherModel(
-//    @PrimaryKey(autoGenerate = false)
     val name: String,
     val description: String,
     val temperature: Double,
@@ -17,16 +16,14 @@ data class LocalWeatherModel(
     val lat: Double,
     val lon: Double,
     val windDirection: Int,
-    var hours: List<LocalHour>? = null,
     val addedAt: Long = System.currentTimeMillis(),
-    var saved: Boolean = false,
-    var currentLocation: Boolean = false,
 )
 
 @Entity(tableName = "location_hours",
+    primaryKeys = ["cityName", "hour"],
     foreignKeys = [ForeignKey(entity = LocalWeatherModel::class,
-        parentColumns = ["name", "saved"],
-        childColumns = ["cityName", "saved"],
+        parentColumns = ["name"],
+        childColumns = ["cityName"],
         onDelete = CASCADE,
         onUpdate = CASCADE
     )]
@@ -37,10 +34,6 @@ data class LocalHour(
     val hourWindSpeed: Double,
     val hourIcon: String,
     val hour: Long,
-    val windDirection: Int,
+    val hourWindDirection: Int,
     val timeZoneOffset: Int = 10800,
-    val saved: Boolean = false
-) {
-    @PrimaryKey(autoGenerate = true)
-    var uid: Int = 0
-}
+)

@@ -6,7 +6,7 @@ import com.example.weatherapp.repository.Repository
 import kotlinx.coroutines.flow.Flow
 
 class GetSavedLocationByCoords(private val repository: Repository) {
-    fun getCityByCoords(lat:Double, lon: Double): Flow<Result<LocalWeatherModel?>> {
-        return repository.getCityByCoords(lat, lon)
+    suspend fun getCityByCoords(): Flow<Result<LocalWeatherModel?>> {
+        return repository.getCityByCoords()
     }
 }

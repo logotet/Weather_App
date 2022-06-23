@@ -1,7 +1,6 @@
 package com.example.weatherapp.ui.current
 
 import androidx.databinding.Bindable
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
 import com.example.weatherapp.data.Result
@@ -19,6 +18,7 @@ import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.models.utils.mapToCurrentHours
@@ -34,7 +34,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CityFragmentViewModel @Inject constructor(
     private val getHourlyWeather: GetHourlyWeather,
-    private val insertIntoDatabase: InsertIntoDatabase,
     private val insertCityName: InsertCityName,
     private val resourceProvider: ResourceProvider,
     private val removeLocationFromFavorites: RemoveLocationFromFavorites,
@@ -44,14 +43,12 @@ class CityFragmentViewModel @Inject constructor(
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getLocationHours: GetLocationHours,
     private val getSavedLocationByCoords: GetSavedLocationByCoords,
+    private val insertSavedLocation: InsertSavedLocation,
+    private val getFavoriteLocationByName: GetFavoriteLocationByName
 ) : ObservableViewModel() {
 
-    private var _cityLocalModel = MutableStateFlow<LocalWeatherModel?>(null)
-    val cityLocalModel: StateFlow<LocalWeatherModel?> = _cityLocalModel
-
-//    private var _cityWeatherModel = MutableLiveData<CurrentWeatherModel>()
-//    val cityWeatherModel: MutableLiveData<CurrentWeatherModel>
-//        get() = _cityWeatherModel
+    private var _locationName = MutableStateFlow<String?>(null)
+    val locationName: StateFlow<String?> = _locationName
 
     private var _hours = MutableStateFlow<List<HourWeatherModel>?>(null)
     val hours: StateFlow<List<HourWeatherModel>?>
@@ -128,7 +125,7 @@ class CityFragmentViewModel @Inject constructor(
         lat?.let {
             lon?.let {
                 getCoordWeather(lat, lon)
-                getSavedLocationByCoords(lat, lon)
+                getSavedLocationByCoords()
             }
         }
     }
@@ -141,9 +138,9 @@ class CityFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun getSavedLocationByCoords(lat: Double, lon: Double) {
+    private fun getSavedLocationByCoords() {
         viewModelScope.launch {
-            getSavedLocationByCoords.getCityByCoords(lat, lon).collect { result ->
+            getSavedLocationByCoords.getCityByCoords().collect { result ->
                 checkLocalResult(result)
             }
         }
@@ -152,8 +149,8 @@ class CityFragmentViewModel @Inject constructor(
     private fun checkLocalResult(result: Result<LocalWeatherModel?>) {
         result.checkResult(
             {
-                _cityLocalModel.value = it
                 weatherModel = it?.mapLocalToCurrentModel()
+                isSavedLocation(it?.name)
             },
             {
                 return@checkResult
@@ -221,9 +218,8 @@ class CityFragmentViewModel @Inject constructor(
                     result
                         .checkResult(
                         {
-//                            _hours.value = it
                             insertRecentCity()
-                            getLocalHours()
+                            getLocalHours(model.name)
                         },
                         {
                             _errorMessage.value = it.message
@@ -235,14 +231,23 @@ class CityFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun getLocalHours(){
-//        TODO experimental
+    private fun getLocalHours(locationName: String){
             viewModelScope.launch {
-                getLocationHours.getLocationHours("sofia").collect { map ->
-                    val hours = map.values.first()
-                    hours?.mapToCurrentHours()?.let { _hours.emit(it) }
+                getLocationHours.getLocationHours(locationName).collect {
+                    _hours.emit(it.mapToCurrentHours())
                 }
             }
+
+    }
+
+    fun isSavedLocation(name: String?){
+        viewModelScope.launch {
+            name?.let {
+                getFavoriteLocationByName.getSavedLocation(it).collect {
+                    _locationName.emit(it)
+                }
+            }
+        }
     }
 
     fun saveWeatherData() {
@@ -254,8 +259,7 @@ class CityFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             weatherModel?.let {
                 val localModel = it.mapApiToCurrentModel()
-                localModel.saved = true
-                insertIntoDatabase.insertData(localModel)
+                insertSavedLocation.insertData(SavedLocation(localModel.name))
                 getSavedLocation(it.name)
             }
         }
@@ -264,7 +268,7 @@ class CityFragmentViewModel @Inject constructor(
     private fun insertLocationHoursAsSaved() {
         viewModelScope.launch {
             hours.value?.let {
-//                insertListOfHours.insertHours(it.mapToLocalHours(weatherModel!!.name))
+                insertListOfHours.insertHours(it.mapToLocalHours(weatherModel!!.name))
             }
         }
     }

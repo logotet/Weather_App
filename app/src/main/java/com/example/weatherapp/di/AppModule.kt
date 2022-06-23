@@ -191,4 +191,9 @@ class AppModule {
     @Singleton
     fun providesGetCityByCoordsFromAPI(repository: Repository): GetLocationNameByCoords =
         GetLocationNameByCoords(repository)
+
+    @Provides
+    @Singleton
+    fun providesInsertSavedLocation(repository: Repository): InsertSavedLocation =
+        InsertSavedLocation(repository)
 }

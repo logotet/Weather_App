@@ -1,11 +1,12 @@
 package com.example.weatherapp.data.local
 
-import com.example.weatherapp.models.local.City
-import com.example.weatherapp.models.local.LocalHour
-import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.local.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
+import java.lang.NullPointerException
 
 class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
 
@@ -20,17 +21,17 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return weatherDatabase.weatherDao().getCity(city)
     }
 
-    fun getCityByCoords(lat: Double, lon: Double): Flow<LocalWeatherModel?> {
-        val cityByCoords = weatherDatabase.weatherDao().getCityByCoords(lat, lon)
-        return cityByCoords
-    }
-
-    fun getFavoriteCity(city: String): Flow<LocalWeatherModel?> {
-        return weatherDatabase.weatherDao().getFavoriteCity(city)
-    }
-
-    fun getCurrentLocation(): Flow<LocalWeatherModel?> {
-        return weatherDatabase.weatherDao().getCurrentLocation()
+    @FlowPreview
+    @ExperimentalCoroutinesApi
+    suspend fun getCityByCoords(): Flow<LocalWeatherModel?> {
+        //TODO why can't it happen using flow???
+        return getCurrentLocationCoords().flatMapLatest { location ->
+            try {
+                weatherDatabase.weatherDao().getCityByCoords(location.lat, location.lon)
+            } catch (e: NullPointerException) {
+                weatherDatabase.weatherDao().getCityByCoords(1.0, 1.0)
+            }
+        }
     }
 
     suspend fun getAllLocations(): List<LocalWeatherModel>? {
@@ -43,14 +44,12 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return weatherDatabase.weatherDao().getRecent()
     }
 
-    suspend fun getFavoriteLocations(): List<LocalWeatherModel>? {
-        return withContext(Dispatchers.IO) {
-            weatherDatabase.weatherDao().getFavorites()
-        }
+    fun getFavoritesLocationsByName(names: List<String>): Flow<List<LocalWeatherModel>> {
+        return weatherDatabase.weatherDao().getFavoritesByNames(names)
     }
 
     suspend fun deleteLocation(cityName: String) {
-        weatherDatabase.weatherDao().deleteCity(cityName)
+        weatherDatabase.savedLocationDao().deleteCity(cityName)
     }
 
     //LocalHour
@@ -60,16 +59,38 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         }
     }
 
-    fun getLocationHours(cityName: String): Flow<Map<LocalWeatherModel?, List<LocalHour>?>> {
+    fun getLocationHours(cityName: String): Flow<List<LocalHour>> {
         return weatherDatabase.weatherDao().getLocationHours(cityName)
     }
 
-    //City
+    //Recent locations
     suspend fun insertCityName(city: City) {
         weatherDatabase.cityDao().insert(city)
     }
 
     fun getRecentCityNames(): Flow<List<City>> {
         return weatherDatabase.cityDao().getRecent()
+    }
+
+    // Saved locations
+    suspend fun insertAsSavedOrNot(city: SavedLocation) {
+        weatherDatabase.savedLocationDao().insert(city)
+    }
+
+    suspend fun getSavedLocations(): List<String> {
+        return weatherDatabase.savedLocationDao().getAll()
+    }
+
+    fun getSavedLocation(name: String): Flow<String> {
+        return weatherDatabase.savedLocationDao().getSavedLocation(name)
+    }
+
+    //Current location
+    suspend fun insertCurrentLocationCoords(city: CurrentLocation) {
+        weatherDatabase.currentLocationDao().insertCurrent(city)
+    }
+
+    fun getCurrentLocationCoords(): Flow<CurrentLocation> {
+        return weatherDatabase.currentLocationDao().getCurrent()
     }
 }
