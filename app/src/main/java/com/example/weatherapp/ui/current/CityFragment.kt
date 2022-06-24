@@ -12,7 +12,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
-import com.example.weatherapp.models.Measure
+import com.example.weatherapp.models.measure.Measure
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider

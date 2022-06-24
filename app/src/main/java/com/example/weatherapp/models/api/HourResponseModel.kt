@@ -1,4 +1,4 @@
-package com.example.weatherapp.models.hourly
+package com.example.weatherapp.models.api
 
 data class HourApiResponseModel(
     val hourly: List<Hourly>,

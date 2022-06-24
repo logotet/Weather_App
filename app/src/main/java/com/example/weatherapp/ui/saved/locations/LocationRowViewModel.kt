@@ -2,7 +2,7 @@ package com.example.weatherapp.ui.saved.locations
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
-import com.example.weatherapp.models.Measure
+import com.example.weatherapp.models.measure.Measure
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.formatTemperature

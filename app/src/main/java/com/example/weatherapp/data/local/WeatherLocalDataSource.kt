@@ -54,12 +54,12 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
     //LocalHour
     suspend fun insertLocalHours(localHours: List<LocalHour>) {
         withContext(Dispatchers.IO) {
-            weatherDatabase.weatherDao().insertLocationHours(localHours)
+            weatherDatabase.hourDao().insertLocationHours(localHours)
         }
     }
 
     fun getLocationHours(cityName: String): Flow<List<LocalHour>> {
-        return weatherDatabase.weatherDao().getLocationHours(cityName)
+        return weatherDatabase.hourDao().getLocationHours(cityName)
     }
 
     //Recent locations

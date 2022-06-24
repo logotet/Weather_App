@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.databinding.HourViewBinding
-import com.example.weatherapp.models.hourly.HourWeatherModel
-import com.example.weatherapp.models.Measure
+import com.example.weatherapp.models.ui.HourWeatherModel
+import com.example.weatherapp.models.measure.Measure
 import com.example.weatherapp.utils.ResourceProvider
 
 class HourAdapter(

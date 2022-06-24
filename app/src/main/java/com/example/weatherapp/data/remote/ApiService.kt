@@ -1,12 +1,10 @@
 package com.example.weatherapp.data.remote
 
 import com.example.weatherapp.models.api.CityNameModel
-import com.example.weatherapp.models.current.CurrentWeather
-import com.example.weatherapp.models.hourly.HourApiResponseModel
+import com.example.weatherapp.models.api.CurrentWeather
+import com.example.weatherapp.models.api.HourApiResponseModel
 import com.example.weatherapp.utils.AppConstants.API_KEY
 import com.example.weatherapp.utils.AppConstants.EXCLUDE_HOUR_DATA
-import com.example.weatherapp.utils.AppConstants.SOFIA_LAT
-import com.example.weatherapp.utils.AppConstants.SOFIA_LON
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

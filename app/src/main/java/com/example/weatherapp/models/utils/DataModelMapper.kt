@@ -1,9 +1,9 @@
 package com.example.weatherapp.utils
 
-import com.example.weatherapp.models.current.CurrentWeather
-import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.hourly.HourApiResponseModel
-import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.api.CurrentWeather
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.api.HourApiResponseModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
 

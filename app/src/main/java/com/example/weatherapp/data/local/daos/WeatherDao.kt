@@ -34,17 +34,4 @@ interface WeatherDao {
 
     @Query("DELETE FROM location_weather")
     suspend fun deleteAll()
-
-    //Hours
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocationHour(localHour: LocalHour)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLocationHours(localHours: List<LocalHour>)
-
-    @Query("SELECT * FROM location_hours WHERE cityName LIKE :locationName")
-    fun getLocationHours2(locationName: String): Flow<List<LocalHour>>
-
-    @Query("SELECT * FROM location_hours WHERE cityName LIKE :cityName")
-    fun getLocationHours(cityName: String): Flow<List<LocalHour>>
 }

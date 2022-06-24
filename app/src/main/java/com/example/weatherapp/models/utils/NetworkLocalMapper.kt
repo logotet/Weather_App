@@ -1,7 +1,7 @@
 package com.example.weatherapp.models.utils
 
-import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
 

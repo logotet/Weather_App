@@ -1,7 +1,6 @@
 package com.example.weatherapp.interactors.apicalls
 
 import com.example.weatherapp.data.Result
-import com.example.weatherapp.models.hourly.HourWeatherModel
 import com.example.weatherapp.repository.Repository
 import kotlinx.coroutines.flow.Flow
 

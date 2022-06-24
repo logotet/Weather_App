@@ -3,7 +3,7 @@ package com.example.weatherapp.utils
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.weatherapp.R
-import com.example.weatherapp.models.Measure
+import com.example.weatherapp.models.measure.Measure
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 

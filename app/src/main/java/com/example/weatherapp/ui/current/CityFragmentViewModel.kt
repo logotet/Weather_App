@@ -12,10 +12,10 @@ import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
 import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
 import com.example.weatherapp.interactors.localcalls.locations.*
-import com.example.weatherapp.models.Measure
-import com.example.weatherapp.models.current.Coord
-import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.api.Coord
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.local.SavedLocation
@@ -23,7 +23,7 @@ import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.models.utils.mapToCurrentHours
 import com.example.weatherapp.models.utils.mapToLocalHours
-import com.example.weatherapp.ui.ObservableViewModel
+import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.example.weatherapp.ui
+package com.example.weatherapp.ui.utils
 
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry

@@ -1,4 +1,4 @@
-package com.example.weatherapp.models
+package com.example.weatherapp.models.measure
 
 enum class Measure(val value: String) {
     METRIC("metric"),

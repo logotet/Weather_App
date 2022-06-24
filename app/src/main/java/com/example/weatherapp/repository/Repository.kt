@@ -5,8 +5,8 @@ import com.example.weatherapp.data.Result
 import com.example.weatherapp.data.Result.*
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.data.remote.mapToResult
-import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours

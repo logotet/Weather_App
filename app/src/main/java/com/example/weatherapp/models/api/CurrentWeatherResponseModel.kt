@@ -1,4 +1,4 @@
-package com.example.weatherapp.models.current
+package com.example.weatherapp.models.api
 
 data class CurrentWeather(
     val clouds: Clouds,

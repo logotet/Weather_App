@@ -1,4 +1,4 @@
-package com.example.weatherapp.models.hourly
+package com.example.weatherapp.models.ui
 
 class HourWeatherModel(
     val hourTemperature: Double,

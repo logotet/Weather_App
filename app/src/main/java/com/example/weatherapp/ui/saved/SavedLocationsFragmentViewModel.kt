@@ -1,13 +1,9 @@
 package com.example.weatherapp.ui.saved
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
 import com.example.weatherapp.interactors.localcalls.locations.GetFavoriteLocations
-import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.local.LocalWeatherModel
-import com.example.weatherapp.ui.ObservableViewModel
+import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.saved.locations.OnSavedLocationClickedListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

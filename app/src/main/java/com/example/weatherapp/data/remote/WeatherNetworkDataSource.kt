@@ -1,9 +1,8 @@
 package com.example.weatherapp.data.remote
 
 import com.example.weatherapp.data.Result
-import com.example.weatherapp.models.api.CityNameModel
-import com.example.weatherapp.models.current.CurrentWeatherModel
-import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.utils.mapApiToCurrentModel
 import com.example.weatherapp.utils.mapToHourWeatherModel
 import kotlinx.coroutines.Dispatchers

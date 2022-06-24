@@ -1,4 +1,4 @@
-package com.example.weatherapp.models.current
+package com.example.weatherapp.models.ui
 
 class CurrentWeatherModel(
     val name: String,
