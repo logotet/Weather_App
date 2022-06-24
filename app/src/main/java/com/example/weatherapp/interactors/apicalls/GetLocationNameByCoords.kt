@@ -4,13 +4,13 @@ import com.example.weatherapp.data.Result
 import com.example.weatherapp.repository.Repository
 import kotlinx.coroutines.flow.Flow
 
-class GetCurrentCityWeather(
+class GetLocationNameByCoords(
     private val repository: Repository,
 ) {
-    suspend fun getCurrentWeather(
-        city: String,
-        measure: String,
-    ): Flow<Result<Unit>> {
-        return repository.getCityNetworkWeather(city, measure)
+    suspend fun getLocationName(
+        lat: Double,
+        lon: Double
+    ):Result<String> {
+        return repository.getCityNameByCoords(lat, lon)
     }
 }

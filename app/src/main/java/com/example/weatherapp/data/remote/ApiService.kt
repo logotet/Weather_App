@@ -1,5 +1,6 @@
 package com.example.weatherapp.data.remote
 
+import com.example.weatherapp.models.api.CityNameModel
 import com.example.weatherapp.models.current.CurrentWeather
 import com.example.weatherapp.models.hourly.HourApiResponseModel
 import com.example.weatherapp.utils.AppConstants.API_KEY
@@ -17,7 +18,7 @@ interface ApiService {
     suspend fun getCurrentCityWeather(
         @Query("q") cityName: String?,
         @Query("units") units: String,
-        @Query("appid") apiKey: String = API_KEY
+        @Query("appid") apiKey: String = API_KEY,
     ): Response<CurrentWeather>
 
     /*Get current weather on chosen coordinates*/
@@ -26,7 +27,7 @@ interface ApiService {
         @Query("units") units: String,
         @Query("lat") lat: String?,
         @Query("lon") lon: String?,
-        @Query("appid") apiKey: String = API_KEY
+        @Query("appid") apiKey: String = API_KEY,
     ): Response<CurrentWeather>
 
     /*Get the weather with the coordinates of Sofia for every hour
@@ -37,6 +38,16 @@ interface ApiService {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("exclude") exclude: String = EXCLUDE_HOUR_DATA,
-        @Query("appid") apiKey: String = API_KEY
+        @Query("appid") apiKey: String = API_KEY,
     ): Response<HourApiResponseModel>
+
+    /*Get list of names of the location base on
+    the coordinates*/
+    @GET("reverse")
+    suspend fun getLocationName(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("limit") limit: Int = 5,
+        @Query("appid") apiKey: String = API_KEY,
+    ): Response<CityNameModel>
 }

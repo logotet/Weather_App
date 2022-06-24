@@ -1,8 +1,8 @@
 package com.example.weatherapp.interactors.apicalls
 
-import com.example.weatherapp.data.remote.NetworkResult
-import com.example.weatherapp.models.current.CurrentWeatherModel
+import com.example.weatherapp.data.Result
 import com.example.weatherapp.repository.Repository
+import kotlinx.coroutines.flow.Flow
 
 class GetCurrentCoordWeather(
     private val repository: Repository,
@@ -11,7 +11,7 @@ class GetCurrentCoordWeather(
         lat: Double,
         lon: Double,
         measure: String,
-    ): NetworkResult<CurrentWeatherModel> {
+    ): Flow<Result<Unit>> {
         return repository.getCoordWeatherNetwork(lat, lon, measure)
     }
 }

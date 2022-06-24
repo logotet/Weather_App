@@ -1,19 +1,19 @@
 package com.example.weatherapp.ui.current
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.models.Measure
+import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
@@ -23,6 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,9 +32,14 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     private val viewModel: CityFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
+    private val args: CityFragmentArgs by navArgs()
+
     private var binding: CityWeatherFragmentBinding? = null
 
     private lateinit var measure: Measure
+    private var cityName: String? = null
+    private var lat: Double? = null
+    private var lon: Double? = null
 
     private var saved: Boolean? = null
 
@@ -42,8 +49,6 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        measure = Measure.getMeasure(arguments?.get("measure") as? String)
-        viewModel.setUpData(activityViewModel.model, measure)
     }
 
     override fun onCreateView(
@@ -60,17 +65,26 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO see how to remove this check when room data is loaded
-        viewModel.checkSavedLocation(activityViewModel.model!!.name)
+
+        measure = Measure.getMeasure(args.measure)
+        cityName = args.location
+        lat = args.lat?.toDouble()
+        lon = args.lon?.toDouble()
+        viewModel.setUpData(cityName, lat, lon, measure)
+
+        cityName?.let { viewModel.getSavedLocation(it) }
 
         val hourAdapter = HourAdapter(resourceProvider)
 
-        viewModel.hours.observe(viewLifecycleOwner) {
-            hourAdapter.updateData(it)
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated{
+            viewModel.hours.collectLatest {
+                hourAdapter.updateData(it)
+            }
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
+//            activity?.onBackPressed()
         }
 
         hourAdapter.updateMeasureUnit(measure)
@@ -85,10 +99,12 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        activityViewModel.model?.let {
-            val lat = it.lat
-            val lon = it.lon
-            googleMap.moveToLocation(lat, lon)
+        lifecycleScope.launch {
+            viewModel.coords.collectLatest {
+                it?.let {
+                    googleMap.moveToLocation(it.lat, it.lon)
+                }
+            }
         }
     }
 
@@ -99,6 +115,9 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val saveItem = menu.findItem(R.id.action_save)
+        if (!this.isNetworkAvailable(context)) {
+            saveItem.isVisible = false
+        }
         toggleSavedIcon(saveItem)
     }
 
@@ -108,7 +127,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
                 saved?.let {
                     if (!it) {
                         item.setDrawable(context, R.drawable.ic_heart_full)
-                        viewModel.insertLocationAsSaved()
+                        viewModel.saveWeatherData()
                         Snackbar.make(requireActivity().window.decorView,
                             "Location saved to favorites",
                             Snackbar.LENGTH_LONG).show()
@@ -127,14 +146,15 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     private fun toggleSavedIcon(saveItem: MenuItem) {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.cityLocalModel.collect { dataModel ->
-                saved = if (dataModel != null) {
+            viewModel.locationName.collect { name ->
+                  saved = if (name != null) {
                     saveItem.setDrawable(context, R.drawable.ic_heart_full)
                     true
                 } else {
                     saveItem.setDrawable(context, R.drawable.ic_heart_empty)
                     false
                 }
+
             }
         }
     }

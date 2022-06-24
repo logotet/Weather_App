@@ -4,6 +4,8 @@ import com.example.weatherapp.models.current.CurrentWeather
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.hourly.HourApiResponseModel
 import com.example.weatherapp.models.hourly.HourWeatherModel
+import com.example.weatherapp.models.local.LocalHour
+import com.example.weatherapp.models.local.LocalWeatherModel
 
 fun CurrentWeather.mapApiToCurrentModel(): CurrentWeatherModel {
     return CurrentWeatherModel(
@@ -37,5 +39,13 @@ fun HourApiResponseModel?.mapToHourWeatherModel(): List<HourWeatherModel> {
         }
     }
     return hours
+}
+
+fun Map<LocalWeatherModel?, List<LocalHour>>.mapToList(): List<LocalHour>{
+    val listOfHours = ArrayList<LocalHour>()
+    for(keyEntry in this){
+       listOfHours.addAll(keyEntry.value)
+    }
+    return listOfHours
 }
 

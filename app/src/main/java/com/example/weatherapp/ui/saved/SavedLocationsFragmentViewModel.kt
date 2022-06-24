@@ -3,50 +3,46 @@ package com.example.weatherapp.ui.saved
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.interactors.localcalls.GetFavoriteLocations
-import com.example.weatherapp.interactors.localcalls.GetLocationByName
+import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
+import com.example.weatherapp.interactors.localcalls.locations.GetFavoriteLocations
 import com.example.weatherapp.models.current.CurrentWeatherModel
 import com.example.weatherapp.models.local.LocalWeatherModel
-import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.ui.ObservableViewModel
 import com.example.weatherapp.ui.saved.locations.OnSavedLocationClickedListener
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SavedLocationsFragmentViewModel @Inject constructor(
     private val getFavoriteLocations: GetFavoriteLocations,
-    private val getLocationByName: GetLocationByName,
 ) : ObservableViewModel(), OnSavedLocationClickedListener {
 
-    private var _locations = MutableLiveData<List<LocalWeatherModel>>()
-    val locations: LiveData<List<LocalWeatherModel>>
+    private var _locations = MutableSharedFlow<List<LocalWeatherModel>>()
+    val locations: SharedFlow<List<LocalWeatherModel>>
         get() = _locations
 
-    private var _selectedLocation = MutableSharedFlow<CurrentWeatherModel>()
-    val selectedLocation: SharedFlow<CurrentWeatherModel>
-    get() = _selectedLocation.asSharedFlow()
+    private var _selectedLocation = MutableSharedFlow<String>()
+    val selectedLocation: SharedFlow<String>
+        get() = _selectedLocation.asSharedFlow()
 
-    init {
-        loadData()
-    }
+    var isNetworkAvailable: Boolean = false
 
-    private fun loadData() {
+    fun loadData() {
         viewModelScope.launch {
-            _locations.value = getFavoriteLocations.getFavoriteLocations()
+            getFavoriteLocations.getFavoriteLocations().collect {
+                _locations.emit(it)
+            }
         }
     }
 
     override fun onSavedLocationClicked(cityName: String) {
         viewModelScope.launch {
-            getLocationByName.getCity(cityName).collect {model ->
-                model?.let {
-                    _selectedLocation.emit(it.mapLocalToCurrentModel())
-                }
-            }
+            _selectedLocation.emit(cityName)
         }
     }
-
 }
