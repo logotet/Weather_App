@@ -21,18 +21,17 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return weatherDatabase.weatherDao().getCity(city)
     }
 
-    @FlowPreview
     @ExperimentalCoroutinesApi
-    suspend fun getCityByCoords(): Flow<LocalWeatherModel?> {
-        //TODO why can't it happen using flow???
-        return getCurrentLocationCoords().flatMapLatest { location ->
-            try {
-                weatherDatabase.weatherDao().getCityByCoords(location.lat, location.lon)
-            } catch (e: NullPointerException) {
-                weatherDatabase.weatherDao().getCityByCoords(1.0, 1.0)
-            }
+    @FlowPreview
+    suspend fun getCityByCoords(): Flow<LocalWeatherModel?> =
+        getCurrentLocationCoords().transformLatest { currentLocation ->
+            currentLocation?.let {
+                weatherDatabase.weatherDao().getCityByCoords(it.lat, it.lon)
+                    .collect { weatherModel ->
+                        emit(weatherModel)
+                    }
+            } ?: emit(null)
         }
-    }
 
     suspend fun getAllLocations(): List<LocalWeatherModel>? {
         return withContext(Dispatchers.IO) {
@@ -90,7 +89,7 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         weatherDatabase.currentLocationDao().insertCurrent(city)
     }
 
-    fun getCurrentLocationCoords(): Flow<CurrentLocation> {
+    private fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
         return weatherDatabase.currentLocationDao().getCurrent()
     }
 }

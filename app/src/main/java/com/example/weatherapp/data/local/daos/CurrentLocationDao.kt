@@ -13,5 +13,5 @@ interface CurrentLocationDao {
     suspend fun insertCurrent(currentLocation: CurrentLocation)
 
     @Query("SELECT * FROM current_location")
-    fun getCurrent(): Flow<CurrentLocation>
+    fun getCurrent(): Flow<CurrentLocation?>
 }
