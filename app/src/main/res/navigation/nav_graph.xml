@@ -60,7 +60,8 @@
         android:label="CoordsFragment" >
         <action
             android:id="@+id/action_coordsFragment_to_currentWeatherFragment2"
-            app:destination="@id/currentWeatherFragment" />
+            app:destination="@id/currentWeatherFragment"
+            app:popUpTo="@id/searchFragment"/>
     </fragment>
 
 </navigation>
