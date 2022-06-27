@@ -108,7 +108,11 @@ class SearchFragment : Fragment() {
         viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
             activityViewModel.unitSystem = viewModel.unitSystem
             firebaseAnalytics.logEvent("weather_search_button_pressed", null)
-            setNavigationWithData()
+                if (!viewModel.cityName.isNullOrBlank()) {
+                    setNavigationWithData()
+                }else{
+                    getView()?.let { view -> Snackbar.make(view, getString(R.string.valid_location), Snackbar.LENGTH_LONG).show() }
+                }
         }
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
@@ -121,7 +125,7 @@ class SearchFragment : Fragment() {
 
     private fun setNavigationWithData() {
         findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
-           location = viewModel.cityName
+            location = viewModel.cityName
         ))
     }
 
