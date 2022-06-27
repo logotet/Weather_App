@@ -3,7 +3,7 @@ package com.example.weatherapp.ui.saved.locations
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherapp.databinding.LocationRowBinding
+import com.example.weatherapp.databinding.LayoutLocationRowBinding
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.utils.ResourceProvider
 
@@ -20,7 +20,7 @@ class LocationAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationHolder {
-        val binding = LocationRowBinding.inflate(
+        val binding = LayoutLocationRowBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
@@ -37,7 +37,7 @@ class LocationAdapter(
     }
 
     inner class LocationHolder(
-        binding: LocationRowBinding,
+        binding: LayoutLocationRowBinding,
         resourceProvider: ResourceProvider,
         onSavedLocationClickedListener: OnSavedLocationClickedListener
     ) : RecyclerView.ViewHolder(binding.root) {

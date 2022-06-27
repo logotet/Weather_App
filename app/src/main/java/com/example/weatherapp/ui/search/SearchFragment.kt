@@ -12,8 +12,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.RecentLocationViewBinding
-import com.example.weatherapp.databinding.SearchFragmentBinding
+import com.example.weatherapp.databinding.FragmentSearchBinding
+import com.example.weatherapp.databinding.LayoutRecentLocationBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
-    private lateinit var binding: SearchFragmentBinding
+    private lateinit var binding: FragmentSearchBinding
 
     private val viewModel: SearchViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
@@ -62,8 +62,8 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.search_fragment, container, false)
-        binding = SearchFragmentBinding.bind(view)
+        val view = inflater.inflate(R.layout.fragment_search, container, false)
+        binding = FragmentSearchBinding.bind(view)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewGroup = container
@@ -93,8 +93,8 @@ class SearchFragment : Fragment() {
                 for (location in recentLocations) {
                     val locationView =
                         LayoutInflater.from(context)
-                            .inflate(R.layout.recent_location_view, viewGroup, false)
-                    val cityNameBinding = RecentLocationViewBinding.bind(locationView)
+                            .inflate(R.layout.layout_recent_location, viewGroup, false)
+                    val cityNameBinding = LayoutRecentLocationBinding.bind(locationView)
                     cityNameBinding.txtRecentLocationName.text =
                         location.cityName
                     binding.recentlyViewed.addView(locationView)

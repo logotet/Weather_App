@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.weatherapp.ui.current.CityFragmentViewModel" />
+            type="com.example.weatherapp.ui.current.ForecastFragmentViewModel" />
     </data>
 
     <ScrollView

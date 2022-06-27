@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.CityWeatherFragmentBinding
+import com.example.weatherapp.databinding.FragmentCityWeatherBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.models.measure.UnitSystem
@@ -28,13 +28,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CityFragment : Fragment(), OnMapReadyCallback {
-    private val viewModel: CityFragmentViewModel by viewModels()
+class ForecastFragment : Fragment(), OnMapReadyCallback {
+    private val viewModel: ForecastFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
-    private val args: CityFragmentArgs by navArgs()
+    private val args: ForecastFragmentArgs by navArgs()
 
-    private var binding: CityWeatherFragmentBinding? = null
+    private var binding:FragmentCityWeatherBinding? = null
 
     private lateinit var unitSystem: UnitSystem
     private var cityName: String? = null
@@ -54,7 +54,7 @@ class CityFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.city_weather_fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_city_weather, container, false)
         binding = DataBindingUtil.bind(view)
         binding?.viewModel = viewModel
         binding?.lifecycleOwner = this

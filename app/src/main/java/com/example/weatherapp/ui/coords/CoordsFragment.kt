@@ -8,7 +8,6 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.CoordsFragmentBinding
+import com.example.weatherapp.databinding.FragmentCoordsBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -24,11 +23,10 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CoordsFragment : Fragment() {
-    private var binding: CoordsFragmentBinding? = null
+    private var binding: FragmentCoordsBinding? = null
     private val viewModel: CoordsFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
@@ -43,7 +41,7 @@ class CoordsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.coords_fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_coords, container, false)
         binding = DataBindingUtil.bind(view)
         binding?.viewModel = viewModel
         binding?.lifecycleOwner = this

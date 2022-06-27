@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CityFragmentViewModel @Inject constructor(
+class ForecastFragmentViewModel @Inject constructor(
     private val getHourlyWeather: GetHourlyWeather,
     private val insertCityName: InsertCityName,
     private val resourceProvider: ResourceProvider,

@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.SavedLocationsFragmentBinding
-import com.example.weatherapp.ui.MainActivityViewModel
+import com.example.weatherapp.databinding.FragmentSavedLocationsBinding
 import com.example.weatherapp.ui.saved.locations.LocationAdapter
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
@@ -23,7 +21,7 @@ import javax.inject.Inject
 class SavedLocationsFragment : Fragment(){
     private val viewModel: SavedLocationsFragmentViewModel by viewModels()
 
-    private var binding: SavedLocationsFragmentBinding? = null
+    private var binding: FragmentSavedLocationsBinding? = null
 
     @Inject
     lateinit var resourceProvider: ResourceProvider
@@ -43,7 +41,7 @@ class SavedLocationsFragment : Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.saved_locations_fragment, container, false)
+        val view = inflater.inflate(R.layout.fragment_saved_locations, container, false)
         binding = DataBindingUtil.bind(view)
         binding?.viewmodel = viewModel
         binding?.lifecycleOwner = this
