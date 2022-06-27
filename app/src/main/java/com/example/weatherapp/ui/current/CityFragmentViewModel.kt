@@ -4,7 +4,7 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
 import com.example.weatherapp.data.Result
-import com.example.weatherapp.data.remote.checkResult
+import com.example.weatherapp.data.remote.checkStatus
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
 import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
@@ -125,13 +125,13 @@ class CityFragmentViewModel @Inject constructor(
     }
 
     private fun checkLocalResult(result: Result<LocalWeatherModel?>) {
-        result.checkResult(
+        result.checkStatus(
             {
                 weatherModel = it?.mapLocalToCurrentModel()
                 isSavedLocation(it?.name)
             },
             {
-                return@checkResult
+                return@checkStatus
             }
         )
     }
@@ -155,7 +155,7 @@ class CityFragmentViewModel @Inject constructor(
     }
 
     private fun checkNetworkResult(result: Result<Unit>) {
-        result.checkResult(
+        result.checkStatus(
             {},
             { _errorMessage.value = it.message }
         )
@@ -169,7 +169,7 @@ class CityFragmentViewModel @Inject constructor(
                     model.lon,
                     model.name).collect { result ->
                     result
-                        .checkResult(
+                        .checkStatus(
                             {
                                 insertRecentCity()
                                 getLocalHours(model.name)

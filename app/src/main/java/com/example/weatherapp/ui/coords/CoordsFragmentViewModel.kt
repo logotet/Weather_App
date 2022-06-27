@@ -1,7 +1,7 @@
 package com.example.weatherapp.ui.coords
 
 import androidx.lifecycle.viewModelScope
-import com.example.weatherapp.data.remote.checkResult
+import com.example.weatherapp.data.remote.checkStatus
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.localcalls.locations.GetSavedLocationByCoords
 import com.example.weatherapp.models.measure.UnitSystem
@@ -37,7 +37,7 @@ class CoordsFragmentViewModel @Inject constructor(
                         lon,
                         unitSystem.value)
                         .collect { result ->
-                            result.checkResult(
+                            result.checkStatus(
                                 {},
                                 {
 //                _errorMessage.value = it.message
@@ -52,14 +52,14 @@ class CoordsFragmentViewModel @Inject constructor(
     private fun getSavedLocationByCoords() {
         viewModelScope.launch {
             getSavedLocationByCoords.getCityByCoords().collect { result ->
-                result.checkResult(
+                result.checkStatus(
                     { model ->
                         viewModelScope.launch {
                             model?.name?.let { _locationName.emit(it) }
                         }
                     },
                     {
-                        return@checkResult
+                        return@checkStatus
                     }
                 )
             }

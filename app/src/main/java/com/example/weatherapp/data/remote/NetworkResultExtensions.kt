@@ -9,7 +9,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import java.lang.Exception
 
-fun <T> Result<T>.checkResult(
+fun <T> Result<T>.checkStatus(
     onSuccess: (T) -> Unit,
     onError: (Result.Error<T>) -> Unit,
 ) {
