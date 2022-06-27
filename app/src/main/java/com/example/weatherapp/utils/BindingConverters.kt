@@ -2,23 +2,23 @@ package com.example.weatherapp.utils
 
 import androidx.databinding.InverseMethod
 import com.example.weatherapp.R
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 
 @InverseMethod("idToMeasure")
-fun measureToId(measure: Measure?): Int {
-    return when (measure) {
-        Measure.METRIC -> R.id.btn_metric
-        Measure.STANDARD -> R.id.btn_standard
-        Measure.IMPERIAL -> R.id.btn_imperial
+fun measureToId(unitSystem: UnitSystem?): Int {
+    return when (unitSystem) {
+        UnitSystem.METRIC -> R.id.btn_metric
+        UnitSystem.STANDARD -> R.id.btn_standard
+        UnitSystem.IMPERIAL -> R.id.btn_imperial
         else -> R.id.btn_metric
     }
 }
 
-fun idToMeasure(selectedBtnId: Int): Measure {
+fun idToMeasure(selectedBtnId: Int): UnitSystem {
     return when(selectedBtnId){
-        R.id.btn_metric -> Measure.METRIC
-        R.id.btn_standard -> Measure.STANDARD
-        R.id.btn_imperial -> Measure.IMPERIAL
-        else -> Measure.METRIC
+        R.id.btn_metric -> UnitSystem.METRIC
+        R.id.btn_standard -> UnitSystem.STANDARD
+        R.id.btn_imperial -> UnitSystem.IMPERIAL
+        else -> UnitSystem.METRIC
     }
 }

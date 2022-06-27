@@ -4,13 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.utils.*
 import javax.inject.Inject
 
 class HourViewModel @Inject constructor(
-    private val measure: Measure,
+    private val unitSystem: UnitSystem,
     private val resourceProvider: ResourceProvider,
 ) : BaseObservable() {
 
@@ -22,11 +22,11 @@ class HourViewModel @Inject constructor(
 
     @get:Bindable
     val hourTemperature: String?
-        get() = hourModel?.hourTemperature.formatTemperature(resourceProvider, measure)
+        get() = hourModel?.hourTemperature.formatTemperature(resourceProvider, unitSystem)
 
     @get:Bindable
     val hourWindSpeed: String?
-        get() = hourModel?.hourWindSpeed.formatSpeed(resourceProvider, measure)
+        get() = hourModel?.hourWindSpeed.formatSpeed(resourceProvider, unitSystem)
 
     @get:Bindable
     val hourWeatherIconPath: String?

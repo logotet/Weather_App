@@ -12,7 +12,7 @@ import com.example.weatherapp.R
 import com.example.weatherapp.databinding.CityWeatherFragmentBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
@@ -36,10 +36,8 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
     private var binding: CityWeatherFragmentBinding? = null
 
-    private lateinit var measure: Measure
+    private lateinit var unitSystem: UnitSystem
     private var cityName: String? = null
-    private var lat: Double? = null
-    private var lon: Double? = null
 
     private var saved: Boolean? = null
 
@@ -66,11 +64,9 @@ class CityFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        measure = Measure.getMeasure(args.measure)
+        unitSystem = activityViewModel.unitSystem
         cityName = args.location
-        lat = args.lat?.toDouble()
-        lon = args.lon?.toDouble()
-        viewModel.setUpData(cityName, lat, lon, measure)
+        viewModel.setUpData(cityName, unitSystem)
 
         cityName?.let { viewModel.getSavedLocation(it) }
 
@@ -84,10 +80,10 @@ class CityFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-//            activity?.onBackPressed()
+            activity?.onBackPressed()
         }
 
-        hourAdapter.updateMeasureUnit(measure)
+        hourAdapter.updateMeasureUnit(unitSystem)
         hourAdapter.resourceProvider = resourceProvider
         binding?.hoursRecView?.adapter = hourAdapter
 

@@ -18,7 +18,7 @@
     //Temperature signature
     <string name="celsius_temperature_format">°C</string>
     <string name="standard_temperature_format">K</string>
-    <string name="imperial_temperature_format">°C</string>
+    <string name="imperial_temperature_format">°F</string>
 
     //Speed signatures
     <string name="metric_standard_speed_format">m/s</string>

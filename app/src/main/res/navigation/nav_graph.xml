@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_searchFragment_to_currentWeatherFragment"
             app:destination="@id/currentWeatherFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_coordsFragment"
+            app:destination="@id/coordsFragment" />
     </fragment>
 
     <fragment
@@ -51,5 +54,13 @@
     <action
         android:id="@+id/action_global_savedLocationsFragment"
         app:destination="@id/savedLocationsFragment" />
+    <fragment
+        android:id="@+id/coordsFragment"
+        android:name="com.example.weatherapp.ui.coords.CoordsFragment"
+        android:label="CoordsFragment" >
+        <action
+            android:id="@+id/action_coordsFragment_to_currentWeatherFragment2"
+            app:destination="@id/currentWeatherFragment" />
+    </fragment>
 
 </navigation>

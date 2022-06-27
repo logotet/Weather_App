@@ -3,7 +3,7 @@ package com.example.weatherapp.ui.search
 import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.ui.utils.ObservableViewModel
@@ -22,7 +22,7 @@ class SearchViewModel @Inject constructor(
     var cityName: String? = null
 
     @Bindable
-    var measure: Measure = Measure.METRIC
+    var unitSystem: UnitSystem = UnitSystem.METRIC
 
     private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
     val locations: StateFlow<List<LocalWeatherModel>> = _locations

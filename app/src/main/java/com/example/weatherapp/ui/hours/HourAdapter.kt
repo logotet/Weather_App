@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.databinding.HourViewBinding
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.utils.ResourceProvider
 
 class HourAdapter(
@@ -13,15 +13,15 @@ class HourAdapter(
 ) :
     RecyclerView.Adapter<HourAdapter.HourHolder>() {
     var hours: List<HourWeatherModel> = emptyList()
-    var measure: Measure = Measure.METRIC
+    var unitSystem: UnitSystem = UnitSystem.METRIC
 
     fun updateData(data: List<HourWeatherModel>?) {
         hours = data ?: emptyList()
         notifyDataSetChanged()
     }
 
-    fun updateMeasureUnit(measure: Measure) {
-        this.measure = measure
+    fun updateMeasureUnit(unitSystem: UnitSystem) {
+        this.unitSystem = unitSystem
         notifyDataSetChanged()
     }
 
@@ -31,7 +31,7 @@ class HourAdapter(
             parent,
             false
         )
-        return HourHolder(binding, measure, resourceProvider)
+        return HourHolder(binding, unitSystem, resourceProvider)
     }
 
     override fun onBindViewHolder(holder: HourHolder, position: Int) {
@@ -43,10 +43,10 @@ class HourAdapter(
 
     class HourHolder(
         private val binding: HourViewBinding,
-        measure: Measure,
+        unitSystem: UnitSystem,
         resourceProvider: ResourceProvider,
     ) : RecyclerView.ViewHolder(binding.root) {
-        private val hourViewModel = HourViewModel(measure, resourceProvider)
+        private val hourViewModel = HourViewModel(unitSystem, resourceProvider)
 
         init {
             binding.viewmodel = hourViewModel

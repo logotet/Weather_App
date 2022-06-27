@@ -10,17 +10,10 @@ import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
-import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
-import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
-import com.example.weatherapp.interactors.localcalls.citynames.GetRecentLocations
-import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
-import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
-import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
-import com.example.weatherapp.interactors.localcalls.locations.*
 import com.example.weatherapp.repository.Repository
 import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.Module
 import dagger.Provides
@@ -97,8 +90,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesHourViewModel(measure: Measure, resourceProvider: ResourceProvider): HourViewModel =
-        HourViewModel(measure, resourceProvider)
+    fun providesHourViewModel(unitSystem: UnitSystem, resourceProvider: ResourceProvider): HourViewModel =
+        HourViewModel(unitSystem, resourceProvider)
 
     @Provides
     @Singleton

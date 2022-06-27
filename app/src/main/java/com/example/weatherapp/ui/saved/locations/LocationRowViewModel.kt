@@ -2,7 +2,7 @@ package com.example.weatherapp.ui.saved.locations
 
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
-import com.example.weatherapp.models.measure.Measure
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.formatTemperature
@@ -19,7 +19,7 @@ class LocationRowViewModel(
         }
 
     //TODO the value should not be constant
-    var measure: Measure = Measure.METRIC
+    var unitSystem: UnitSystem = UnitSystem.METRIC
 
     @get:Bindable
     val cityName: String?
@@ -27,7 +27,7 @@ class LocationRowViewModel(
 
     @get:Bindable
     val cityTemperature: String?
-        get() = location?.temperature.formatTemperature(resourceProvider, measure)
+        get() = location?.temperature.formatTemperature(resourceProvider, unitSystem)
 
     fun onItemClicked() {
         cityName?.let {
