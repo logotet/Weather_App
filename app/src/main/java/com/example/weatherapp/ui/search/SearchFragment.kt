@@ -37,6 +37,7 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
+    //todo you don't use this client here anymore
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var gpsActivationLaunched: Boolean = false
 
@@ -107,6 +108,7 @@ class SearchFragment : Fragment() {
 
         viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
             activityViewModel.unitSystem = viewModel.unitSystem
+            //todo extract name string in resource file
             firebaseAnalytics.logEvent("weather_search_button_pressed", null)
             setNavigationWithData()
         }
@@ -114,6 +116,7 @@ class SearchFragment : Fragment() {
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
             activityViewModel.unitSystem = viewModel.unitSystem
             binding.edtCity.text = null
+            //todo extract name string in resource file
             firebaseAnalytics.logEvent("weather_location_button_pressed", null)
             constructLocationPermissionRequest.launch()
         }
@@ -129,6 +132,7 @@ class SearchFragment : Fragment() {
         permissionRequest.proceed()
     }
 
+    // todo avoid shortening word if possible
     private fun goToCoordsFragment() {
         findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCoordsFragment())
     }
