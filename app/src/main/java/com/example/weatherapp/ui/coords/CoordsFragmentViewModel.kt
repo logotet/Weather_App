@@ -51,6 +51,8 @@ class CoordsFragmentViewModel @Inject constructor(
 
     private fun getSavedLocationByCoords() {
         viewModelScope.launch {
+            //todo Try to create extension function on Flow that will accept Result<T> value and
+            // will handle success and error cases. The idea is to simplify the collect call
             getSavedLocationByCoords.getCityByCoords().collect { result ->
                 result.checkStatus(
                     { model ->

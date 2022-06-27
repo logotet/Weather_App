@@ -33,6 +33,8 @@ class CoordsFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var gpsActivationLaunched: Boolean = false
     private val cancellationTokenSource = CancellationTokenSource()
+
+    //todo you don't use these fields in the fragment. They are useless at the moment
     private var lat: Double? = null
     private var lon: Double? = null
 
