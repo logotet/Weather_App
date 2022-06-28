@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.FragmentCoordsBinding
+import com.example.weatherapp.databinding.FragmentGpsBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -25,9 +25,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
-class CoordsFragment : Fragment() {
-    private var binding: FragmentCoordsBinding? = null
-    private val viewModel: CoordsFragmentViewModel by viewModels()
+class GPSFragment : Fragment() {
+    private var binding: FragmentGpsBinding? = null
+    private val viewModel: GPSFragmentViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -41,7 +41,7 @@ class CoordsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_coords, container, false)
+        val view = inflater.inflate(R.layout.fragment_gps, container, false)
         binding = DataBindingUtil.bind(view)
         binding?.viewModel = viewModel
         binding?.lifecycleOwner = this
@@ -79,7 +79,7 @@ class CoordsFragment : Fragment() {
     }
 
     private fun setNavigationWithData(locationName: String) {
-        findNavController().navigate(CoordsFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
+        findNavController().navigate(GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
             location = locationName
         ))
     }

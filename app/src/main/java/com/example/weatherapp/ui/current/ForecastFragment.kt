@@ -29,7 +29,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ForecastFragment : Fragment(), OnMapReadyCallback {
-    private val viewModel: ForecastFragmentViewModel by viewModels()
+    private val viewModel: ForecastViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private val args: ForecastFragmentArgs by navArgs()
@@ -66,9 +66,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
 
         unitSystem = activityViewModel.unitSystem
         cityName = args.location
-        viewModel.setUpData(cityName, unitSystem)
-
-        cityName?.let { viewModel.getSavedLocation(it) }
+        viewModel.setupData(cityName, unitSystem)
 
         val hourAdapter = HourAdapter(resourceProvider)
 
@@ -123,7 +121,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                 saved?.let {
                     if (!it) {
                         item.setDrawable(context, R.drawable.ic_heart_full)
-                        viewModel.saveWeatherData()
+                        viewModel.saveLocationToFavorites()
                         Snackbar.make(requireActivity().window.decorView,
                             "Location saved to favorites",
                             Snackbar.LENGTH_LONG).show()

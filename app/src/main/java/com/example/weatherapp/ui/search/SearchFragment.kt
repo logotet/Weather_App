@@ -17,8 +17,6 @@ import com.example.weatherapp.databinding.LayoutRecentLocationBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.utils.ResourceProvider
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -37,7 +35,6 @@ class SearchFragment : Fragment() {
     private val viewModel: SearchViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var gpsActivationLaunched: Boolean = false
 
     @Inject
@@ -52,7 +49,7 @@ class SearchFragment : Fragment() {
         viewModel.isNetworkAvailable = this.isNetworkAvailable(context)
 
         if (gpsActivationLaunched) {
-            goToCoordsFragment()
+            goToCoordinatesFragment()
         }
         gpsActivationLaunched = false
     }
@@ -73,13 +70,11 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-
         val constructLocationPermissionRequest = constructLocationPermissionRequest(
             LocationPermission.FINE,
             onShowRationale = ::onGetLocationRationale,
             onPermissionDenied = ::onLocationPermissionDenied,
-            requiresPermission = ::goToCoordsFragment
+            requiresPermission = ::goToCoordinatesFragment
         )
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
@@ -107,18 +102,22 @@ class SearchFragment : Fragment() {
 
         viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
             activityViewModel.unitSystem = viewModel.unitSystem
-            firebaseAnalytics.logEvent("weather_search_button_pressed", null)
-                if (!viewModel.cityName.isNullOrBlank()) {
-                    setNavigationWithData()
-                }else{
-                    getView()?.let { view -> Snackbar.make(view, getString(R.string.valid_location), Snackbar.LENGTH_LONG).show() }
+            firebaseAnalytics.logEvent(getString(R.string.search_button_pressed), null)
+            if (!viewModel.cityName.isNullOrBlank()) {
+                setNavigationWithData()
+            } else {
+                getView()?.let { view ->
+                    Snackbar.make(view,
+                        getString(R.string.valid_location),
+                        Snackbar.LENGTH_LONG).show()
                 }
+            }
         }
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
             activityViewModel.unitSystem = viewModel.unitSystem
             binding.edtCity.text = null
-            firebaseAnalytics.logEvent("weather_location_button_pressed", null)
+            firebaseAnalytics.logEvent(getString(R.string.location_button_pressed), null)
             constructLocationPermissionRequest.launch()
         }
     }
@@ -133,7 +132,7 @@ class SearchFragment : Fragment() {
         permissionRequest.proceed()
     }
 
-    private fun goToCoordsFragment() {
+    private fun goToCoordinatesFragment() {
         findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCoordsFragment())
     }
 

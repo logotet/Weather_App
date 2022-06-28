@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CoordsFragmentViewModel @Inject constructor(
+class GPSFragmentViewModel @Inject constructor(
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getSavedLocationByCoords: GetSavedLocationByCoords,
 ) : ObservableViewModel() {

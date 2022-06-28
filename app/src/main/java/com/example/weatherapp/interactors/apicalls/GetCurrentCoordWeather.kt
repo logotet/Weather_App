@@ -12,6 +12,6 @@ class GetCurrentCoordWeather(
         lon: Double,
         measure: String,
     ): Flow<Result<Unit>> {
-        return repository.getCoordWeatherNetwork(lat, lon, measure)
+        return repository.getNetworkWeatherFromCoordinates(lat, lon, measure)
     }
 }

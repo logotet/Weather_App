@@ -2,10 +2,11 @@ package com.example.weatherapp.di
 
 import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.local.WeatherLocalDataSource
+import com.example.weatherapp.interactors.GetWeatherData
 import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentLocations
-import com.example.weatherapp.interactors.localcalls.citynames.InsertCityName
+import com.example.weatherapp.interactors.localcalls.citynames.InsertRecentCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
 import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
 import com.example.weatherapp.interactors.localcalls.locations.*
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class InterceptorsModule {
+class InteractorsModule {
     @Provides
     @Singleton
     fun providesWeatherLocalDataSource(weatherDatabase: WeatherDatabase): WeatherLocalDataSource =
@@ -51,8 +52,8 @@ class InterceptorsModule {
 
     @Provides
     @Singleton
-    fun providesInsertCityName(repository: Repository): InsertCityName =
-        InsertCityName(repository)
+    fun providesInsertCityName(repository: Repository): InsertRecentCityName =
+        InsertRecentCityName(repository)
 
     @Provides
     @Singleton
@@ -93,4 +94,9 @@ class InterceptorsModule {
     @Singleton
     fun providesInsertSavedLocation(repository: Repository): InsertSavedLocation =
         InsertSavedLocation(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetWeatherData(repository: Repository): GetWeatherData =
+        GetWeatherData(repository)
 }

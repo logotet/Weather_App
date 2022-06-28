@@ -56,7 +56,7 @@
         app:destination="@id/savedLocationsFragment" />
     <fragment
         android:id="@+id/coordsFragment"
-        android:name="com.example.weatherapp.ui.coords.CoordsFragment"
+        android:name="com.example.weatherapp.ui.coords.GPSFragment"
         android:label="CoordsFragment" >
         <action
             android:id="@+id/action_coordsFragment_to_currentWeatherFragment2"

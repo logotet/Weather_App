@@ -11,6 +11,6 @@ class GetCurrentCityWeather(
         city: String,
         measure: String,
     ): Flow<Result<Unit>> {
-        return repository.getCityNetworkWeather(city, measure)
+        return repository.getLocationNetworkWeather(city, measure)
     }
 }

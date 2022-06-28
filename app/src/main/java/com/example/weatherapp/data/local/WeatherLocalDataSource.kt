@@ -47,10 +47,6 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return weatherDatabase.weatherDao().getFavoritesByNames(names)
     }
 
-    suspend fun deleteLocation(cityName: String) {
-        weatherDatabase.savedLocationDao().deleteCity(cityName)
-    }
-
     //LocalHour
     suspend fun insertLocalHours(localHours: List<LocalHour>) {
         withContext(Dispatchers.IO) {
@@ -82,6 +78,10 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
 
     fun getSavedLocation(name: String): Flow<String> {
         return weatherDatabase.savedLocationDao().getSavedLocation(name)
+    }
+
+    suspend fun deleteLocation(cityName: String) {
+        weatherDatabase.savedLocationDao().deleteCity(cityName)
     }
 
     //Current location

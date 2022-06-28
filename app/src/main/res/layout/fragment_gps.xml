@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.weatherapp.ui.coords.CoordsFragmentViewModel" />
+            type="com.example.weatherapp.ui.coords.GPSFragmentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

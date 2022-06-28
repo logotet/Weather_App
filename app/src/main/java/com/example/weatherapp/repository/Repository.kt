@@ -10,6 +10,7 @@ import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -18,15 +19,15 @@ class Repository(
     private val weatherNetworkDataSource: WeatherNetworkDataSource,
 ) {
     //Network
-    suspend fun getCityNetworkWeather(
+    suspend fun getLocationNetworkWeather(
         city: String,
         measure: String,
     ): Flow<Result<Unit>> {
-        val cityNetworkWeather = weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
-        return saveSuccess(cityNetworkWeather, false)
+        val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
+        return saveSuccess(locationResult, false)
     }
 
-    suspend fun getCoordWeatherNetwork(
+    suspend fun getNetworkWeatherFromCoordinates(
         lat: Double,
         lon: Double,
         measure: String,
@@ -43,7 +44,39 @@ class Repository(
         city: String,
     ): Flow<Result<Unit>> {
         val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
+        delay(3000)
         return saveSuccessHours(hourlyWeather, city)
+    }
+
+    private suspend fun saveSuccess(
+        cityNetworkWeather: Result<CurrentWeatherModel>,
+        currentLocation: Boolean
+    ): Flow<Result<Unit>> {
+        return if (cityNetworkWeather is Success) {
+            val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
+            if(currentLocation) {
+                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
+                    dataModel.lon))
+            }
+            insertData(dataModel)
+            flowOf(Success(Unit))
+        } else {
+            flowOf(Error((cityNetworkWeather as Error).message))
+        }
+    }
+
+    //TODO refactor
+    private suspend fun saveSuccessHours(
+        cityNetworkWeather: Result<List<HourWeatherModel>>,
+        city: String,
+    ): Flow<Result<Unit>> {
+        return if (cityNetworkWeather is Success) {
+            val dataModel = cityNetworkWeather.data.mapToLocalHours(city)
+            insertLocalHours(dataModel)
+            flowOf(Success(Unit))
+        } else {
+            flowOf(Error((cityNetworkWeather as Error).message))
+        }
     }
 
     suspend fun getCityNameByCoords(
@@ -103,44 +136,12 @@ class Repository(
         return weatherLocalDataSource.getSavedLocation(name)
     }
 
-    //
-    private suspend fun saveSuccess(
-        cityNetworkWeather: Result<CurrentWeatherModel>,
-        currentLocation: Boolean
-    ): Flow<Result<Unit>> {
-        return if (cityNetworkWeather is Success) {
-            val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
-            if(currentLocation) {
-                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
-                    dataModel.lon))
-            }
-            insertData(dataModel)
-            flowOf(Success(Unit))
-        } else {
-            flowOf(Error((cityNetworkWeather as Error).message))
-        }
-    }
-
-    //TODO refactor
-    private suspend fun saveSuccessHours(
-        cityNetworkWeather: Result<List<HourWeatherModel>>,
-        city: String,
-    ): Flow<Result<Unit>> {
-        return if (cityNetworkWeather is Success) {
-            val dataModel = cityNetworkWeather.data.mapToLocalHours(city)
-            insertLocalHours(dataModel)
-            flowOf(Success(Unit))
-        } else {
-            flowOf(Error((cityNetworkWeather as Error).message))
-        }
-    }
-
     suspend fun getFavoriteLocations(): Flow<List<LocalWeatherModel>> {
         val savedLocationsNames = weatherLocalDataSource.getSavedLocations()
         return weatherLocalDataSource.getFavoritesLocationsByName(savedLocationsNames)
     }
 
-    suspend fun insertAsSavedOrNot(savedLocation: SavedLocation) {
+    suspend fun insertAsSaved(savedLocation: SavedLocation) {
         weatherLocalDataSource.insertAsSavedOrNot(savedLocation)
     }
 }
