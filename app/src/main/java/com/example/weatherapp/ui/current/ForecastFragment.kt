@@ -100,6 +100,11 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+
+        binding?.refresh?.setOnRefreshListener {
+            cityName?.let { viewModel.refreshData(it) }
+            binding?.refresh?.isRefreshing = false
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -109,7 +114,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         val saveItem = menu.findItem(R.id.action_save)
-        if (!this.isNetworkAvailable(context)) {
+        if (!this.isNetworkAvailable()) {
             saveItem.isVisible = false
         }
         toggleSavedIcon(saveItem)
