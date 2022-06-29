@@ -2,7 +2,6 @@ package com.example.weatherapp.di
 
 import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.local.WeatherLocalDataSource
-import com.example.weatherapp.interactors.GetWeatherData
 import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentLocations
@@ -94,9 +93,4 @@ class InteractorsModule {
     @Singleton
     fun providesInsertSavedLocation(repository: Repository): InsertSavedLocation =
         InsertSavedLocation(repository)
-
-    @Provides
-    @Singleton
-    fun providesGetWeatherData(repository: Repository): GetWeatherData =
-        GetWeatherData(repository)
 }

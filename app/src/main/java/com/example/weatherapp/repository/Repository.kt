@@ -24,7 +24,7 @@ class Repository(
         measure: String,
     ): Flow<Result<Unit>> {
         val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
-        return saveSuccess(locationResult, false)
+        return saveSuccess(locationResult, false, measure)
     }
 
     suspend fun getNetworkWeatherFromCoordinates(
@@ -34,7 +34,7 @@ class Repository(
     ): Flow<Result<Unit>> {
         val currentCoordWeatherResponse =
             weatherNetworkDataSource.getCurrentCoordWeatherResponse(lat, lon, measure)
-        return saveSuccess(currentCoordWeatherResponse, true)
+        return saveSuccess(currentCoordWeatherResponse, true, measure)
     }
 
     suspend fun getHourlyWeather(
@@ -44,13 +44,13 @@ class Repository(
         city: String,
     ): Flow<Result<Unit>> {
         val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
-        delay(3000)
         return saveSuccessHours(hourlyWeather, city)
     }
 
     private suspend fun saveSuccess(
         cityNetworkWeather: Result<CurrentWeatherModel>,
-        currentLocation: Boolean
+        currentLocation: Boolean,
+        units: String
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
@@ -59,6 +59,8 @@ class Repository(
                     dataModel.lon))
             }
             insertData(dataModel)
+            //TODO the fun below throws sqlite exception as the parent entry is not yet inserted
+//            getHourlyWeather(dataModel.name, dataModel.lat, dataModel.lon, units)
             flowOf(Success(Unit))
         } else {
             flowOf(Error((cityNetworkWeather as Error).message))

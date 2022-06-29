@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @SuppressLint("MissingPermission")
-fun Fragment.isNetworkAvailable(context: Context?): Boolean {
+fun Fragment.isNetworkAvailable(): Boolean {
     val connectivityManager = context?.getSystemService(ConnectivityManager::class.java)
     return connectivityManager?.activeNetwork != null
 }

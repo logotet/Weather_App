@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
 import com.example.weatherapp.data.Result
 import com.example.weatherapp.data.remote.checkStatus
-import com.example.weatherapp.interactors.GetWeatherData
+import com.example.weatherapp.data.remote.collectResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
 import com.example.weatherapp.interactors.localcalls.citynames.InsertRecentCityName
@@ -34,10 +34,11 @@ class ForecastViewModel @Inject constructor(
     private val insertRecentCityName: InsertRecentCityName,
     private val resourceProvider: ResourceProvider,
     private val removeLocationFromFavorites: RemoveLocationFromFavorites,
+    private val getLocationByName: GetLocationByName,
+    private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getLocationHours: GetLocationHours,
     private val getFavoriteLocationByName: GetFavoriteLocationByName,
     private val insertSavedLocation: InsertSavedLocation,
-    private val getWeatherData: GetWeatherData
 ) : ObservableViewModel() {
 
     private var _locationName = MutableStateFlow<String?>(null)
@@ -56,8 +57,7 @@ class ForecastViewModel @Inject constructor(
             value?.let {
                 _coords.value = Coord(value.lon, value.lat)
             }
-            //TODO extract the fun below
-//            getNetworkHours()
+            getNetworkHours()
             notifyChange()
         }
 
@@ -100,29 +100,44 @@ class ForecastViewModel @Inject constructor(
 
     fun setupData(city: String?, unitSystem: UnitSystem) {
         this.unitSystem = unitSystem
-            if (!city.isNullOrEmpty()) {
-                viewModelScope.launch {
-                    getWeatherData.getWeatherData(city, unitSystem).collect {
-                        checkLocalResult(it)
-//                        getNetworkHours()
-                        getLocalHours(city)
-                        insertRecentCity()
-                    }
-                }
-            }
+        if (!city.isNullOrEmpty()) {
+            getNetworkWeatherResponse(city)
+            getWeatherFromDatabase(city)
+            getLocalHours(city)
+        }
     }
 
-
-    private fun checkLocalResult(result: Result<LocalWeatherModel?>) {
-        result.checkStatus(
+    private fun getNetworkWeatherResponse(city: String?) {
+        onNetworkAvailability(isNetworkAvailable,
             {
-                weatherModel = it?.mapLocalToCurrentModel()
-                isSavedLocation(it?.name)
+                viewModelScope.launch {
+                    city?.let {
+                        getCurrentCityWeather.getCurrentWeather(it, unitSystem.value)
+                            .collectResult(
+                                {},
+                                { _errorMessage.value = it.message }
+                            )
+                    }
+                }
+                notifyChange()
             },
             {
-                return@checkStatus
-            }
-        )
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
+            })
+    }
+
+    private fun getWeatherFromDatabase(city: String) {
+        viewModelScope.launch {
+            getLocationByName.getCity(city).collectResult(
+                {
+                    weatherModel = it?.mapLocalToCurrentModel()
+                    isSavedLocation(it?.name)
+                },
+                {
+                    _errorMessage.value = it.message
+                }
+            )
+        }
     }
 
     private fun getNetworkHours() {
@@ -131,18 +146,16 @@ class ForecastViewModel @Inject constructor(
                 getHourlyWeather.getHours(unitSystem.value,
                     model.lat,
                     model.lon,
-                    model.name).collect { result ->
-                    result
-                        .checkStatus(
-                            {
-                            },
-                            {
-                                _errorMessage.value = it.message
-                            }
-                        )
-                }
+                    model.name).collectResult(
+                    {
+                        insertRecentCity()
+                    },
+                    {
+                        _errorMessage.value = it.message
+                    }
+                )
+                notifyChange()
             }
-            notifyChange()
         }
     }
 
@@ -166,8 +179,8 @@ class ForecastViewModel @Inject constructor(
 
     fun saveLocationToFavorites() {
         viewModelScope.launch {
-        weatherModel?.let {
-            insertSavedLocation.insertData(SavedLocation(it.name))
+            weatherModel?.let {
+                insertSavedLocation.insertData(SavedLocation(it.name))
             }
         }
     }
@@ -186,5 +199,11 @@ class ForecastViewModel @Inject constructor(
                 insertRecentCityName.insertCityName(City(it.name))
             }
         }
+    }
+
+    fun refreshData(locationName: String) {
+        getNetworkWeatherResponse(locationName)
+        getNetworkHours()
+        notifyChange()
     }
 }

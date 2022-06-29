@@ -28,7 +28,7 @@ class SavedLocationsFragment : Fragment(){
 
     override fun onResume() {
         super.onResume()
-        viewModel.isNetworkAvailable = this.isNetworkAvailable(context)
+        viewModel.isNetworkAvailable = isNetworkAvailable()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

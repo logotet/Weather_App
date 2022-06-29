@@ -46,7 +46,7 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.isNetworkAvailable = this.isNetworkAvailable(context)
+        viewModel.isNetworkAvailable = this.isNetworkAvailable()
 
         if (gpsActivationLaunched) {
             goToCoordinatesFragment()

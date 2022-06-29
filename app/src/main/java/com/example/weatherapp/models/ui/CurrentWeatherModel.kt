@@ -10,5 +10,5 @@ class CurrentWeatherModel(
     val lat: Double,
     val lon: Double,
     val windDirection: Int,
-    var hours: List<HourWeatherModel>? = null
+//    var hours: List<HourWeatherModel>? = null
     )
