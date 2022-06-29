@@ -13,6 +13,7 @@ import com.example.weatherapp.models.utils.mapToLocalHours
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 
 class Repository(
     private val weatherLocalDataSource: WeatherLocalDataSource,

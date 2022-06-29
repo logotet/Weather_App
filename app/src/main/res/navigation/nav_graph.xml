@@ -28,7 +28,7 @@
             android:defaultValue="metric"
             app:argType="string" />
         <argument
-            android:name="location"
+            android:name="cityName"
             android:defaultValue="pleven"
             app:argType="string"
             app:nullable="true" />
