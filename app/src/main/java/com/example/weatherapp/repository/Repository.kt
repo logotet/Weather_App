@@ -1,16 +1,16 @@
 package com.example.weatherapp.repository
 
-import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.Result
-import com.example.weatherapp.data.Result.*
+import com.example.weatherapp.data.Result.Error
+import com.example.weatherapp.data.Result.Success
+import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
 import com.example.weatherapp.data.remote.mapToResult
+import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.utils.mapApiToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -59,7 +59,6 @@ class Repository(
                     dataModel.lon))
             }
             insertData(dataModel)
-            delay(10_000)
             //TODO the fun below throws sqlite exception as the parent entry is not yet inserted
 //            getHourlyWeather(dataModel.name, dataModel.lat, dataModel.lon, units)
             flowOf(Success(Unit))
@@ -75,7 +74,7 @@ class Repository(
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val hourModel = cityNetworkWeather.data.mapToLocalHours(city)
-                insertLocalHours(hourModel)
+            insertLocalHours(hourModel)
             flowOf(Success(Unit))
         } else {
             flowOf(Error((cityNetworkWeather as Error).message))
@@ -93,10 +92,6 @@ class Repository(
     //LocalWeatherModel
     private suspend fun insertData(dataModel: LocalWeatherModel) {
         weatherLocalDataSource.insert(dataModel)
-    }
-
-    suspend fun insertWeatherModelWithHours(dataModel: LocalWeatherModel, localHours: List<LocalHour>) {
-        weatherLocalDataSource.insertWeatherData(dataModel, localHours)
     }
 
     fun getLocationFromDatabase(city: String): Flow<Result<LocalWeatherModel?>> {

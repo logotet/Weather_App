@@ -3,28 +3,30 @@ package com.example.weatherapp.ui.current
 import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
-import com.example.weatherapp.data.Result
-import com.example.weatherapp.data.remote.checkStatus
 import com.example.weatherapp.data.remote.collectResult
 import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
 import com.example.weatherapp.interactors.localcalls.citynames.InsertRecentCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
-import com.example.weatherapp.interactors.localcalls.locations.*
-import com.example.weatherapp.models.measure.UnitSystem
+import com.example.weatherapp.interactors.localcalls.locations.GetFavoriteLocationByName
+import com.example.weatherapp.interactors.localcalls.locations.GetLocationByName
+import com.example.weatherapp.interactors.localcalls.locations.InsertSavedLocation
+import com.example.weatherapp.interactors.localcalls.locations.RemoveLocationFromFavorites
 import com.example.weatherapp.models.api.Coord
+import com.example.weatherapp.models.local.City
+import com.example.weatherapp.models.local.SavedLocation
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.local.City
-import com.example.weatherapp.models.local.LocalWeatherModel
-import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.models.utils.mapToCurrentHours
 import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -68,6 +70,10 @@ class ForecastViewModel @Inject constructor(
     private var _errorMessage = SingleLiveEvent<String?>()
     val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
+
+    private var _errorDatabaseMessage = SingleLiveEvent<String?>()
+    val errorDatabaseMessage: SingleLiveEvent<String?>
+        get() = _errorDatabaseMessage
 
     @get:Bindable
     val cityName: String?
@@ -115,6 +121,7 @@ class ForecastViewModel @Inject constructor(
                         getCurrentCityWeather.getCurrentWeather(it, unitSystem.value)
                             .collectResult(
                                 {},
+
                                 { _errorMessage.value = it.message }
                             )
                     }
@@ -134,7 +141,8 @@ class ForecastViewModel @Inject constructor(
                     isSavedLocation(it?.name)
                 },
                 {
-                    _errorMessage.value = it.message
+                    _errorDatabaseMessage.value =
+                        resourceProvider.getString(R.string.no_location_found)
                 }
             )
         }

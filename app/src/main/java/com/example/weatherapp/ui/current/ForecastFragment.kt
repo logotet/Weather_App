@@ -10,9 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentCityWeatherBinding
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.hours.HourAdapter
-import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
@@ -73,6 +73,11 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                 hourAdapter.updateData(it)
                 binding?.refreshLayout?.isRefreshing = false
             }
+        }
+
+        viewModel.errorDatabaseMessage.observe(viewLifecycleOwner) {
+            binding?.refreshLayout?.isRefreshing = false
+            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
