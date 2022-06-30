@@ -66,7 +66,7 @@ class SavedLocationsFragment : Fragment(){
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.selectedLocation.collectLatest{
                 findNavController().navigate(SavedLocationsFragmentDirections.actionSavedLocationsFragmentToCurrentWeatherFragment(
-                    location = it
+                    cityName = it
                 ))
             }
         }

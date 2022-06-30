@@ -80,7 +80,7 @@ class GPSFragment : Fragment() {
 
     private fun setNavigationWithData(locationName: String) {
         findNavController().navigate(GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
-            location = locationName
+            cityName = locationName
         ))
     }
 

@@ -201,9 +201,11 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    fun refreshData(locationName: String) {
-        getNetworkWeatherResponse(locationName)
-        getNetworkHours()
-        notifyChange()
+    fun refreshData() {
+        cityName?.let {
+            getNetworkWeatherResponse(cityName)
+            getNetworkHours()
+            notifyChange()
+        }
     }
 }

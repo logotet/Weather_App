@@ -37,7 +37,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
     private var binding:FragmentCityWeatherBinding? = null
 
     private lateinit var unitSystem: UnitSystem
-    private var cityName: String? = null
 
     private var saved: Boolean? = null
 
@@ -65,18 +64,19 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         unitSystem = activityViewModel.unitSystem
-        cityName = args.location
-        viewModel.setupData(cityName, unitSystem)
+        viewModel.setupData(args.cityName, unitSystem)
 
         val hourAdapter = HourAdapter(resourceProvider)
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated{
             viewModel.hours.collectLatest {
                 hourAdapter.updateData(it)
+                binding?.refreshLayout?.isRefreshing = false
             }
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
+            binding?.refreshLayout?.isRefreshing = false
             Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
             activity?.onBackPressed()
         }
@@ -90,6 +90,10 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
 
         activityViewModel.barVisible = false
+
+        binding?.refreshLayout?.setOnRefreshListener {
+            viewModel.refreshData()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -99,11 +103,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                     googleMap.moveToLocation(it.lat, it.lon)
                 }
             }
-        }
-
-        binding?.refresh?.setOnRefreshListener {
-            cityName?.let { viewModel.refreshData(it) }
-            binding?.refresh?.isRefreshing = false
         }
     }
 

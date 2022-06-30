@@ -124,7 +124,7 @@ class SearchFragment : Fragment() {
 
     private fun setNavigationWithData() {
         findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
-            location = viewModel.cityName
+            cityName = viewModel.cityName
         ))
     }
 

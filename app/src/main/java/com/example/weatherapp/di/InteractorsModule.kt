@@ -4,10 +4,8 @@ import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
-import com.example.weatherapp.interactors.localcalls.citynames.GetRecentLocations
 import com.example.weatherapp.interactors.localcalls.citynames.InsertRecentCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
-import com.example.weatherapp.interactors.localcalls.hours.InsertListOfHours
 import com.example.weatherapp.interactors.localcalls.locations.*
 import com.example.weatherapp.repository.Repository
 import dagger.Module
@@ -26,23 +24,8 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun providesInsertIntoDatabase(repository: Repository): InsertIntoDatabase =
-        InsertIntoDatabase(repository)
-
-    @Provides
-    @Singleton
     fun providesGetLocationFromDatabase(repository: Repository): GetLocationByName =
         GetLocationByName(repository)
-
-    @Provides
-    @Singleton
-    fun providesGetAllLocations(repository: Repository): GetAllLocations =
-        GetAllLocations(repository)
-
-    @Provides
-    @Singleton
-    fun providesGetRecentLocations(repository: Repository): GetRecentLocations =
-        GetRecentLocations(repository)
 
     @Provides
     @Singleton
@@ -63,11 +46,6 @@ class InteractorsModule {
     @Singleton
     fun providesRemoveLocationFromFavorites(repository: Repository): RemoveLocationFromFavorites =
         RemoveLocationFromFavorites(repository)
-
-    @Provides
-    @Singleton
-    fun providesInsertListOfHours(repository: Repository): InsertListOfHours =
-        InsertListOfHours(repository)
 
     @Provides
     @Singleton
