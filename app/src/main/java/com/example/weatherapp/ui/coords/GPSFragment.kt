@@ -62,15 +62,22 @@ class GPSFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        cancellationTokenSource.cancel()
+    }
+
     private fun getCurrentLocation() {
         if (isGPSEnabled()) {
             fusedLocationClient.getCurrentLocation(
                 LocationRequest.PRIORITY_HIGH_ACCURACY,
                 cancellationTokenSource.token
-            ).addOnCompleteListener { task ->
-                lat = task.result.latitude
-                lon = task.result.longitude
-                viewModel.setUpData(lat, lon, activityViewModel.unitSystem)
+            ).addOnSuccessListener { location ->
+                location?.let {
+                    lat = location.latitude
+                    lon = location.longitude
+                    viewModel.setUpData(lat, lon, activityViewModel.unitSystem)
+                }
             }
         } else {
             startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

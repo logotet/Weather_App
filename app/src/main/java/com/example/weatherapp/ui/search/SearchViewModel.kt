@@ -3,13 +3,15 @@ package com.example.weatherapp.ui.search
 import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
-import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.utils.ObservableViewModel
-import com.example.weatherapp.utils.*
+import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

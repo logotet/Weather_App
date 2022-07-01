@@ -121,7 +121,6 @@ class ForecastViewModel @Inject constructor(
                         getCurrentCityWeather.getCurrentWeather(it, unitSystem.value)
                             .collectResult(
                                 {},
-
                                 { _errorMessage.value = it.message }
                             )
                     }
@@ -141,8 +140,6 @@ class ForecastViewModel @Inject constructor(
                     isSavedLocation(it?.name)
                 },
                 {
-                    _errorDatabaseMessage.value =
-                        resourceProvider.getString(R.string.no_location_found)
                 }
             )
         }
@@ -188,7 +185,7 @@ class ForecastViewModel @Inject constructor(
     fun saveLocationToFavorites() {
         viewModelScope.launch {
             weatherModel?.let {
-                insertSavedLocation.insertData(SavedLocation(it.name))
+                insertSavedLocation.insertAsSaved(SavedLocation(it.name))
             }
         }
     }

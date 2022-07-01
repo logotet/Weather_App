@@ -4,8 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.utils.AppConstants
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,7 +17,7 @@ interface WeatherDao {
     @Query("SELECT * FROM location_weather")
     suspend fun getAll(): List<LocalWeatherModel>
 
-    @Query("SELECT * FROM location_weather ORDER BY addedAt DESC LIMIT 5 ")
+    @Query("SELECT * FROM location_weather ORDER BY addedAt DESC LIMIT 5")
     fun getRecent(): Flow<List<LocalWeatherModel>>
 
     @Query("SELECT * FROM location_weather WHERE name IN (:names)")
@@ -31,6 +31,13 @@ interface WeatherDao {
 
     @Query("DELETE FROM location_weather WHERE name LIKE :cityName")
     suspend fun deleteCity(cityName: String)
+
+    @Query("DELETE FROM location_weather WHERE name NOT IN (:cityNames) and (addedAt + :timeOffset) < :currentTime")
+    suspend fun deleteNotIn(
+        cityNames: List<String>,
+        timeOffset: Long = AppConstants.OLD_DATA_TIMEOUT,
+        currentTime: Long = System.currentTimeMillis(),
+    )
 
     @Query("DELETE FROM location_weather")
     suspend fun deleteAll()

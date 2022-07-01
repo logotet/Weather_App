@@ -71,4 +71,9 @@ class InteractorsModule {
     @Singleton
     fun providesInsertSavedLocation(repository: Repository): InsertSavedLocation =
         InsertSavedLocation(repository)
+
+    @Provides
+    @Singleton
+    fun providesDeleteCacheMemory(repository: Repository): DeleteCacheMemory =
+        DeleteCacheMemory(repository)
 }

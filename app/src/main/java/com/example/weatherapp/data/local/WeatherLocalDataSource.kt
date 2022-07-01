@@ -4,9 +4,10 @@ import com.example.weatherapp.models.local.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.withContext
-import java.lang.NullPointerException
 
 class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
 
@@ -33,18 +34,13 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
             } ?: emit(null)
         }
 
-    suspend fun getAllLocations(): List<LocalWeatherModel>? {
-        return withContext(Dispatchers.IO) {
-            weatherDatabase.weatherDao().getAll()
-        }
-    }
-
-    fun getRecentLocations(): Flow<List<LocalWeatherModel>> {
-        return weatherDatabase.weatherDao().getRecent()
-    }
-
     fun getFavoritesLocationsByName(names: List<String>): Flow<List<LocalWeatherModel>> {
         return weatherDatabase.weatherDao().getFavoritesByNames(names)
+    }
+
+    suspend fun deleteOldCityData() {
+        val favoriteCities = weatherDatabase.savedLocationDao().getAll()
+        weatherDatabase.weatherDao().deleteNotIn(favoriteCities)
     }
 
     //LocalHour
@@ -65,6 +61,10 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
 
     fun getRecentCityNames(): Flow<List<City>> {
         return weatherDatabase.cityDao().getRecent()
+    }
+
+    suspend fun getRecentlyUpdatedCityNames(): List<String> {
+        return weatherDatabase.cityDao().getMostRecent()
     }
 
     // Saved locations

@@ -19,10 +19,14 @@ class Repository(
     private val weatherNetworkDataSource: WeatherNetworkDataSource,
 ) {
     //Network
-    suspend fun getLocationNetworkWeather(
+    suspend fun getNetworkWeatherByLocationName(
         city: String,
         measure: String,
     ): Flow<Result<Unit>> {
+        val latestRecentCityNames = weatherLocalDataSource.getRecentlyUpdatedCityNames()
+        if (latestRecentCityNames.contains(city)) {
+            return flowOf(Success(Unit))
+        }
         val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
         return saveSuccess(locationResult, false, measure)
     }
@@ -50,11 +54,11 @@ class Repository(
     private suspend fun saveSuccess(
         cityNetworkWeather: Result<CurrentWeatherModel>,
         currentLocation: Boolean,
-        units: String
+        units: String,
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
-            if(currentLocation) {
+            if (currentLocation) {
                 weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
                     dataModel.lon))
             }
@@ -70,7 +74,7 @@ class Repository(
     //TODO refactor
     private suspend fun saveSuccessHours(
         cityNetworkWeather: Result<List<HourWeatherModel>>,
-        city: String
+        city: String,
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
             val hourModel = cityNetworkWeather.data.mapToLocalHours(city)
@@ -101,14 +105,6 @@ class Repository(
     suspend fun getCityByCoords(): Flow<Result<LocalWeatherModel?>> {
         val cityByCoords = weatherLocalDataSource.getCityByCoords()
         return cityByCoords.mapToResult()
-    }
-
-    suspend fun getAllLocations(): List<LocalWeatherModel>? {
-        return weatherLocalDataSource.getAllLocations()
-    }
-
-    fun getRecentLocations(): Flow<List<LocalWeatherModel>> {
-        return weatherLocalDataSource.getRecentLocations()
     }
 
     suspend fun deleteLocation(cityName: String) {
@@ -145,6 +141,11 @@ class Repository(
 
     suspend fun insertAsSaved(savedLocation: SavedLocation) {
         weatherLocalDataSource.insertAsSavedOrNot(savedLocation)
+    }
+
+    //Unsaved entries
+    suspend fun deleteCache() {
+        weatherLocalDataSource.deleteOldCityData()
     }
 }
 
