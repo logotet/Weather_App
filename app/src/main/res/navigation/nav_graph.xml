@@ -49,10 +49,14 @@
         android:label="SavedLocationsFragment">
         <action
             android:id="@+id/action_savedLocationsFragment_to_currentWeatherFragment"
+            app:popUpTo="@id/currentWeatherFragment"
+            app:popUpToInclusive="true"
             app:destination="@id/currentWeatherFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_savedLocationsFragment"
+        app:popUpTo="@id/savedLocationsFragment"
+        app:popUpToInclusive="true"
         app:destination="@id/savedLocationsFragment" />
     <fragment
         android:id="@+id/coordsFragment"
