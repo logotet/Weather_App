@@ -8,3 +8,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+google-services.json
+
+app/debug/output-metadata.json
+
+app/debug/app-debug.apk

@@ -2,11 +2,13 @@ package com.example.weatherapp.ui.search
 
 import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
+import com.example.weatherapp.R
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.utils.ObservableViewModel
+import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getRecentCityNames: GetRecentCityNames,
+    private val resourceProvider: ResourceProvider,
 ) : ObservableViewModel(), OnRecentClickListener {
 
     @Bindable
@@ -28,6 +31,16 @@ class SearchViewModel @Inject constructor(
         set(value) {
             field = value
             notifyChange()
+        }
+
+    @get:Bindable
+    val unitSystemText: String
+        get() {
+            return when (unitSystem) {
+                UnitSystem.METRIC -> resourceProvider.getString(R.string.metric)
+                UnitSystem.STANDARD -> resourceProvider.getString(R.string.standard)
+                UnitSystem.IMPERIAL -> resourceProvider.getString(R.string.imperial)
+            }
         }
 
     private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
