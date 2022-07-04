@@ -22,22 +22,3 @@ fun idToMeasure(selectedBtnId: Int): UnitSystem {
         else -> UnitSystem.METRIC
     }
 }
-
-@InverseMethod("idToMeasureText")
-fun measureToIdText(unitSystem: UnitSystem?): Int {
-    return when (unitSystem) {
-        UnitSystem.METRIC -> R.id.txt_metric
-        UnitSystem.STANDARD -> R.id.txt_standard
-        UnitSystem.IMPERIAL -> R.id.txt_imperial
-        else -> R.id.txt_metric
-    }
-}
-
-fun idToMeasureText(selectedBtnId: Int): UnitSystem {
-    return when (selectedBtnId) {
-        R.id.txt_metric -> UnitSystem.METRIC
-        R.id.txt_standard -> UnitSystem.STANDARD
-        R.id.txt_imperial -> UnitSystem.IMPERIAL
-        else -> UnitSystem.METRIC
-    }
-}
