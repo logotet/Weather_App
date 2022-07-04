@@ -25,6 +25,10 @@ class SearchViewModel @Inject constructor(
 
     @Bindable
     var unitSystem: UnitSystem = UnitSystem.METRIC
+        set(value) {
+            field = value
+            notifyChange()
+        }
 
     private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
     val locations: StateFlow<List<LocalWeatherModel>> = _locations

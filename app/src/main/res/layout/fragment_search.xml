@@ -20,73 +20,72 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--            <RadioGroup-->
-            <!--                android:id="@+id/rg_temperatur"-->
-            <!--                android:layout_width="400dp"-->
-            <!--                android:layout_height="30dp"-->
-            <!--                android:paddingHorizontal="20dp"-->
-            <!--                android:layout_marginStart="8dp"-->
-            <!--                android:layout_marginTop="80dp"-->
-            <!--                android:checkedButton="@{BindingConvertersKt.measureToId(viewModel.unitSystem)}"-->
-            <!--                android:orientation="horizontal"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent">-->
+            <RadioGroup
+                android:id="@+id/rg_unit_system_names"
+                android:layout_width="300dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="60dp"
+                android:checkedButton="@={BindingConvertersKt.measureToIdText(viewModel.unitSystem)}"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <!--                <RadioButton-->
-            <!--                    android:id="@+id/btn_metri"-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="match_parent"-->
-            <!--                    android:layout_weight="1"-->
-            <!--                    android:button="@null"-->
-            <!--                    android:checked="true"-->
-            <!--                    android:background="@drawable/drawable_unit_system_selector"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:layout_marginHorizontal="10dp"-->
-            <!--                    android:text="@string/metric"-->
-            <!--                    android:textSize="20sp"-->
-            <!--                    android:textStyle="bold" />-->
+                <RadioButton
+                    android:id="@+id/txt_metric"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:checked="true"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:text="@string/metric"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
+                    android:textSize="16sp" />
 
-            <!--                <RadioButton-->
-            <!--                    android:id="@+id/btn_standar"-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="match_parent"-->
-            <!--                    android:layout_weight="1"-->
-            <!--                    android:layout_marginHorizontal="10dp"-->
-            <!--                    android:button="@null"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:background="@drawable/drawable_unit_system_selector"-->
-            <!--                    android:text="@string/standard"-->
-            <!--                    android:textSize="20sp"-->
-            <!--                    android:textStyle="bold" />-->
+                <RadioButton
+                    android:id="@+id/txt_standard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:text="@string/standard"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
+                    android:textSize="16sp" />
 
-            <!--                <RadioButton-->
-            <!--                    android:id="@+id/btn_imperia"-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="match_parent"-->
-            <!--                    android:layout_weight="1"-->
-            <!--                    android:background="@drawable/drawable_unit_system_selector"-->
-            <!--                    android:button="@null"-->
-            <!--                    android:layout_marginHorizontal="10dp"-->
-            <!--                    android:gravity="center"-->
-            <!--                    android:text="@string/imperial"-->
-            <!--                    android:textSize="20sp"-->
-            <!--                    android:textStyle="bold" />-->
+                <RadioButton
+                    android:id="@+id/txt_imperial"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:clickable="false"
+                    android:gravity="center"
+                    android:text="@string/imperial"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
+                    android:textSize="16sp" />
 
-            <!--            </RadioGroup>-->
+            </RadioGroup>
 
             <RadioGroup
                 android:id="@+id/rg_temperature"
                 android:layout_width="300dp"
                 android:layout_height="60dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="80dp"
                 android:checkedButton="@={BindingConvertersKt.measureToId(viewModel.unitSystem)}"
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/rg_unit_system_names">
 
                 <RadioButton
                     android:id="@+id/btn_metric"
