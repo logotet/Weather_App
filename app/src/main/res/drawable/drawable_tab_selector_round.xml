@@ -10,8 +10,8 @@
 
     <item android:state_checked="false">
         <shape android:shape="oval">
-            <solid android:color="#BEBEBE" />
-            <stroke android:width="2dp" android:color="#BEBEBE" />
+            <solid android:color="@color/light_grey" />
+            <stroke android:width="2dp" android:color="@color/light_grey" />
             <size android:height="88dp" android:width="88dp" />
 
         </shape>
