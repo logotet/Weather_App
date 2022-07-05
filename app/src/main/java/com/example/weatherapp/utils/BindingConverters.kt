@@ -15,7 +15,7 @@ fun measureToId(unitSystem: UnitSystem?): Int {
 }
 
 fun idToMeasure(selectedBtnId: Int): UnitSystem {
-    return when(selectedBtnId){
+    return when (selectedBtnId) {
         R.id.btn_metric -> UnitSystem.METRIC
         R.id.btn_standard -> UnitSystem.STANDARD
         R.id.btn_imperial -> UnitSystem.IMPERIAL

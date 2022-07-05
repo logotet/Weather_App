@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#76b5c5</color>
+    <color name="light_grey">#E8E8E8</color>
+    <color name="cape_cod">#414a4c</color>
 </resources>
