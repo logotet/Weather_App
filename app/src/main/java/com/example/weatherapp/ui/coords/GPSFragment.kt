@@ -31,7 +31,6 @@ class GPSFragment : Fragment() {
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var gpsActivationLaunched: Boolean = false
     private val cancellationTokenSource = CancellationTokenSource()
     private var lat: Double? = null
     private var lon: Double? = null
@@ -68,20 +67,15 @@ class GPSFragment : Fragment() {
     }
 
     private fun getCurrentLocation() {
-        if (isGPSEnabled()) {
-            fusedLocationClient.getCurrentLocation(
-                LocationRequest.PRIORITY_HIGH_ACCURACY,
-                cancellationTokenSource.token
-            ).addOnSuccessListener { location ->
-                location?.let {
-                    lat = location.latitude
-                    lon = location.longitude
-                    viewModel.setUpData(lat, lon, activityViewModel.unitSystem)
-                }
+        fusedLocationClient.getCurrentLocation(
+            LocationRequest.PRIORITY_HIGH_ACCURACY,
+            cancellationTokenSource.token
+        ).addOnSuccessListener { location ->
+            location?.let {
+                lat = location.latitude
+                lon = location.longitude
+                viewModel.setUpData(lat, lon, activityViewModel.unitSystem)
             }
-        } else {
-            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            gpsActivationLaunched = true
         }
     }
 
@@ -89,10 +83,5 @@ class GPSFragment : Fragment() {
         findNavController().navigate(GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
             cityName = locationName
         ))
-    }
-
-    private fun isGPSEnabled(): Boolean {
-        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 }
