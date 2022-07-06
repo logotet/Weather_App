@@ -1,6 +1,7 @@
 package com.example.weatherapp.models.local
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 
 @Entity(tableName = "location_weather",

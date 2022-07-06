@@ -1,11 +1,11 @@
 package com.example.weatherapp.models.utils
 
-import com.example.weatherapp.models.ui.CurrentWeatherModel
-import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 
-fun CurrentWeatherModel.mapApiToCurrentModel(): LocalWeatherModel {
+fun CurrentWeatherModel.mapCurrentToLocal(): LocalWeatherModel {
     return LocalWeatherModel(
         name,
         description,
@@ -19,17 +19,17 @@ fun CurrentWeatherModel.mapApiToCurrentModel(): LocalWeatherModel {
     )
 }
 
-fun LocalWeatherModel.mapLocalToCurrentModel(): CurrentWeatherModel{
+fun LocalWeatherModel.mapLocalToCurrentModel(): CurrentWeatherModel {
     return CurrentWeatherModel(
-        this.name,
-        this.description,
-        this.temperature,
-        this.windSpeed,
-        this.humidity,
-        this.icon,
-        this.lat,
-        this.lon,
-        this.windDirection
+        name,
+        description,
+        temperature,
+        windSpeed,
+        humidity,
+        icon,
+        lat,
+        lon,
+        windDirection
     )
 }
 

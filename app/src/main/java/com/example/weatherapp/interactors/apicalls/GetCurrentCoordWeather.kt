@@ -10,8 +10,7 @@ class GetCurrentCoordWeather(
     suspend fun getCurrentCoordWeather(
         lat: Double,
         lon: Double,
-        measure: String,
     ): Flow<Result<Unit>> {
-        return repository.getNetworkWeatherFromCoordinates(lat, lon, measure)
+        return repository.getNetworkWeatherFromCoordinates(lat, lon)
     }
 }

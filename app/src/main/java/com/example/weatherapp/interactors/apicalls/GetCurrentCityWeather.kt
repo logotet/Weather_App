@@ -9,8 +9,7 @@ class GetCurrentCityWeather(
 ) {
     suspend fun getCurrentWeather(
         city: String,
-        measure: String,
     ): Flow<Result<Unit>> {
-        return repository.getNetworkWeatherByLocationName(city, measure)
+        return repository.getNetworkWeatherByLocationName(city)
     }
 }

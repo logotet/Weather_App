@@ -25,17 +25,16 @@ class GPSFragmentViewModel @Inject constructor(
         get() = _locationName.asSharedFlow()
 
     fun setUpData(lat: Double?, lon: Double?, unitSystem: UnitSystem) {
-        getWeatherData(lat, lon, unitSystem)
+        getWeatherData(lat, lon)
         getSavedLocationByCoords()
     }
 
-    private fun getWeatherData(lat: Double?, lon: Double?, unitSystem: UnitSystem) {
+    private fun getWeatherData(lat: Double?, lon: Double?) {
         viewModelScope.launch {
             lat?.let { lat ->
                 lon?.let { lon ->
                     getCurrentCoordWeather.getCurrentCoordWeather(lat,
-                        lon,
-                        unitSystem.value)
+                        lon)
                         .collect { result ->
                             result.checkStatus(
                                 {},
