@@ -29,7 +29,9 @@ class WeatherNetworkDataSource(
     ): Result<CurrentWeatherModel> {
         return withContext(Dispatchers.IO) {
             getResult {
-                apiService.getCurrentCoordWeather(lat = lat.toString(), lon = lon.toString())
+                apiService.getCurrentCoordWeather(
+                    lat = lat.toString(),
+                    lon = lon.toString())
             }
                 .mapSuccess {
                     it.mapApiToCurrentModel()
@@ -43,7 +45,9 @@ class WeatherNetworkDataSource(
     ): Result<List<HourWeatherModel>> {
         return withContext(Dispatchers.IO) {
             getResult {
-                apiService.getHourlyWeather(lat = lat.toString(), lon = lon.toString())
+                apiService.getHourlyWeather(
+                    lat = lat.toString(),
+                    lon = lon.toString())
             }
                 .mapSuccess {
                     it.mapToHourWeatherModel()

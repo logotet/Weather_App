@@ -2,11 +2,7 @@ package com.example.weatherapp.data.local
 
 import com.example.weatherapp.models.local.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.withContext
 
 class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
@@ -21,18 +17,6 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
     fun getCity(city: String): Flow<LocalWeatherModel?> {
         return weatherDatabase.weatherDao().getCity(city)
     }
-
-    @ExperimentalCoroutinesApi
-    @FlowPreview
-    suspend fun getCityByCoords(): Flow<LocalWeatherModel?> =
-        getCurrentLocationCoords().transformLatest { currentLocation ->
-            currentLocation?.let {
-                weatherDatabase.weatherDao().getCityByCoords(it.lat, it.lon)
-                    .collect { weatherModel ->
-                        emit(weatherModel)
-                    }
-            } ?: emit(null)
-        }
 
     fun getFavoritesLocationsByName(names: List<String>): Flow<List<LocalWeatherModel>> {
         return weatherDatabase.weatherDao().getFavoritesByNames(names)
@@ -89,7 +73,7 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         weatherDatabase.currentLocationDao().insertCurrent(city)
     }
 
-    private fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
+    fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
         return weatherDatabase.currentLocationDao().getCurrent()
     }
 }
