@@ -18,8 +18,9 @@ import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.utils.mapLocalToCurrentModel
+import com.example.weatherapp.models.utils.mapTemperature
 import com.example.weatherapp.models.utils.mapToCurrentHours
+import com.example.weatherapp.models.utils.mapWindSpeed
 import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.*
@@ -85,7 +86,10 @@ class ForecastViewModel @Inject constructor(
 
     @get:Bindable
     val temperature: String
-        get() = weatherModel?.temperature.formatTemperature(resourceProvider, unitSystem)
+        get() {
+            val temperature = unitSystem.mapTemperature(weatherModel?.temperature)
+            return temperature.formatTemperature(resourceProvider, unitSystem)
+        }
 
     @get:Bindable
     val humidity: String
@@ -93,7 +97,10 @@ class ForecastViewModel @Inject constructor(
 
     @get:Bindable
     val windSpeed: String
-        get() = weatherModel?.windSpeed.formatSpeed(resourceProvider, unitSystem)
+        get() {
+            val windSpeed = unitSystem.mapWindSpeed(weatherModel?.windSpeed)
+            return windSpeed.formatSpeed(resourceProvider, unitSystem)
+        }
 
     @get:Bindable
     val iconPath: String
@@ -118,7 +125,7 @@ class ForecastViewModel @Inject constructor(
             {
                 viewModelScope.launch {
                     city?.let {
-                        getCurrentCityWeather.getCurrentWeather(it, unitSystem.value)
+                        getCurrentCityWeather.getCurrentWeather(it)
                             .collectResult(
                                 {},
                                 { _errorMessage.value = it.message }
@@ -136,7 +143,7 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch {
             getLocationByName.getCity(city).collectResult(
                 {
-                    weatherModel = it?.mapLocalToCurrentModel()
+                    weatherModel = it
                     isSavedLocation(it?.name)
                 },
                 {
@@ -148,7 +155,7 @@ class ForecastViewModel @Inject constructor(
     private fun getNetworkHours() {
         viewModelScope.launch {
             weatherModel?.let { model ->
-                getHourlyWeather.getHours(unitSystem.value,
+                getHourlyWeather.getHours(
                     model.lat,
                     model.lon,
                     model.name).collectResult(

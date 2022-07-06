@@ -9,10 +9,12 @@ import com.example.weatherapp.data.remote.mapToResult
 import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.utils.mapApiToCurrentModel
+import com.example.weatherapp.models.utils.mapCurrentToLocal
+import com.example.weatherapp.models.utils.mapLocalToCurrentModel
 import com.example.weatherapp.models.utils.mapToLocalHours
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.transform
 
 class Repository(
     private val weatherLocalDataSource: WeatherLocalDataSource,
@@ -21,43 +23,44 @@ class Repository(
     //Network
     suspend fun getNetworkWeatherByLocationName(
         city: String,
-        measure: String,
     ): Flow<Result<Unit>> {
-        val latestRecentCityNames = weatherLocalDataSource.getRecentlyUpdatedCityNames()
-        if (latestRecentCityNames.contains(city)) {
-            return flowOf(Success(Unit))
-        }
-        val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city, measure)
-        return saveSuccess(locationResult, false, measure)
+        if (checkRecentCity(city)) return flowOf(Success(Unit))
+        val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city)
+        return saveSuccess(locationResult, false)
     }
 
     suspend fun getNetworkWeatherFromCoordinates(
         lat: Double,
         lon: Double,
-        measure: String,
     ): Flow<Result<Unit>> {
         val currentCoordWeatherResponse =
-            weatherNetworkDataSource.getCurrentCoordWeatherResponse(lat, lon, measure)
-        return saveSuccess(currentCoordWeatherResponse, true, measure)
+            weatherNetworkDataSource.getCurrentCoordWeatherResponse(lat, lon)
+        return saveSuccess(currentCoordWeatherResponse, true)
     }
 
     suspend fun getHourlyWeather(
-        measure: String,
         lat: Double,
         lon: Double,
         city: String,
     ): Flow<Result<Unit>> {
-        val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(measure, lat, lon)
+        val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(lat, lon)
         return saveSuccessHours(hourlyWeather, city)
+    }
+
+    private suspend fun checkRecentCity(city: String): Boolean {
+        val latestRecentCityNames = weatherLocalDataSource.getRecentlyUpdatedCityNames()
+        if (latestRecentCityNames.contains(city)) {
+            return true
+        }
+        return false
     }
 
     private suspend fun saveSuccess(
         cityNetworkWeather: Result<CurrentWeatherModel>,
         currentLocation: Boolean,
-        units: String,
     ): Flow<Result<Unit>> {
         return if (cityNetworkWeather is Success) {
-            val dataModel = cityNetworkWeather.data.mapApiToCurrentModel()
+            val dataModel = cityNetworkWeather.data.mapCurrentToLocal()
             if (currentLocation) {
                 weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
                     dataModel.lon))
@@ -98,8 +101,10 @@ class Repository(
         weatherLocalDataSource.insert(dataModel)
     }
 
-    fun getLocationFromDatabase(city: String): Flow<Result<LocalWeatherModel?>> {
-        return weatherLocalDataSource.getCity(city).mapToResult()
+    fun getLocationFromDatabase(city: String): Flow<Result<CurrentWeatherModel?>> {
+        return weatherLocalDataSource.getCity(city).transform {
+            emit(it?.mapLocalToCurrentModel())
+        }.mapToResult()
     }
 
     suspend fun getCityByCoords(): Flow<Result<LocalWeatherModel?>> {

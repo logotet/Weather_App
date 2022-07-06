@@ -10,14 +10,13 @@ import kotlinx.coroutines.withContext
 
 class WeatherNetworkDataSource(
     private val apiService: ApiService,
-    private val geocodeApiService: GeocodeApiService
-    ) {
+    private val geocodeApiService: GeocodeApiService,
+) {
     suspend fun getCurrentWeatherResponse(
         city: String,
-        measure: String,
     ): Result<CurrentWeatherModel> {
         return withContext(Dispatchers.IO) {
-            getResult { apiService.getCurrentCityWeather(city, measure) }
+            getResult { apiService.getCurrentCityWeather(city) }
                 .mapSuccess {
                     it.mapApiToCurrentModel()
                 }
@@ -27,11 +26,10 @@ class WeatherNetworkDataSource(
     suspend fun getCurrentCoordWeatherResponse(
         lat: Double,
         lon: Double,
-        measure: String,
     ): Result<CurrentWeatherModel> {
         return withContext(Dispatchers.IO) {
             getResult {
-                apiService.getCurrentCoordWeather(measure, lat.toString(), lon.toString())
+                apiService.getCurrentCoordWeather(lat = lat.toString(), lon = lon.toString())
             }
                 .mapSuccess {
                     it.mapApiToCurrentModel()
@@ -40,13 +38,12 @@ class WeatherNetworkDataSource(
     }
 
     suspend fun getHourlyWeather(
-        measure: String,
         lat: Double,
         lon: Double,
     ): Result<List<HourWeatherModel>> {
         return withContext(Dispatchers.IO) {
             getResult {
-              apiService.getHourlyWeather(measure, lat.toString(), lon.toString())
+                apiService.getHourlyWeather(lat = lat.toString(), lon = lon.toString())
             }
                 .mapSuccess {
                     it.mapToHourWeatherModel()

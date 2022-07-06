@@ -15,14 +15,14 @@ interface ApiService {
     @GET("weather")
     suspend fun getCurrentCityWeather(
         @Query("q") cityName: String?,
-        @Query("units") units: String,
+        @Query("units") units: String = METRIC_SYSTEM,
         @Query("appid") apiKey: String = API_KEY,
     ): Response<CurrentWeather>
 
     /*Get current weather on chosen coordinates*/
     @GET("weather")
     suspend fun getCurrentCoordWeather(
-        @Query("units") units: String,
+        @Query("units") units: String = METRIC_SYSTEM,
         @Query("lat") lat: String?,
         @Query("lon") lon: String?,
         @Query("appid") apiKey: String = API_KEY,
@@ -32,7 +32,7 @@ interface ApiService {
      in the next 48h*/
     @GET("onecall")
     suspend fun getHourlyWeather(
-        @Query("units") units: String,
+        @Query("units") units: String = METRIC_SYSTEM,
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("exclude") exclude: String = EXCLUDE_HOUR_DATA,
@@ -48,4 +48,8 @@ interface ApiService {
         @Query("limit") limit: Int = 5,
         @Query("appid") apiKey: String = API_KEY,
     ): Response<CityNameModel>
+
+    companion object {
+        private const val METRIC_SYSTEM = "standard"
+    }
 }
