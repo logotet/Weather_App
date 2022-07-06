@@ -1,6 +1,10 @@
 package com.example.weatherapp.ui.search
 
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
@@ -133,7 +137,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun goToCoordinatesFragment() {
-        findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCoordsFragment())
+        if (isGPSEnabled()) {
+            findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCoordsFragment())
+        } else {
+            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            gpsActivationLaunched = true
+        }
     }
 
     private fun onLocationPermissionDenied() {
@@ -141,6 +150,11 @@ class SearchFragment : Fragment() {
             Snackbar.make(it, getString(R.string.location_denied), Snackbar.LENGTH_LONG).show()
             activityViewModel.barVisible = false
         }
+    }
+
+    private fun isGPSEnabled(): Boolean {
+        val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 }
 
