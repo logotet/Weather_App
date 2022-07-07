@@ -25,15 +25,15 @@ class HourViewModel @Inject constructor(
     @get:Bindable
     val hourTemperature: String
         get() {
-            val hourMappedTemperature = unitSystem.mapTemperature(hourModel?.hourTemperature)
-            return hourMappedTemperature.formatTemperature(resourceProvider, unitSystem)
+            val temperature = unitSystem.mapTemperature(hourModel?.hourTemperature)
+            return temperature.formatTemperature(resourceProvider, unitSystem)
         }
 
     @get:Bindable
     val hourWindSpeed: String
         get() {
-            val hourMappedSpeed = unitSystem.mapWindSpeed(hourModel?.hourWindSpeed)
-            return hourMappedSpeed.formatSpeed(resourceProvider, unitSystem)
+            val windSpeed = unitSystem.mapWindSpeed(hourModel?.hourWindSpeed)
+            return windSpeed.formatSpeed(resourceProvider, unitSystem)
         }
 
     @get:Bindable

@@ -1,26 +1,21 @@
 package com.example.weatherapp.ui.coords
 
-import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentGpsBinding
-import com.example.weatherapp.ui.MainActivityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -28,7 +23,6 @@ import kotlinx.coroutines.flow.collect
 class GPSFragment : Fragment() {
     private var binding: FragmentGpsBinding? = null
     private val viewModel: GPSFragmentViewModel by viewModels()
-    private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val cancellationTokenSource = CancellationTokenSource()
@@ -59,6 +53,12 @@ class GPSFragment : Fragment() {
                 setNavigationWithData(it)
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.errorMessage.collect {
+                setBackNavigation(it)
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -74,7 +74,7 @@ class GPSFragment : Fragment() {
             location?.let {
                 lat = location.latitude
                 lon = location.longitude
-                viewModel.setUpData(lat, lon, activityViewModel.unitSystem)
+                viewModel.setUpData(lat, lon)
             }
         }
     }
@@ -83,5 +83,10 @@ class GPSFragment : Fragment() {
         findNavController().navigate(GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
             cityName = locationName
         ))
+    }
+
+    private fun setBackNavigation(error: String) {
+        activity?.onBackPressed()
+        view?.let { Snackbar.make(it, error, Snackbar.LENGTH_SHORT).show() }
     }
 }

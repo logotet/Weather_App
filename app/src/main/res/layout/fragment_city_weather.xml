@@ -15,111 +15,109 @@
         android:layout_height="match_parent"
         android:background="@color/blue">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_city_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.cityName}"
+                android:textSize="@dimen/city_name_text_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/img_weather"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:imgUrl="@{viewModel.iconPath}"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_city_name" />
+
+            <TextView
+                android:id="@+id/txt_temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:text="@{viewModel.temperature}"
+                android:textSize="@dimen/common_text_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/txt_description"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/txt_description"
+                app:layout_constraintTop_toBottomOf="@id/img_weather" />
+
+            <TextView
+                android:id="@+id/txt_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.description}"
+                android:textSize="@dimen/common_text_size"
+                app:layout_constraintLeft_toRightOf="@id/txt_temperature"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/img_weather" />
+
+            <TextView
+                android:id="@+id/txt_humidity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:text="@{viewModel.humidity}"
+                android:textSize="@dimen/common_text_size"
+                app:layout_constraintBaseline_toBaselineOf="@id/txt_wind_speed"
+                app:layout_constraintLeft_toLeftOf="@id/txt_temperature"
+                app:layout_constraintTop_toBottomOf="@id/txt_temperature" />
+
+            <TextView
+                android:id="@+id/txt_wind_speed"
+                drawableDirection="@{viewModel.rotation}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/standard_field_margin"
+                android:layout_marginBottom="10dp"
+                android:drawablePadding="10dp"
+                android:text="@{viewModel.windSpeed}"
+                android:textSize="@dimen/common_text_size"
+                app:layout_constraintLeft_toRightOf="@id/txt_temperature"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_description" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="0dp"
+                android:layout_margin="4dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_wind_speed" />
 
-                <TextView
-                    android:id="@+id/txt_city_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.cityName}"
-                    android:textSize="@dimen/city_name_text_size"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/hours_rec_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="true"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider" />
 
-                <ImageView
-                    android:id="@+id/img_weather"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    app:imgUrl="@{viewModel.iconPath}"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txt_city_name" />
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragment_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="4dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hours_rec_view"
+                app:layout_goneMarginTop="16dp" />
 
-                <TextView
-                    android:id="@+id/txt_temperature"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/standard_field_margin"
-                    android:text="@{viewModel.temperature}"
-                    android:textSize="@dimen/common_text_size"
-                    app:layout_constraintBaseline_toBaselineOf="@id/txt_description"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/txt_description"
-                    app:layout_constraintTop_toBottomOf="@id/img_weather" />
-
-                <TextView
-                    android:id="@+id/txt_description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{viewModel.description}"
-                    android:textSize="@dimen/common_text_size"
-                    app:layout_constraintLeft_toRightOf="@id/txt_temperature"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/img_weather" />
-
-                <TextView
-                    android:id="@+id/txt_humidity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/standard_field_margin"
-                    android:text="@{viewModel.humidity}"
-                    android:textSize="@dimen/common_text_size"
-                    app:layout_constraintBaseline_toBaselineOf="@id/txt_wind_speed"
-                    app:layout_constraintLeft_toLeftOf="@id/txt_temperature"
-                    app:layout_constraintTop_toBottomOf="@id/txt_temperature" />
-
-                <TextView
-                    android:id="@+id/txt_wind_speed"
-                    drawableDirection="@{viewModel.rotation}"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/standard_field_margin"
-                    android:layout_marginBottom="10dp"
-                    android:drawablePadding="10dp"
-                    android:text="@{viewModel.windSpeed}"
-                    android:textSize="@dimen/common_text_size"
-                    app:layout_constraintLeft_toRightOf="@id/txt_temperature"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txt_description" />
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:id="@+id/divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp"
-                    android:layout_margin="10dp"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/txt_wind_speed" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/hours_rec_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="32dp"
-                    android:nestedScrollingEnabled="true"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/divider"
-                    app:layout_constraintBottom_toTopOf="@id/fragment_map"/>
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/fragment_map"
-                    android:name="com.google.android.gms.maps.SupportMapFragment"
-                    android:layout_width="match_parent"
-                    app:layout_goneMarginTop="16dp"
-                    android:layout_height="220dp"
-                    android:layout_margin="4dp"
-                    android:layout_marginTop="40dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/hours_rec_view" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

@@ -5,6 +5,7 @@ import com.example.weatherapp.data.Result.Error
 import com.example.weatherapp.data.Result.Success
 import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.data.remote.WeatherNetworkDataSource
+import com.example.weatherapp.data.remote.flowOfResult
 import com.example.weatherapp.data.remote.mapToResult
 import com.example.weatherapp.models.local.*
 import com.example.weatherapp.models.ui.CurrentWeatherModel
@@ -26,7 +27,7 @@ class Repository(
     ): Flow<Result<Unit>> {
         if (checkRecentCity(city)) return flowOf(Success(Unit))
         val locationResult = weatherNetworkDataSource.getCurrentWeatherResponse(city)
-        return saveSuccess(locationResult, false)
+        return saveSuccessfulResponse(locationResult)
     }
 
     suspend fun getNetworkWeatherFromCoordinates(
@@ -35,7 +36,7 @@ class Repository(
     ): Flow<Result<Unit>> {
         val currentCoordWeatherResponse =
             weatherNetworkDataSource.getCurrentCoordWeatherResponse(lat, lon)
-        return saveSuccess(currentCoordWeatherResponse, true)
+        return saveSuccessfulCoords(currentCoordWeatherResponse)
     }
 
     suspend fun getHourlyWeather(
@@ -43,6 +44,7 @@ class Repository(
         lon: Double,
         city: String,
     ): Flow<Result<Unit>> {
+        if (checkRecentCity(city)) return flowOf(Success(Unit))
         val hourlyWeather = weatherNetworkDataSource.getHourlyWeather(lat, lon)
         return saveSuccessHours(hourlyWeather, city)
     }
@@ -55,23 +57,52 @@ class Repository(
         return false
     }
 
-    private suspend fun saveSuccess(
-        cityNetworkWeather: Result<CurrentWeatherModel>,
-        currentLocation: Boolean,
+    //Local
+    //LocalWeatherModel
+    private suspend fun insertData(dataModel: LocalWeatherModel) {
+        weatherLocalDataSource.insert(dataModel)
+    }
+
+    fun getLocationFromDatabase(city: String): Flow<Result<CurrentWeatherModel?>> {
+        return weatherLocalDataSource.getCity(city).transform {
+            emit(it?.mapLocalToCurrentModel())
+        }.mapToResult()
+    }
+
+    suspend fun deleteLocation(cityName: String) {
+        weatherLocalDataSource.deleteLocation(cityName)
+    }
+
+    private suspend fun saveSuccessfulCoords(
+        currentCoordWeatherResponse: Result<CurrentWeatherModel>,
     ): Flow<Result<Unit>> {
-        return if (cityNetworkWeather is Success) {
-            val dataModel = cityNetworkWeather.data.mapCurrentToLocal()
-            if (currentLocation) {
-                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(dataModel.lat,
-                    dataModel.lon))
+        return currentCoordWeatherResponse.flowOfResult(
+            {
+                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(it.name, it.lat,
+                    it.lon))
+                Success(Unit)
+            },
+            {
+                Error((currentCoordWeatherResponse as Error).message)
             }
-            insertData(dataModel)
-            //TODO the fun below throws sqlite exception as the parent entry is not yet inserted
+        )
+    }
+
+    private suspend fun saveSuccessfulResponse(
+        cityNetworkWeather: Result<CurrentWeatherModel>,
+    ): Flow<Result<Unit>> {
+        return cityNetworkWeather.flowOfResult(
+            {
+                val dataModel = it.mapCurrentToLocal()
+                insertData(dataModel)
+                //TODO the fun below throws sqlite exception as the parent entry is not yet inserted
 //            getHourlyWeather(dataModel.name, dataModel.lat, dataModel.lon, units)
-            flowOf(Success(Unit))
-        } else {
-            flowOf(Error((cityNetworkWeather as Error).message))
-        }
+                Success(Unit)
+            },
+            {
+                Error((cityNetworkWeather as Error).message)
+            }
+        )
     }
 
     //TODO refactor
@@ -95,29 +126,8 @@ class Repository(
         return weatherNetworkDataSource.getCityNameByCoords(lat, lon)
     }
 
-    //Local
-    //LocalWeatherModel
-    private suspend fun insertData(dataModel: LocalWeatherModel) {
-        weatherLocalDataSource.insert(dataModel)
-    }
-
-    fun getLocationFromDatabase(city: String): Flow<Result<CurrentWeatherModel?>> {
-        return weatherLocalDataSource.getCity(city).transform {
-            emit(it?.mapLocalToCurrentModel())
-        }.mapToResult()
-    }
-
-    suspend fun getCityByCoords(): Flow<Result<LocalWeatherModel?>> {
-        val cityByCoords = weatherLocalDataSource.getCityByCoords()
-        return cityByCoords.mapToResult()
-    }
-
-    suspend fun deleteLocation(cityName: String) {
-        weatherLocalDataSource.deleteLocation(cityName)
-    }
-
     //LocalHours
-    suspend fun insertLocalHours(localHours: List<LocalHour>) {
+    private suspend fun insertLocalHours(localHours: List<LocalHour>) {
         weatherLocalDataSource.insertLocalHours(localHours)
     }
 
@@ -146,6 +156,11 @@ class Repository(
 
     suspend fun insertAsSaved(savedLocation: SavedLocation) {
         weatherLocalDataSource.insertAsSavedOrNot(savedLocation)
+    }
+
+    //Current Location
+    fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
+        return weatherLocalDataSource.getCurrentLocationCoords()
     }
 
     //Unsaved entries

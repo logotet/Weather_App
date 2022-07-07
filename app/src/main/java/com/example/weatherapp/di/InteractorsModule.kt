@@ -3,6 +3,7 @@ package com.example.weatherapp.di
 import com.example.weatherapp.data.local.WeatherDatabase
 import com.example.weatherapp.data.local.WeatherLocalDataSource
 import com.example.weatherapp.interactors.apicalls.GetLocationNameByCoords
+import com.example.weatherapp.interactors.localcalls.citynames.GetCurrentLocation
 import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityNames
 import com.example.weatherapp.interactors.localcalls.citynames.InsertRecentCityName
 import com.example.weatherapp.interactors.localcalls.hours.GetLocationHours
@@ -59,11 +60,6 @@ class InteractorsModule {
 
     @Provides
     @Singleton
-    fun providesGGetCityByCoords(repository: Repository): GetSavedLocationByCoords =
-        GetSavedLocationByCoords(repository)
-
-    @Provides
-    @Singleton
     fun providesGetCityByCoordsFromAPI(repository: Repository): GetLocationNameByCoords =
         GetLocationNameByCoords(repository)
 
@@ -76,4 +72,9 @@ class InteractorsModule {
     @Singleton
     fun providesDeleteCacheMemory(repository: Repository): DeleteCacheMemory =
         DeleteCacheMemory(repository)
+
+    @Provides
+    @Singleton
+    fun providesGetLatestCityName(repository: Repository): GetCurrentLocation =
+        GetCurrentLocation(repository)
 }
