@@ -8,11 +8,10 @@ class GetHourlyWeather(
     private val repository: Repository,
 ) {
     suspend fun getHours(
-        measure: String,
         lat: Double,
         lon: Double,
         city: String
     ): Flow<Result<Unit>> {
-        return repository.getHourlyWeather(measure, lat, lon, city)
+        return repository.getHourlyWeather(lat, lon, city)
     }
 }
