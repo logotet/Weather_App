@@ -76,6 +76,10 @@ class ForecastViewModel @Inject constructor(
     val errorDatabaseMessage: SingleLiveEvent<String?>
         get() = _errorDatabaseMessage
 
+    private var _cancelRefresh = SingleLiveEvent<Unit>()
+    val cancelRefresh: SingleLiveEvent<Unit>
+        get() = _cancelRefresh
+
     @get:Bindable
     val cityName: String?
         get() = weatherModel?.name
@@ -127,8 +131,12 @@ class ForecastViewModel @Inject constructor(
                     city?.let {
                         getCurrentCityWeather.getCurrentWeather(it)
                             .collectResult(
-                                {},
-                                { _errorMessage.value = it.message }
+                                {
+                                    _cancelRefresh.call()
+                                },
+                                {
+                                    _errorMessage.value = it.message
+                                }
                             )
                     }
                 }
@@ -146,8 +154,7 @@ class ForecastViewModel @Inject constructor(
                     weatherModel = it
                     isSavedLocation(it?.name)
                 },
-                {
-                }
+                {}
             )
         }
     }

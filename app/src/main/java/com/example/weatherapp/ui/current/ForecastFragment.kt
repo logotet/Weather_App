@@ -71,13 +71,11 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated{
             viewModel.hours.collectLatest {
                 hourAdapter.updateData(it)
-                binding?.refreshLayout?.isRefreshing = false
             }
         }
 
-        viewModel.errorDatabaseMessage.observe(viewLifecycleOwner) {
+        viewModel.cancelRefresh.observe(viewLifecycleOwner) {
             binding?.refreshLayout?.isRefreshing = false
-            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) {
