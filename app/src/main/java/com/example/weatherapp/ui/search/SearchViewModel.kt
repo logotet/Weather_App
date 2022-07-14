@@ -34,7 +34,7 @@ class SearchViewModel @Inject constructor(
         }
 
     @get:Bindable
-    val unitSystemText: String
+    val unitSystemTitle: String
         get() {
             return when (unitSystem) {
                 UnitSystem.METRIC -> resourceProvider.getString(R.string.metric)
