@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.databinding.LayoutLocationRowBinding
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.utils.ResourceProvider
 
 class LocationAdapter(
@@ -13,6 +14,7 @@ class LocationAdapter(
 ) : RecyclerView.Adapter<LocationAdapter.LocationHolder>() {
 
     private var locations: List<LocalWeatherModel> = emptyList()
+    var unitSystem: UnitSystem? = null
 
     fun updateData(data: List<LocalWeatherModel>?) {
         locations = data ?: emptyList()
@@ -45,6 +47,7 @@ class LocationAdapter(
         private val locationViewModel: LocationRowViewModel = LocationRowViewModel(resourceProvider, onSavedLocationClickedListener)
 
         init {
+            locationViewModel.unitSystem = unitSystem
             binding.viewmodel = locationViewModel
         }
 
