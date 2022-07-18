@@ -82,6 +82,12 @@ class SearchFragment : Fragment() {
         )
 
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            viewModel.units.collectLatest {
+                activityViewModel.unitSystem = it
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.cityNames.collectLatest { recentLocations ->
                 if (recentLocations.isNotEmpty()) {
                     binding.txtRecentlySearched.visibility = VISIBLE
@@ -105,7 +111,6 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
-            activityViewModel.unitSystem = viewModel.unitSystem
             firebaseAnalytics.logEvent(getString(R.string.search_button_pressed), null)
             if (!viewModel.cityName.isNullOrBlank()) {
                 setNavigationWithData()
@@ -119,7 +124,6 @@ class SearchFragment : Fragment() {
         }
 
         viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
-            activityViewModel.unitSystem = viewModel.unitSystem
             binding.edtCity.text = null
             firebaseAnalytics.logEvent(getString(R.string.location_button_pressed), null)
             constructLocationPermissionRequest.launch()

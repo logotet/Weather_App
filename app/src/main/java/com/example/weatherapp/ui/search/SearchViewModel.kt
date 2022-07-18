@@ -13,6 +13,7 @@ import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,6 +31,11 @@ class SearchViewModel @Inject constructor(
     var unitSystem: UnitSystem = UnitSystem.METRIC
         set(value) {
             field = value
+
+            viewModelScope.launch {
+                _units.emit(field)
+            }
+
             notifyChange()
         }
 
@@ -45,6 +51,9 @@ class SearchViewModel @Inject constructor(
 
     private var _locations = MutableStateFlow(emptyList<LocalWeatherModel>())
     val locations: StateFlow<List<LocalWeatherModel>> = _locations
+
+    private var _units = MutableStateFlow(unitSystem)
+    val units: StateFlow<UnitSystem> = _units.asStateFlow()
 
     private var _cityNames = MutableStateFlow(emptyList<City>())
     val cityNames: StateFlow<List<City>> = _cityNames
