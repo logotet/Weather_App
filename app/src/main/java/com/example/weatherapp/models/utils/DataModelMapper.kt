@@ -33,7 +33,8 @@ fun HourApiResponseModel?.mapToHourWeatherModel(): List<HourWeatherModel> {
                     h.weather[0].icon,
                     h.dt.toLong(),
                     h.wind_deg,
-                    this.timezone_offset
+                    this.timezone_offset,
+                    h.humidity
                 )
             )
         }

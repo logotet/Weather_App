@@ -37,4 +37,5 @@ data class LocalHour(
     val hour: Long,
     val hourWindDirection: Int,
     val timeZoneOffset: Int = 10800,
+    val humidity: Int
 )
