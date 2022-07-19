@@ -30,6 +30,10 @@ class HourViewModel @Inject constructor(
         }
 
     @get:Bindable
+    val humidity: String
+        get() = hourModel?.humidity.formatHumidity(resourceProvider)
+
+    @get:Bindable
     val hourWindSpeed: String
         get() {
             val windSpeed = unitSystem.mapWindSpeed(hourModel?.hourWindSpeed)
