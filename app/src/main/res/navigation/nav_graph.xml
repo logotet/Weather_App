@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.example.weatherapp.ui.search.SearchFragment"
-        android:label="SearchFragment"
+        android:label="Weather App"
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_currentWeatherFragment"
@@ -21,7 +21,7 @@
     <fragment
         android:id="@+id/currentWeatherFragment"
         android:name="com.example.weatherapp.ui.current.ForecastFragment"
-        android:label="CurrentWeatherFragment"
+        android:label="Weather Info"
         tools:layout="@layout/fragment_city_weather">
         <argument
             android:name="measure"
@@ -46,7 +46,7 @@
     <fragment
         android:id="@+id/savedLocationsFragment"
         android:name="com.example.weatherapp.ui.saved.SavedLocationsFragment"
-        android:label="SavedLocationsFragment">
+        android:label="Saved Locations">
         <action
             android:id="@+id/action_savedLocationsFragment_to_currentWeatherFragment"
             app:popUpTo="@id/currentWeatherFragment"
@@ -61,7 +61,7 @@
     <fragment
         android:id="@+id/coordsFragment"
         android:name="com.example.weatherapp.ui.coords.GPSFragment"
-        android:label="CoordsFragment" >
+        android:label="Finding your location..." >
         <action
             android:id="@+id/action_coordsFragment_to_currentWeatherFragment2"
             app:destination="@id/currentWeatherFragment"
