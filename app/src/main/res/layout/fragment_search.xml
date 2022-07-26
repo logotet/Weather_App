@@ -18,16 +18,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/jordi_blue">
 
             <TextView
+                style="@style/TextAppearance"
                 android:id="@+id/txt_unit_system"
                 android:layout_width="wrap_content"
                 android:layout_height="60dp"
                 android:layout_marginTop="60dp"
                 android:layout_marginBottom="20dp"
                 android:text="@{viewModel.unitSystemTitle}"
-                android:textColor="@color/cape_cod"
                 android:textSize="26sp"
                 app:layout_constraintBottom_toTopOf="@+id/rg_temperature"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +58,7 @@
                     android:checked="true"
                     android:gravity="center"
                     android:text="@string/celsius_temperature_format"
-                    android:textColor="@color/white"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -71,7 +72,7 @@
                     android:button="@null"
                     android:gravity="center"
                     android:text="@string/standard_temperature_format"
-                    android:textColor="@color/white"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
@@ -85,17 +86,21 @@
                     android:button="@null"
                     android:gravity="center"
                     android:text="@string/imperial_temperature_format"
-                    android:textColor="@color/white"
+                    android:textColor="@drawable/drawable_radio_button_text_color"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
             </RadioGroup>
 
             <EditText
+                android:textColorHint="@color/white"
+                style="@style/TextAppearance"
                 android:id="@+id/edt_city"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 android:layout_margin="@dimen/standard_field_margin"
+                android:singleLine="true"
                 android:hint="@string/city"
                 android:text="@={viewModel.cityName}"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -114,6 +119,7 @@
                 app:layout_constraintTop_toBottomOf="@id/edt_city" />
 
             <TextView
+                style="@style/TextAppearance"
                 android:id="@+id/txt_or"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -138,6 +144,7 @@
                 app:layout_constraintTop_toBottomOf="@id/txt_or" />
 
             <TextView
+                style="@style/TextAppearance"
                 android:id="@+id/txt_recently_searched"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -152,6 +159,7 @@
                 tools:visibility="visible" />
 
             <LinearLayout
+                style="@style/TextAppearance"
                 android:id="@+id/recently_viewed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
