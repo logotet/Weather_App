@@ -77,4 +77,9 @@ class InteractorsModule {
     @Singleton
     fun providesGetLatestCityName(repository: Repository): GetCurrentLocation =
         GetCurrentLocation(repository)
+
+    @Provides
+    @Singleton
+    fun providesDeleteCurrentLocation(repository: Repository): DeleteCurrentLocation =
+        DeleteCurrentLocation(repository)
 }

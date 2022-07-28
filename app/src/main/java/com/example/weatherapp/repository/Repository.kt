@@ -78,8 +78,12 @@ class Repository(
     ): Flow<Result<Unit>> {
         return currentCoordWeatherResponse.flowOfResult(
             {
-                weatherLocalDataSource.insertCurrentLocationCoords(CurrentLocation(it.name, it.lat,
-                    it.lon))
+                weatherLocalDataSource.insertCurrentLocationCoords(
+                    CurrentLocation(
+                        it.name, it.lat,
+                        it.lon
+                    )
+                )
                 Success(Unit)
             },
             {
@@ -161,6 +165,10 @@ class Repository(
     //Current Location
     fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
         return weatherLocalDataSource.getCurrentLocationCoords()
+    }
+
+    suspend fun deleteCurrentLocationCoords() {
+        return weatherLocalDataSource.deleteCurrentLocationCoords()
     }
 
     //Unsaved entries
