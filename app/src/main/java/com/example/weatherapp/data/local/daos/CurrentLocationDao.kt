@@ -14,4 +14,7 @@ interface CurrentLocationDao {
 
     @Query("SELECT * FROM current_location")
     fun getCurrent(): Flow<CurrentLocation?>
+
+    @Query("DELETE  FROM current_location")
+    suspend fun deleteCurrent()
 }

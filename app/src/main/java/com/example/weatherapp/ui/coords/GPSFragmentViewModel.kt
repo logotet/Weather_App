@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.remote.checkStatus
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.localcalls.citynames.GetCurrentLocation
+import com.example.weatherapp.interactors.localcalls.locations.DeleteCurrentLocation
 import com.example.weatherapp.ui.utils.ObservableViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class GPSFragmentViewModel @Inject constructor(
     private val getCurrentCoordWeather: GetCurrentCoordWeather,
     private val getCurrentLocation: GetCurrentLocation,
+    private val deleteCurrentLocation: DeleteCurrentLocation
 ) : ObservableViewModel() {
 
     private val _locationName = MutableSharedFlow<String>()
@@ -28,6 +30,9 @@ class GPSFragmentViewModel @Inject constructor(
         get() = _errorMessage.asSharedFlow()
 
     fun setUpData(lat: Double?, lon: Double?) {
+        viewModelScope.launch {
+            deleteCurrentLocation.deleteCurrentLocation()
+        }
         getWeatherData(lat, lon)
         getCoordsDataFromDatabase()
     }

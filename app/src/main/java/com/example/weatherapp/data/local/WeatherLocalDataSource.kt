@@ -76,4 +76,8 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
     fun getCurrentLocationCoords(): Flow<CurrentLocation?> {
         return weatherDatabase.currentLocationDao().getCurrent()
     }
+
+    suspend fun deleteCurrentLocationCoords() {
+        weatherDatabase.currentLocationDao().deleteCurrent()
+    }
 }
