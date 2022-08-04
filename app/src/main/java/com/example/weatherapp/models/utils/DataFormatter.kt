@@ -1,11 +1,10 @@
 package com.example.weatherapp.utils
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.weatherapp.R
 import com.example.weatherapp.models.measure.UnitSystem
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 fun Double?.formatTemperature(
     resourceProvider: ResourceProvider,
@@ -16,9 +15,11 @@ fun Double?.formatTemperature(
         UnitSystem.STANDARD -> resourceProvider.getString(R.string.standard_temperature_format)
         UnitSystem.IMPERIAL -> resourceProvider.getString(R.string.imperial_temperature_format)
     }
-    return resourceProvider.getString(R.string.temperature_format,
+    return resourceProvider.getString(
+        R.string.temperature_format,
         this ?: 0.0,
-        tempFormat)
+        tempFormat
+    )
 }
 
 fun Int?.formatHumidity(resourceProvider: ResourceProvider): String =
@@ -33,13 +34,16 @@ fun Double?.formatSpeed(resourceProvider: ResourceProvider, unitSystem: UnitSyst
     return resourceProvider.getString(R.string.speed_format, this ?: 0.0, speedFormat)
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun Long.formatHour(resourceProvider: ResourceProvider, timeOffset: Int?): String {
-    var format = ""
-    timeOffset?.let {
-        val zoneOffset = ZoneOffset.ofTotalSeconds(timeOffset)
-        val dateTime = LocalDateTime.ofEpochSecond(this, 0, zoneOffset)
-        format = resourceProvider.getString(R.string.hour_format, dateTime.hour.toString())
+fun Long.formatHour(timeOffset: Int): String {
+    val simpleDateFormat = SimpleDateFormat("HH:mm")
+    TimeUnit.SECONDS.toMillis(timeOffset.toLong())
+    simpleDateFormat.timeZone =
+        SimpleTimeZone(TimeUnit.SECONDS.toMillis(timeOffset.toLong()).toInt(), "")
+    return simpleDateFormat.format(TimeUnit.SECONDS.toMillis(this))
+}
+
+fun String.capitalizeFirstChar(): String {
+    return this.replaceFirstChar {
+        it.uppercase()
     }
-    return format
 }

@@ -13,16 +13,18 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="120dp"
+        tools:background="@color/jordi_blue"
         android:onClick="@{() -> viewmodel.onItemClicked()}">
 
         <TextView
+            style="@style/TextAppearance"
             android:id="@+id/txt_location_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:layout_marginHorizontal="20dp"
             android:text="@{viewmodel.cityName}"
-            android:textSize="46sp"
+            android:textSize="40sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/txt_location_temp"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,12 +32,13 @@
             tools:text="Sofia" />
 
         <TextView
+            style="@style/TextAppearance"
             android:id="@+id/txt_location_temp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:text="@{viewmodel.cityTemperature}"
-            android:textSize="46sp"
+            android:textSize="40sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

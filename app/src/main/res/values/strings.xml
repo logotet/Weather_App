@@ -13,7 +13,6 @@
     //Measure format
     <string name="temperature_format">%.0f%s</string>
     <string name="speed_format">%.1f%s</string>
-    <string name="hour_format">%sh</string>
 
     //Temperature signature
     <string name="celsius_temperature_format">°C</string>
@@ -39,5 +38,6 @@
     <string name="valid_location">Enter valid location</string>
     <string name="search_button_pressed">weather_search_button_pressed</string>
     <string name="location_button_pressed">weather_location_button_pressed</string>
+    <string name="hourly">Next 48 hours</string>
 
 </resources>

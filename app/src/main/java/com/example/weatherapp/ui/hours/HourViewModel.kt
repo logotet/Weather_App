@@ -1,7 +1,5 @@
 package com.example.weatherapp.ui.hours
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import com.example.weatherapp.models.measure.UnitSystem
@@ -46,8 +44,7 @@ class HourViewModel @Inject constructor(
 
     @get:Bindable
     val hourValue: String?
-        @RequiresApi(Build.VERSION_CODES.O)
-        get() = hourModel?.hour?.formatHour(resourceProvider, hourModel?.timeZoneOffset)
+        get() = hourModel?.let { it.hour.formatHour(it.timeZoneOffset) }
 
     @get:Bindable
     val rotation: Int?

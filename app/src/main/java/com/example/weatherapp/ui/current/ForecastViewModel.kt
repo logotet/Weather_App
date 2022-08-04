@@ -86,7 +86,7 @@ class ForecastViewModel @Inject constructor(
 
     @get:Bindable
     val description: String?
-        get() = weatherModel?.description
+        get() = weatherModel?.description?.capitalizeFirstChar()
 
     @get:Bindable
     val temperature: String
