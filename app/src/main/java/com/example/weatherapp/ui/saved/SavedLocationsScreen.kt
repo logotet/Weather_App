@@ -23,7 +23,7 @@ import com.example.weatherapp.models.local.LocalWeatherModel
 @Composable
 fun SavedLocationsScreen(
     viewModel: SavedLocationsFragmentViewModel,
-    selectLocation: () -> Unit
+    selectLocation: (String) -> Unit
 ) {
     //TODO
 //        val viewModel: SavedLocationsFragmentViewModel = viewModel()
@@ -31,7 +31,9 @@ fun SavedLocationsScreen(
 
     LazyColumn {
         items(savedLocations.value) { location ->
-            SavedLocationRow(localWeatherModel = location, selectLocation = selectLocation)
+            SavedLocationRow(localWeatherModel = location) { name ->
+                selectLocation(name)
+            }
         }
     }
 }
@@ -39,13 +41,13 @@ fun SavedLocationsScreen(
 @Composable
 fun SavedLocationRow(
     localWeatherModel: LocalWeatherModel,
-    selectLocation: () -> Unit
+    selectLocation: (String) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp, start = 30.dp, end = 30.dp)
-            .clickable(onClick = selectLocation),
+            .clickable(onClick = { selectLocation(localWeatherModel.name) }),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {

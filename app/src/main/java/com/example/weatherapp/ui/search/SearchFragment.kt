@@ -7,29 +7,22 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentSearchBinding
-import com.example.weatherapp.databinding.LayoutRecentLocationBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.utils.isNetworkAvailable
-import com.example.weatherapp.utils.ResourceProvider
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.LocationPermission
 import permissions.dispatcher.ktx.constructLocationPermissionRequest
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -40,9 +33,6 @@ class SearchFragment : Fragment() {
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private var gpsActivationLaunched: Boolean = false
-
-    @Inject
-    lateinit var resourceProvider: ResourceProvider
 
     private val firebaseAnalytics = Firebase.analytics
 
@@ -68,72 +58,48 @@ class SearchFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         viewGroup = container
+
+        binding.cvSearchScreen.setContent {
+            SearchScreen(viewModel = viewModel,
+                { locationName ->
+                    searchLocation(locationName)
+                },
+                {
+                    constructLocationPermissionRequest(
+                        LocationPermission.FINE,
+                        onShowRationale = ::onGetLocationRationale,
+                        onPermissionDenied = ::onLocationPermissionDenied,
+                        requiresPermission = ::goToCoordinatesFragment
+                    ).launch()
+                },
+                { unitSystem ->
+                    activityViewModel.unitSystem = unitSystem
+                }
+            )
+        }
         return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val constructLocationPermissionRequest = constructLocationPermissionRequest(
-            LocationPermission.FINE,
-            onShowRationale = ::onGetLocationRationale,
-            onPermissionDenied = ::onLocationPermissionDenied,
-            requiresPermission = ::goToCoordinatesFragment
-        )
-
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.units.collectLatest {
-                activityViewModel.unitSystem = it
+    private fun searchLocation(locationName: String?) {
+        if (!locationName.isNullOrBlank()) {
+            setNavigationWithData(locationName)
+        } else {
+            view?.let { view ->
+                Snackbar.make(
+                    view,
+                    getString(R.string.valid_location),
+                    Snackbar.LENGTH_LONG
+                ).show()
             }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.cityNames.collectLatest { recentLocations ->
-                if (recentLocations.isNotEmpty()) {
-                    binding.txtRecentlySearched.visibility = VISIBLE
-                } else {
-                    binding.txtRecentlySearched.visibility = INVISIBLE
-                }
-
-                for (location in recentLocations) {
-                    val locationView =
-                        LayoutInflater.from(context)
-                            .inflate(R.layout.layout_recent_location, viewGroup, false)
-                    val cityNameBinding = LayoutRecentLocationBinding.bind(locationView)
-                    cityNameBinding.txtRecentLocationName.text =
-                        location.cityName
-                    binding.recentlyViewed.addView(locationView)
-                    locationView.setOnClickListener {
-                        viewModel.onItemClicked(location.cityName)
-                    }
-                }
-            }
-        }
-
-        viewModel.onSearchButtonPressed.observe(viewLifecycleOwner) {
-            firebaseAnalytics.logEvent(getString(R.string.search_button_pressed), null)
-            if (!viewModel.cityName.isNullOrBlank()) {
-                setNavigationWithData()
-            } else {
-                getView()?.let { view ->
-                    Snackbar.make(view,
-                        getString(R.string.valid_location),
-                        Snackbar.LENGTH_LONG).show()
-                }
-            }
-        }
-
-        viewModel.onLocationButtonPressed.observe(viewLifecycleOwner) {
-            binding.edtCity.text = null
-            firebaseAnalytics.logEvent(getString(R.string.location_button_pressed), null)
-            constructLocationPermissionRequest.launch()
         }
     }
 
-    private fun setNavigationWithData() {
-        findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
-            cityName = viewModel.cityName
-        ))
+    private fun setNavigationWithData(locationName: String) {
+        findNavController().navigate(
+            SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
+                cityName = locationName
+            )
+        )
     }
 
     private fun onGetLocationRationale(permissionRequest: PermissionRequest) {

@@ -43,10 +43,10 @@ class SavedLocationsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_saved_locations, container, false)
         view.findViewById<ComposeView>(R.id.compose_view).setContent {
-            SavedLocationsScreen(viewModel) {
+            SavedLocationsScreen(viewModel) { name ->
                 findNavController().navigate(
                     SavedLocationsFragmentDirections.actionSavedLocationsFragmentToCurrentWeatherFragment(
-//                        cityName = it
+                        cityName = name
                     )
                 )
             }
