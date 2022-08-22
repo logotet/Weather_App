@@ -8,12 +8,13 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.FragmentSearchBinding
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.google.android.material.snackbar.Snackbar
@@ -27,16 +28,12 @@ import permissions.dispatcher.ktx.constructLocationPermissionRequest
 
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
-    private lateinit var binding: FragmentSearchBinding
-
     private val viewModel: SearchViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private var gpsActivationLaunched: Boolean = false
 
     private val firebaseAnalytics = Firebase.analytics
-
-    private var viewGroup: ViewGroup? = null
 
     override fun onResume() {
         super.onResume()
@@ -52,32 +49,28 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_search, container, false)
-        binding = FragmentSearchBinding.bind(view)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        viewGroup = container
-
-        binding.cvSearchScreen.setContent {
-            SearchScreen(viewModel = viewModel,
-                { locationName ->
-                    searchLocation(locationName)
-                },
-                {
-                    constructLocationPermissionRequest(
-                        LocationPermission.FINE,
-                        onShowRationale = ::onGetLocationRationale,
-                        onPermissionDenied = ::onLocationPermissionDenied,
-                        requiresPermission = ::goToCoordinatesFragment
-                    ).launch()
-                },
-                { unitSystem ->
-                    activityViewModel.unitSystem = unitSystem
-                }
-            )
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                SearchScreen(viewModel = viewModel,
+                    { locationName ->
+                        searchLocation(locationName)
+                    },
+                    {
+                        constructLocationPermissionRequest(
+                            LocationPermission.FINE,
+                            onShowRationale = ::onGetLocationRationale,
+                            onPermissionDenied = ::onLocationPermissionDenied,
+                            requiresPermission = ::goToCoordinatesFragment
+                        ).launch()
+                    },
+                    { unitSystem ->
+                        activityViewModel.unitSystem = unitSystem
+                    }
+                )
+            }
         }
-        return view
     }
 
     private fun searchLocation(locationName: String?) {

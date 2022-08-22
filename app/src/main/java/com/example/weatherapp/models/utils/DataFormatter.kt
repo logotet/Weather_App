@@ -1,7 +1,8 @@
-package com.example.weatherapp.utils
+package com.example.weatherapp.models.utils
 
 import com.example.weatherapp.R
 import com.example.weatherapp.models.measure.UnitSystem
+import com.example.weatherapp.utils.ResourceProvider
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit

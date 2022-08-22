@@ -4,9 +4,9 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.utils.mapTemperature
-import com.example.weatherapp.models.utils.mapWindSpeed
-import com.example.weatherapp.utils.*
+import com.example.weatherapp.models.utils.*
+import com.example.weatherapp.utils.AppConstants
+import com.example.weatherapp.utils.ResourceProvider
 import javax.inject.Inject
 
 class HourViewModel @Inject constructor(

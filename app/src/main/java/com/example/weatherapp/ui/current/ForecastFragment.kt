@@ -22,7 +22,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,7 +33,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
 
     private val args: ForecastFragmentArgs by navArgs()
 
-    private var binding:FragmentCityWeatherBinding? = null
+    private var binding: FragmentCityWeatherBinding? = null
 
     private lateinit var unitSystem: UnitSystem
 
@@ -54,9 +53,16 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_city_weather, container, false)
+
         binding = DataBindingUtil.bind(view)
         binding?.viewModel = viewModel
         binding?.lifecycleOwner = this
+
+        binding?.cvForecast?.setContent {
+            ForecastScreen(
+                viewModel = viewModel
+            )
+        }
         return view
     }
 
@@ -68,7 +74,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
 
         val hourAdapter = HourAdapter(resourceProvider)
 
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated{
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.hours.collectLatest {
                 hourAdapter.updateData(it)
             }
@@ -129,15 +135,19 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                     if (!it) {
                         item.setDrawable(context, R.drawable.ic_heart_full)
                         viewModel.saveLocationToFavorites()
-                        Snackbar.make(requireActivity().window.decorView,
+                        Snackbar.make(
+                            requireActivity().window.decorView,
                             "Location saved to favorites",
-                            Snackbar.LENGTH_LONG).show()
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     } else {
                         item.setDrawable(context, R.drawable.ic_heart_empty)
                         viewModel.removeLocationFromFavorites()
-                        Snackbar.make(requireActivity().window.decorView,
+                        Snackbar.make(
+                            requireActivity().window.decorView,
                             "Location removed from favorites",
-                            Snackbar.LENGTH_LONG).show()
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -148,7 +158,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
     private fun toggleSavedIcon(saveItem: MenuItem) {
         viewLifecycleOwner.lifecycleScope.launchWhenCreated {
             viewModel.locationName.collect { name ->
-                  saved = if (name != null) {
+                saved = if (name != null) {
                     saveItem.setDrawable(context, R.drawable.ic_heart_full)
                     true
                 } else {

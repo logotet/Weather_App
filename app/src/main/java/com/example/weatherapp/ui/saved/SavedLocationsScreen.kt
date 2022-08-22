@@ -27,6 +27,7 @@ fun SavedLocationsScreen(
 ) {
     //TODO
 //        val viewModel: SavedLocationsFragmentViewModel = viewModel()
+    viewModel.loadData()
     val savedLocations = viewModel.locations.collectAsState(initial = emptyList())
 
     LazyColumn {

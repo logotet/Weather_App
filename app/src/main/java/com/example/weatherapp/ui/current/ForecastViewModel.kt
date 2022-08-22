@@ -18,16 +18,15 @@ import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
-import com.example.weatherapp.models.utils.mapTemperature
-import com.example.weatherapp.models.utils.mapToCurrentHours
-import com.example.weatherapp.models.utils.mapWindSpeed
+import com.example.weatherapp.models.utils.*
 import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
-import com.example.weatherapp.utils.*
+import com.example.weatherapp.utils.AppConstants
+import com.example.weatherapp.utils.ResourceProvider
+import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
