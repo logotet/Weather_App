@@ -13,7 +13,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.databinding.ActivityMainBinding
+import com.example.weatherapp.ui.search.SearchFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -40,6 +42,21 @@ class MainActivity : AppCompatActivity() {
             navController = navController,
             configuration = appBarConfiguration
         )
+
+        setNavigationFromNotification()
+    }
+
+    private fun setNavigationFromNotification() {
+        val extras = intent.extras
+        extras?.let {
+            if (it.containsKey("city")) {
+                navController.navigate(
+                    SearchFragmentDirections.actionSearchFragmentToCurrentWeatherFragment(
+                        cityName = it.get("city") as String?
+                    )
+                )
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
