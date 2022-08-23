@@ -15,7 +15,6 @@ class AppFirebaseMessageService : FirebaseMessagingService() {
     companion object {
         const val CHANNEL_NAME = "channel"
         const val CHANNEL_ID = "channel_id"
-        const val TITLE = "title"
         const val CITY_NAME_NAV_ARG = "cityName"
         const val CITY_KEY = "city"
     }
@@ -31,13 +30,12 @@ class AppFirebaseMessageService : FirebaseMessagingService() {
             .setArguments(args)
             .createPendingIntent()
 
-        val notification = NotificationCompat.Builder(this, "notifications")
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(message.notification?.title)
             .setContentText(message.notification?.body)
             .setAutoCancel(true)
-            .setChannelId(CHANNEL_ID)
             .setVibrate(longArrayOf(1000))
             .setOnlyAlertOnce(true)
             .build()
