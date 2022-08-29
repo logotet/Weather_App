@@ -80,7 +80,11 @@ class ForecastViewModel @Inject constructor(
     val cancelRefresh: SingleLiveEvent<Unit>
         get() = _cancelRefresh
 
-    val someName = mutableStateOf("")
+//    private val _weatherModel2 = MutableStateFlow<CurrentWeatherModel?>(null)
+//    val weatherModel2: StateFlow<CurrentWeatherModel?>
+//        get() = _weatherModel2.asStateFlow()
+
+    val weatherModel3 = mutableStateOf<CurrentWeatherModel?>(null)
 
     @get:Bindable
     val cityName: String?
@@ -154,7 +158,7 @@ class ForecastViewModel @Inject constructor(
             getLocationByName.getCity(city).collectResult(
                 {
                     weatherModel = it
-                    someName.value = it?.name!!
+                    weatherModel3.value = it
                     isSavedLocation(it?.name)
                 },
                 {}
@@ -168,7 +172,8 @@ class ForecastViewModel @Inject constructor(
                 getHourlyWeather.getHours(
                     model.lat,
                     model.lon,
-                    model.name).collectResult(
+                    model.name
+                ).collectResult(
                     {
                         insertRecentCity()
                     },

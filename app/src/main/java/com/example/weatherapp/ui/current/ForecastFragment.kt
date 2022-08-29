@@ -2,7 +2,8 @@ package com.example.weatherapp.ui.current
 
 import android.os.Bundle
 import android.view.*
-import androidx.databinding.DataBindingUtil
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -51,19 +52,14 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_city_weather, container, false)
-
-        binding = DataBindingUtil.bind(view)
-        binding?.viewModel = viewModel
-        binding?.lifecycleOwner = this
-
-        binding?.cvForecast?.setContent {
-            ForecastScreen(
-//                viewModel = viewModel
-            )
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ForecastScreen()
+            }
         }
-        return view
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
