@@ -60,7 +60,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
 
         binding?.cvForecast?.setContent {
             ForecastScreen(
-                viewModel = viewModel
+//                viewModel = viewModel
             )
         }
         return view

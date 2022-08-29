@@ -1,5 +1,6 @@
 package com.example.weatherapp.ui.current
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.databinding.Bindable
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.R
@@ -79,6 +80,8 @@ class ForecastViewModel @Inject constructor(
     val cancelRefresh: SingleLiveEvent<Unit>
         get() = _cancelRefresh
 
+    val someName = mutableStateOf("")
+
     @get:Bindable
     val cityName: String?
         get() = weatherModel?.name
@@ -151,6 +154,7 @@ class ForecastViewModel @Inject constructor(
             getLocationByName.getCity(city).collectResult(
                 {
                     weatherModel = it
+                    someName.value = it?.name!!
                     isSavedLocation(it?.name)
                 },
                 {}
