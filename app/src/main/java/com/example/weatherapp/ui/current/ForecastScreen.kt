@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -86,9 +87,10 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                 }
 
                 Text(
-                    text = "Next 48 hours",
+                    text = stringResource(id = R.string.hourly),
                     fontSize = 24.sp,
-                    color = Color.White
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 20.dp)
                 )
 
                 //todo hours list is not always loaded?
@@ -107,20 +109,22 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     }
                 }
 
-                val singapore = LatLng(1.35, 103.87)
+                val location = LatLng(
+                    model.lat,
+                    model.lon
+                )
                 val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(singapore, 10f)
+                    position = CameraPosition.fromLatLngZoom(location, 10f)
                 }
                 GoogleMap(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(100.dp),
+                        .height(400.dp)
+                        .padding(top = 30.dp),
                     cameraPositionState = cameraPositionState
                 ) {
                     Marker(
-                        position = singapore,
-                        title = "Singapore",
-                        snippet = "Marker in Singapore"
+                        position = location,
                     )
                 }
             }
@@ -205,7 +209,8 @@ fun Hour(
             Icon(
                 painter = rememberAsyncImagePainter(iconCode.getIconUrl()),
                 contentDescription = null,
-                tint = Color.Unspecified
+                tint = Color.Unspecified,
+                modifier = Modifier.size(60.dp)
             )
 
             val formattedTemperature = UnitSystem.METRIC.mapTemperature(temperature)
@@ -220,6 +225,7 @@ fun Hour(
                 val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
                 ForecastScreenHourText(text = formattedSpeed)
 
+                //todo align the icon to the text baseline
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_direction),
                     "image",
