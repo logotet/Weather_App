@@ -33,13 +33,18 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     Surface(color = colorResource(id = R.color.jordi_blue)) {
-        Column(modifier = Modifier.fillMaxSize(1f)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(1f)
+                .padding(8.dp)
+        ) {
             val weatherModel = viewModel.weatherModelState.value
 
             weatherModel?.let { model ->
                 TextAndIconForecast(
                     painter = painterResource(id = R.drawable.ic_location_name),
-                    text = model.name
+                    text = model.name,
+                    iconSize = 40.dp
                 )
 
                 val formattedTemperature = UnitSystem.METRIC.mapTemperature(model.temperature)
@@ -82,7 +87,8 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                             .height(48.dp)
                             .padding(horizontal = 20.dp),
                         painter = painterResource(id = R.drawable.ic_arrow_direction),
-                        text = model.windSpeed.formatSpeedComposable(UnitSystem.METRIC)
+                        text = model.windSpeed.formatSpeedComposable(UnitSystem.METRIC),
+                        rotation = model.windDirection
                     )
                 }
 
@@ -90,7 +96,10 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     text = stringResource(id = R.string.hourly),
                     fontSize = 24.sp,
                     color = Color.White,
-                    modifier = Modifier.padding(top = 20.dp)
+                    modifier = Modifier.padding(
+                        top = 20.dp,
+                        start = 20.dp
+                    )
                 )
 
                 //todo hours list is not always loaded?
@@ -141,7 +150,8 @@ fun TextAndIconForecast(
     painter: Painter,
     text: String,
     tint: Color = Color.White,
-    iconSize: Dp = 20.dp
+    iconSize: Dp = 30.dp,
+    rotation: Int = 0
 ) {
     Row(
         modifier = modifier,
@@ -152,7 +162,9 @@ fun TextAndIconForecast(
             painter = painter,
             contentDescription = null,
             tint = tint,
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier
+                .size(iconSize)
+                .rotate(rotation.toFloat())
         )
 
         ForecastScreenText(text = text)
