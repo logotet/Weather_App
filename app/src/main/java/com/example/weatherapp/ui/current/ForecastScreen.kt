@@ -1,27 +1,28 @@
 package com.example.weatherapp.ui.current
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.weatherapp.R
 import com.example.weatherapp.models.measure.UnitSystem
-import com.example.weatherapp.models.utils.formatHumidityComposable
-import com.example.weatherapp.models.utils.formatSpeedComposable
-import com.example.weatherapp.models.utils.formatTemperatureComposable
+import com.example.weatherapp.models.utils.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -31,31 +32,27 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     Surface(color = colorResource(id = R.color.jordi_blue)) {
-
         Column(modifier = Modifier.fillMaxSize(1f)) {
-            val cityName = remember { mutableStateOf("") }
-            val temperature = remember {
-                mutableStateOf("")
-            }
-            val description = remember {
-                mutableStateOf("")
-            }
-
-            val weatherModel = viewModel.weatherModel3.value
+            val weatherModel = viewModel.weatherModelState.value
 
             weatherModel?.let { model ->
-                TextAndIconWorkTitle(
+                TextAndIconForecast(
                     painter = painterResource(id = R.drawable.ic_location_name),
                     text = model.name
                 )
 
-                TextAndIconWorkTitle(
-                    painter = rememberAsyncImagePainter("https://openweathermap.org/img/wn/03d@2x.png"),
-                    text = model.temperature.formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+                val formattedTemperature = UnitSystem.METRIC.mapTemperature(model.temperature)
+                    .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+                TextAndIconForecast(
+                    painter = rememberAsyncImagePainter(model.icon.getIconUrl()),
+                    text = formattedTemperature,
+                    tint = Color.Unspecified,
+                    //todo size does not correspond to the size value
+                    iconSize = 60.dp
                 )
 
                 Text(
-                    text = model.description,
+                    text = model.description.capitalizeFirstChar(),
                     textAlign = TextAlign.Center,
                     color = Color.White,
                     fontSize = 36.sp,
@@ -69,7 +66,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextAndIconWorkTitle(
+                    TextAndIconForecast(
                         modifier = Modifier
                             .padding(top = 20.dp)
                             .height(48.dp)
@@ -78,7 +75,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                         text = model.humidity.formatHumidityComposable()
                     )
 
-                    TextAndIconWorkTitle(
+                    TextAndIconForecast(
                         Modifier
                             .padding(top = 20.dp)
                             .height(48.dp)
@@ -94,13 +91,21 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     color = Color.White
                 )
 
-//            val hours = viewModel.hours.collectAsState()
-
-//            LazyRow {
-//                items(hours.value) { hour ->
-//                    Text(text = hour.hour.toString())
-//                }
-//            }
+                //todo hours list is not always loaded?
+                val hours = viewModel.hoursState.value
+                LazyRow {
+                    items(hours) { hour ->
+                        Hour(
+                            hour = hour.hour,
+                            timeOffset = hour.timeZoneOffset,
+                            temperature = hour.hourTemperature,
+                            iconCode = hour.hourIcon,
+                            humidity = hour.humidity,
+                            windSpeed = hour.hourWindSpeed,
+                            rotation = hour.windDirection
+                        )
+                    }
+                }
 
                 val singapore = LatLng(1.35, 103.87)
                 val cameraPositionState = rememberCameraPositionState {
@@ -123,15 +128,16 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
     }
 }
 
-
 @Composable
-fun TextAndIconWorkTitle(
+fun TextAndIconForecast(
     modifier: Modifier = Modifier
         .fillMaxWidth()
         .padding(top = 20.dp)
         .height(48.dp),
     painter: Painter,
-    text: String
+    text: String,
+    tint: Color = Color.White,
+    iconSize: Dp = 20.dp
 ) {
     Row(
         modifier = modifier,
@@ -141,7 +147,8 @@ fun TextAndIconWorkTitle(
         Icon(
             painter = painter,
             contentDescription = null,
-            tint = Color.White
+            tint = tint,
+            modifier = Modifier.size(iconSize)
         )
 
         ForecastScreenText(text = text)
@@ -155,4 +162,74 @@ fun ForecastScreenText(text: String) {
         fontSize = 36.sp,
         color = Color.White,
     )
+}
+
+@Composable
+fun ForecastScreenHourText(
+    text: String,
+    fontSize: TextUnit = 20.sp,
+    padding: Dp = 1.dp
+) {
+    Text(
+        text = text,
+        fontSize = fontSize,
+        color = Color.White,
+        modifier = Modifier.padding(padding)
+    )
+}
+
+@Composable
+fun Hour(
+    hour: Long,
+    timeOffset: Int,
+    iconCode: String,
+    temperature: Double,
+    humidity: Int,
+    windSpeed: Double,
+    rotation: Int
+) {
+    Surface(color = colorResource(id = R.color.jordi_blue)) {
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .width(width = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val hourValue = hour.formatHour(timeOffset)
+            ForecastScreenHourText(
+                text = hourValue,
+                padding = 2.dp
+            )
+
+            Icon(
+                painter = rememberAsyncImagePainter(iconCode.getIconUrl()),
+                contentDescription = null,
+                tint = Color.Unspecified
+            )
+
+            val formattedTemperature = UnitSystem.METRIC.mapTemperature(temperature)
+                .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+
+            ForecastScreenHourText(text = formattedTemperature, fontSize = 28.sp)
+
+            val formattedHumidity = humidity.formatHumidityComposable()
+            ForecastScreenHourText(text = formattedHumidity)
+
+            Row {
+                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
+                ForecastScreenHourText(text = formattedSpeed)
+
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_direction),
+                    "image",
+                    Modifier
+                        .size(16.dp)
+                        .fillMaxSize()
+                        .rotate(rotation.toFloat()),
+                    tint = Color.White
+                )
+            }
+        }
+    }
 }

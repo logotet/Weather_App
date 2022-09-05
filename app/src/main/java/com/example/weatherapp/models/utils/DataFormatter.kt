@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.weatherapp.R
 import com.example.weatherapp.models.measure.UnitSystem
+import com.example.weatherapp.utils.AppConstants
 import com.example.weatherapp.utils.ResourceProvider
 import java.text.SimpleDateFormat
 import java.util.*
@@ -79,4 +80,8 @@ fun String.capitalizeFirstChar(): String {
     return this.replaceFirstChar {
         it.uppercase()
     }
+}
+
+fun String.getIconUrl(): String {
+    return AppConstants.IMG_URL + this + AppConstants.IMG_URL_SUFFIX
 }

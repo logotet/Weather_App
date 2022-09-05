@@ -10,17 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.FragmentCityWeatherBinding
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.MainActivityViewModel
-import com.example.weatherapp.ui.hours.HourAdapter
 import com.example.weatherapp.ui.utils.isNetworkAvailable
 import com.example.weatherapp.ui.utils.setDrawable
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.moveToLocation
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -33,8 +30,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     private val args: ForecastFragmentArgs by navArgs()
-
-    private var binding: FragmentCityWeatherBinding? = null
 
     private lateinit var unitSystem: UnitSystem
 
@@ -59,7 +54,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
                 ForecastScreen()
             }
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,38 +61,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
 
         unitSystem = activityViewModel.unitSystem
         viewModel.setupData(args.cityName, unitSystem)
-
-        val hourAdapter = HourAdapter(resourceProvider)
-
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            viewModel.hours.collectLatest {
-                hourAdapter.updateData(it)
-            }
-        }
-
-        viewModel.cancelRefresh.observe(viewLifecycleOwner) {
-            binding?.refreshLayout?.isRefreshing = false
-        }
-
-        viewModel.errorMessage.observe(viewLifecycleOwner) {
-            binding?.refreshLayout?.isRefreshing = false
-            Snackbar.make(view, it.toString(), Snackbar.LENGTH_LONG).show()
-            activity?.onBackPressed()
-        }
-
-        hourAdapter.updateMeasureUnit(unitSystem)
-        hourAdapter.resourceProvider = resourceProvider
-        binding?.hoursRecView?.adapter = hourAdapter
-
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.fragment_map) as? SupportMapFragment
-        mapFragment?.getMapAsync(this)
-
-        activityViewModel.barVisible = false
-
-        binding?.refreshLayout?.setOnRefreshListener {
-            viewModel.refreshData()
-        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
