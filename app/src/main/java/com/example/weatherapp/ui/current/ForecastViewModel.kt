@@ -44,7 +44,6 @@ class ForecastViewModel @Inject constructor(
     private val getFavoriteLocationByName: GetFavoriteLocationByName,
     private val insertSavedLocation: InsertSavedLocation,
 ) : ObservableViewModel() {
-
     private var _locationName = MutableStateFlow<String?>(null)
     val locationName: StateFlow<String?> = _locationName
 
@@ -76,6 +75,7 @@ class ForecastViewModel @Inject constructor(
     fun setupData(city: String?, unitSystem: UnitSystem) {
         this.unitSystem = unitSystem
         if (!city.isNullOrEmpty()) {
+            //todo handle all the data calls in a separate usecase
             getNetworkWeatherResponse(city)
             getWeatherFromDatabase(city)
             getLocalHours(city)

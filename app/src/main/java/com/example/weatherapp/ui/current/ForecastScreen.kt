@@ -142,10 +142,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
 
 @Composable
 fun TextAndIconForecast(
-    modifier: Modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 20.dp)
-        .height(48.dp),
+    modifier: Modifier = Modifier,
     painter: Painter,
     text: String,
     tint: Color = Color.White,
@@ -153,7 +150,10 @@ fun TextAndIconForecast(
     rotation: Int = 0
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+            .height(48.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -164,6 +164,7 @@ fun TextAndIconForecast(
             modifier = Modifier
                 .size(iconSize)
                 .rotate(rotation.toFloat())
+                .padding(end = 4.dp)
         )
 
         ForecastScreenText(text = text)
@@ -181,15 +182,16 @@ fun ForecastScreenText(text: String) {
 
 @Composable
 fun ForecastScreenHourText(
+    modifier: Modifier = Modifier,
     text: String,
     fontSize: TextUnit = 20.sp,
-    padding: Dp = 1.dp
+    padding: Dp = 4.dp,
 ) {
     Text(
         text = text,
         fontSize = fontSize,
         color = Color.White,
-        modifier = Modifier.padding(padding)
+        modifier = modifier.padding(padding)
     )
 }
 
@@ -232,20 +234,22 @@ fun Hour(
             val formattedHumidity = humidity.formatHumidityComposable()
             ForecastScreenHourText(text = formattedHumidity)
 
-            Row {
-                //todo align the icon to the text baseline
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_direction),
-                    "image",
-                    Modifier
+                    contentDescription = "image",
+                    modifier = Modifier
+                        .padding(end = 4.dp)
                         .size(16.dp)
                         .fillMaxSize()
                         .rotate(rotation.toFloat()),
                     tint = Color.White
                 )
+
                 val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
                 ForecastScreenHourText(text = formattedSpeed)
-
             }
         }
     }
