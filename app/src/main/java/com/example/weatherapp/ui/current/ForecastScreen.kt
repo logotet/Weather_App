@@ -44,7 +44,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                 TextAndIconForecast(
                     painter = painterResource(id = R.drawable.ic_location_name),
                     text = model.name,
-                    iconSize = 40.dp
+                    iconSize = 40.dp,
                 )
 
                 val formattedTemperature = UnitSystem.METRIC.mapTemperature(model.temperature)
@@ -53,16 +53,18 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     painter = rememberAsyncImagePainter(model.icon.getIconUrl()),
                     text = formattedTemperature,
                     tint = Color.Unspecified,
-                    //todo size does not correspond to the size value
-                    iconSize = 60.dp
+                    rowHeight = 80.dp,
+                    iconSize = 100.dp,
+                    fontSize = 44.sp
                 )
 
                 Text(
                     text = model.description.capitalizeFirstChar(),
                     textAlign = TextAlign.Center,
                     color = Color.White,
-                    fontSize = 36.sp,
+                    fontSize = 32.sp,
                     modifier = Modifier
+                        .padding(top = 20.dp)
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                 )
@@ -73,19 +75,13 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     TextAndIconForecast(
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .height(48.dp)
-                            .padding(horizontal = 20.dp),
+                        modifier = Modifier.fillMaxWidth(0.3f),
                         painter = painterResource(id = R.drawable.ic_raindrop),
                         text = model.humidity.formatHumidityComposable()
                     )
 
                     TextAndIconForecast(
-                        Modifier
-                            .padding(top = 20.dp)
-                            .height(48.dp)
-                            .padding(horizontal = 20.dp),
+                        modifier = Modifier.fillMaxWidth(0.6f),
                         painter = painterResource(id = R.drawable.ic_arrow_direction),
                         text = model.windSpeed.formatSpeedComposable(UnitSystem.METRIC),
                         rotation = model.windDirection
@@ -143,17 +139,20 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
 @Composable
 fun TextAndIconForecast(
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    rowHeight: Dp = 48.dp,
     painter: Painter,
     text: String,
     tint: Color = Color.White,
     iconSize: Dp = 30.dp,
-    rotation: Int = 0
+    rotation: Int = 0,
+    fontSize: TextUnit = 32.sp
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
-            .height(48.dp),
+            .height(rowHeight),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -161,21 +160,21 @@ fun TextAndIconForecast(
             painter = painter,
             contentDescription = null,
             tint = tint,
-            modifier = Modifier
+            modifier = iconModifier
                 .size(iconSize)
                 .rotate(rotation.toFloat())
                 .padding(end = 4.dp)
         )
 
-        ForecastScreenText(text = text)
+        ForecastScreenText(text = text, fontSize = fontSize)
     }
 }
 
 @Composable
-fun ForecastScreenText(text: String) {
+fun ForecastScreenText(text: String, fontSize: TextUnit) {
     Text(
         text = text,
-        fontSize = 36.sp,
+        fontSize = fontSize,
         color = Color.White,
     )
 }
