@@ -38,7 +38,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                 .fillMaxSize(1f)
                 .padding(8.dp)
         ) {
-            val weatherModel = viewModel.weatherModelState.value
+            val weatherModel = viewModel.weatherModelState
 
             weatherModel?.let { model ->
                 TextAndIconForecast(
@@ -102,8 +102,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     )
                 )
 
-                //todo hours list is not always loaded?
-                val hours = viewModel.hoursState.value
+                val hours = viewModel.hoursState
                 LazyRow {
                     items(hours) { hour ->
                         Hour(
@@ -234,9 +233,6 @@ fun Hour(
             ForecastScreenHourText(text = formattedHumidity)
 
             Row {
-                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
-                ForecastScreenHourText(text = formattedSpeed)
-
                 //todo align the icon to the text baseline
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_direction),
@@ -247,6 +243,9 @@ fun Hour(
                         .rotate(rotation.toFloat()),
                     tint = Color.White
                 )
+                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
+                ForecastScreenHourText(text = formattedSpeed)
+
             }
         }
     }
