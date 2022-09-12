@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.weatherapp.R
 import com.example.weatherapp.databinding.FragmentGpsBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -17,7 +17,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class GPSFragment : Fragment() {
@@ -33,12 +32,13 @@ class GPSFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_gps, container, false)
-        binding = DataBindingUtil.bind(view)
-        binding?.viewModel = viewModel
-        binding?.lifecycleOwner = this
-        return view
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                GPSScreen()
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,9 +80,11 @@ class GPSFragment : Fragment() {
     }
 
     private fun setNavigationWithData(locationName: String) {
-        findNavController().navigate(GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
-            cityName = locationName
-        ))
+        findNavController().navigate(
+            GPSFragmentDirections.actionCoordsFragmentToCurrentWeatherFragment2(
+                cityName = locationName
+            )
+        )
     }
 
     private fun setBackNavigation(error: String) {
