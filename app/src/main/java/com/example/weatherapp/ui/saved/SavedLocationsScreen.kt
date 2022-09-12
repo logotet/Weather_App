@@ -19,14 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.measure.UnitSystem
+import com.example.weatherapp.models.utils.formatTemperatureComposable
+import com.example.weatherapp.models.utils.mapTemperature
 
 @Composable
 fun SavedLocationsScreen(
     viewModel: SavedLocationsFragmentViewModel,
     selectLocation: (String) -> Unit
 ) {
-    //TODO
-//        val viewModel: SavedLocationsFragmentViewModel = viewModel()
+
     viewModel.loadData()
     val savedLocations = viewModel.locations.collectAsState(initial = emptyList())
 
@@ -63,9 +65,11 @@ fun SavedLocationRow(
                 .fillMaxWidth()
                 .weight(2f)
         )
+
+        val formattedTemperature = UnitSystem.METRIC.mapTemperature(localWeatherModel.temperature)
+            .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
         Text(
-            //TODO format the temp
-            text = localWeatherModel.temperature.toString(),
+            text = formattedTemperature,
             fontSize = 40.sp,
             color = Color.White,
             textAlign = TextAlign.End,
