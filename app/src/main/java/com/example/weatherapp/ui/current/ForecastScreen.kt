@@ -3,6 +3,7 @@ package com.example.weatherapp.ui.current
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -94,22 +95,32 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     color = Color.White,
                     modifier = Modifier.padding(
                         top = 20.dp,
-                        start = 20.dp
+                        start = 8.dp,
+                        bottom = 2.dp
                     )
                 )
 
                 val hours = viewModel.hoursState
-                LazyRow {
-                    items(hours) { hour ->
-                        Hour(
-                            hour = hour.hour,
-                            timeOffset = hour.timeZoneOffset,
-                            temperature = hour.hourTemperature,
-                            iconCode = hour.hourIcon,
-                            humidity = hour.humidity,
-                            windSpeed = hour.hourWindSpeed,
-                            rotation = hour.windDirection
-                        )
+                Surface(
+                    shape = RoundedCornerShape(
+                        topStart = 10.dp,
+                        topEnd = 10.dp,
+                        bottomEnd = 10.dp,
+                        bottomStart = 10.dp
+                    )
+                ) {
+                    LazyRow {
+                        items(hours) { hour ->
+                            Hour(
+                                hour = hour.hour,
+                                timeOffset = hour.timeZoneOffset,
+                                temperature = hour.hourTemperature,
+                                iconCode = hour.hourIcon,
+                                humidity = hour.humidity,
+                                windSpeed = hour.hourWindSpeed,
+                                rotation = hour.windDirection
+                            )
+                        }
                     }
                 }
 
@@ -204,7 +215,9 @@ fun Hour(
     windSpeed: Double,
     rotation: Int
 ) {
-    Surface(color = colorResource(id = R.color.jordi_blue)) {
+    Surface(
+        color = colorResource(id = R.color.malibu)
+    ) {
         Column(
             modifier = Modifier
                 .wrapContentHeight()
