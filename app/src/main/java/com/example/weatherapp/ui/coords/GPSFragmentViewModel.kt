@@ -10,7 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -63,7 +62,9 @@ class GPSFragmentViewModel @Inject constructor(
     private fun getCoordsDataFromDatabase() {
         viewModelScope.launch {
             getCurrentLocation.getCurrentLocation().collect { location ->
-                location?.name?.let { _locationName.emit(it) }
+                location?.name?.let {
+                    _locationName.emit(it)
+                }
             }
         }
     }
