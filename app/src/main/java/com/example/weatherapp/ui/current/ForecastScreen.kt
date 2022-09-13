@@ -96,7 +96,7 @@ fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.c
                     modifier = Modifier.padding(
                         top = 20.dp,
                         start = 8.dp,
-                        bottom = 2.dp
+                        bottom = 4.dp
                     )
                 )
 
