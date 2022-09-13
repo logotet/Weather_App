@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.TextFieldValue
@@ -46,13 +47,22 @@ fun SearchScreen(
             var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
             TextField(
                 value = locationNameText,
+                label = { Text(text = stringResource(id = R.string.city)) },
                 onValueChange = { newInput ->
                     locationNameText = newInput
                 },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(20.dp),
+                shape = TextFieldDefaults.OutlinedTextFieldShape,
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null
+                    )
+                },
+                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
             )
 
             ButtonSearchScreen(
@@ -70,12 +80,15 @@ fun SearchScreen(
                 stringResource(R.string.get_my_location)
             )
 
-            TextSearchScreen(
-                stringResource(R.string.recently_searched_locations),
-                textAlign = TextAlign.Start
-            )
-
             val recentLocationsList = viewModel.cityNames.collectAsState()
+
+            if (recentLocationsList.value.isNotEmpty()) {
+                TextSearchScreen(
+                    stringResource(R.string.recently_searched_locations),
+                    textAlign = TextAlign.Start,
+                    fontSize = 20.sp,
+                )
+            }
 
             LazyColumn {
                 items(recentLocationsList.value) { recentLocation ->
@@ -131,7 +144,7 @@ fun UnitsRadioGroup(
                                 color = if (selectedValue == unit) {
                                     Color.Blue
                                 } else {
-                                    Color.Gray
+                                    Color.LightGray
                                 }
                             )
                         })
@@ -170,7 +183,11 @@ private fun ButtonSearchScreen(
 }
 
 @Composable
-private fun TextSearchScreen(text: String, textAlign: TextAlign, fontSize: TextUnit = 16.sp) {
+private fun TextSearchScreen(
+    text: String,
+    textAlign: TextAlign,
+    fontSize: TextUnit = 16.sp,
+) {
     Text(
         text = text,
         color = Color.White,
