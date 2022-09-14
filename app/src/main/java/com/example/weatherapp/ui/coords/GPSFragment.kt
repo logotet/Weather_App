@@ -36,7 +36,7 @@ class GPSFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                GPSScreen()
+//                GPSScreen()
             }
         }
     }

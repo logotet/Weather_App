@@ -24,6 +24,9 @@ import com.example.weatherapp.utils.AppConstants.ROUTE_FORECAST
 import com.example.weatherapp.utils.AppConstants.ROUTE_GPS
 import com.example.weatherapp.utils.AppConstants.ROUTE_SAVED
 import com.example.weatherapp.utils.AppConstants.ROUTE_SEARCH
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.AndroidEntryPoint
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.LocationPermission
@@ -35,8 +38,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val cancellationTokenSource = CancellationTokenSource()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContent {
             val navController = rememberNavController()
@@ -83,6 +91,9 @@ class MainActivity : AppCompatActivity() {
 
                 composable(route = ROUTE_GPS) {
                     GPSScreen(
+                        viewModel = hiltViewModel(),
+                        fusedLocationProviderClient = fusedLocationClient,
+                        cancellationTokenSource = cancellationTokenSource,
                         navigateToForecast = { locationName ->
                             navController.navigateToForecastFromGps(locationName)
                         }

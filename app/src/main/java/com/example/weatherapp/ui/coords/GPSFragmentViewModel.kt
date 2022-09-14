@@ -1,5 +1,8 @@
 package com.example.weatherapp.ui.coords
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.data.remote.checkStatus
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
@@ -19,6 +22,8 @@ class GPSFragmentViewModel @Inject constructor(
     private val getCurrentLocation: GetCurrentLocation,
     private val deleteCurrentLocation: DeleteCurrentLocation
 ) : ObservableViewModel() {
+
+    var locationName2 by mutableStateOf<String?>(null)
 
     private val _locationName = MutableSharedFlow<String>()
     val locationName: SharedFlow<String>
@@ -64,6 +69,7 @@ class GPSFragmentViewModel @Inject constructor(
             getCurrentLocation.getCurrentLocation().collect { location ->
                 location?.name?.let {
                     _locationName.emit(it)
+                    locationName2 = it
                 }
             }
         }
