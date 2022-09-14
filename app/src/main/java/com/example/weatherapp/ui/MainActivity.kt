@@ -1,9 +1,6 @@
 package com.example.weatherapp.ui
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -14,9 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.weatherapp.R
 import com.example.weatherapp.ui.coords.GPSScreen
 import com.example.weatherapp.ui.current.ForecastScreen
+import com.example.weatherapp.ui.navigation.navigateToForecastFromGps
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSaved
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSearch
+import com.example.weatherapp.ui.navigation.navigateToSavedScreen
 import com.example.weatherapp.ui.saved.SavedLocationsScreen
 import com.example.weatherapp.ui.search.SearchScreen
 import com.example.weatherapp.utils.AppConstants.ARG_LOCATION
@@ -45,13 +45,12 @@ class MainActivity : AppCompatActivity() {
                 navController = navController,
                 startDestination = ROUTE_SEARCH
             ) {
+
                 composable(route = ROUTE_SEARCH) {
                     SearchScreen(
                         viewModel = hiltViewModel(),
                         searchLocation = { locationName ->
-                            navController.navigate(
-                                "$ROUTE_FORECAST/$locationName"
-                            )
+                            navController.navigateToForecastFromSearch(locationName)
                         },
                         getCurrentLocation = {
                             constructLocationPermissionRequest(
@@ -64,9 +63,10 @@ class MainActivity : AppCompatActivity() {
                         selectUnitSystem = { unitSystem ->
                             activityViewModel.unitSystem = unitSystem
                         },
-                        navigateToSavedLocations = { navController.navigate(ROUTE_SAVED) }
+                        navigateToSavedLocations = { navController.navigateToSavedScreen() }
                     )
                 }
+
                 composable(route = "$ROUTE_FORECAST/{$ARG_LOCATION}", arguments = listOf(
                     navArgument(ARG_LOCATION) {
                         type = NavType.StringType
@@ -76,40 +76,28 @@ class MainActivity : AppCompatActivity() {
                         ForecastScreen(
                             viewModel = hiltViewModel(),
                             locationName = it,
-                            navigateToSavedLocations = { navController.navigate(ROUTE_SAVED) },
+                            navigateToSavedLocations = navController::navigateToSavedScreen,
                         )
                     }
                 }
-                composable(route = "gps") {
-                    GPSScreen()
+
+                composable(route = ROUTE_GPS) {
+                    GPSScreen(
+                        navigateToForecast = { locationName ->
+                            navController.navigateToForecastFromGps(locationName)
+                        }
+                    )
                 }
-                composable(route = "saved") {
+
+                composable(route = ROUTE_SAVED) {
                     SavedLocationsScreen(
                         viewModel = hiltViewModel(),
                         selectLocation = { name ->
-                            navController.navigate(
-                                "$ROUTE_FORECAST/$name"
-                            )
+                            navController.navigateToForecastFromSaved(name)
                         }
                     )
                 }
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_favorites -> {
-                navController.navigate(R.id.action_global_savedLocationsFragment)
-                true
-            }
-            else -> false
         }
     }
 
