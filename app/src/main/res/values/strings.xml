@@ -25,11 +25,17 @@
 
     //Humidity signatures
     <string name="humidity_format"> %d%%</string>
+
     <string name="or">Or</string>
     <string name="get_my_location">Get My Location</string>
     <string name="save_location">Save location</string>
     <string name="favourites">Favourites</string>
     <string name="recently_searched_locations">Recently searched locations:</string>
+
+    //Screen app bar titles
+    <string name="forecast_screen_title">Forecast</string>
+    <string name="gps_screen_title">Getting your location…</string>
+    <string name="favorites_screen_title">Favorite locations</string>
 
     //Error messages
     <string name="no_network_message">No network detected</string>

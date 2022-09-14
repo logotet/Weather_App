@@ -23,80 +23,100 @@ import androidx.compose.ui.unit.sp
 import com.example.weatherapp.R
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.measure.UnitSystem
+import com.example.weatherapp.ui.Appbar
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
     searchLocation: (String?) -> Unit,
     getCurrentLocation: () -> Unit,
-    selectUnitSystem: (UnitSystem) -> Unit
+    selectUnitSystem: (UnitSystem) -> Unit,
+    navigateToSavedLocations: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = colorResource(id = R.color.jordi_blue)
-    ) {
-        Column(modifier = Modifier.padding(top = 50.dp)) {
-            val unitSystemText =
-                remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }
-            TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
-
-            UnitsRadioGroup(
-                selectUnitSystem
-            ) { newUnitText ->
-                unitSystemText.value =
-                    newUnitText.capitalizeFirst()
-            }
-
-            var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
-            TextField(
-                value = locationNameText,
-                label = { Text(text = stringResource(id = R.string.city)) },
-                onValueChange = { newInput ->
-                    locationNameText = newInput
-                },
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                shape = TextFieldDefaults.OutlinedTextFieldShape,
-                leadingIcon = {
+    Scaffold(topBar = {
+        Appbar(
+            title = stringResource(id = R.string.search),
+            menuItems = {
+                IconButton(onClick = {
+                    navigateToSavedLocations()
+                }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_search),
-                        contentDescription = null
+                        painter = painterResource(id = R.drawable.ic_favorites_list), "",
+                        tint = Color.White
                     )
-                },
-                colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
-            )
-
-            ButtonSearchScreen(
-                { searchLocation(locationNameText.text) },
-                stringResource(R.string.search)
-            )
-
-            TextSearchScreen(
-                stringResource(R.string.or),
-                textAlign = TextAlign.Center
-            )
-
-            ButtonSearchScreen(
-                getCurrentLocation,
-                stringResource(R.string.get_my_location)
-            )
-
-            val recentLocationsList = viewModel.cityNames.collectAsState()
-
-            if (recentLocationsList.value.isNotEmpty()) {
-                TextSearchScreen(
-                    stringResource(R.string.recently_searched_locations),
-                    textAlign = TextAlign.Start,
-                    fontSize = 20.sp,
-                )
+                }
             }
+        )
+    }) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            color = colorResource(id = R.color.jordi_blue)
+        ) {
+            Column(modifier = Modifier.padding(top = 50.dp)) {
+                val unitSystemText =
+                    remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }
+                TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
 
-            LazyColumn {
-                items(recentLocationsList.value) { recentLocation ->
-                    RecentLocationRow(recentLocation) { selectedLocation ->
-                        searchLocation(selectedLocation)
+                UnitsRadioGroup(
+                    selectUnitSystem
+                ) { newUnitText ->
+                    unitSystemText.value =
+                        newUnitText.capitalizeFirst()
+                }
+
+                var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
+                TextField(
+                    value = locationNameText,
+                    label = { Text(text = stringResource(id = R.string.city)) },
+                    onValueChange = { newInput ->
+                        locationNameText = newInput
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    shape = TextFieldDefaults.OutlinedTextFieldShape,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_search),
+                            contentDescription = null
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
+                )
+
+                ButtonSearchScreen(
+                    { searchLocation(locationNameText.text) },
+                    stringResource(R.string.search)
+                )
+
+                TextSearchScreen(
+                    stringResource(R.string.or),
+                    textAlign = TextAlign.Center
+                )
+
+                ButtonSearchScreen(
+                    getCurrentLocation,
+                    stringResource(R.string.get_my_location)
+                )
+
+                val recentLocationsList = viewModel.cityNames.collectAsState()
+
+                if (recentLocationsList.value.isNotEmpty()) {
+                    TextSearchScreen(
+                        stringResource(R.string.recently_searched_locations),
+                        textAlign = TextAlign.Start,
+                        fontSize = 20.sp,
+                    )
+                }
+
+                LazyColumn {
+                    items(recentLocationsList.value) { recentLocation ->
+                        RecentLocationRow(recentLocation) { selectedLocation ->
+                            searchLocation(selectedLocation)
+                        }
                     }
                 }
             }

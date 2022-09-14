@@ -4,8 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherapp.models.local.City
-import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.local.SavedLocation
 import kotlinx.coroutines.flow.Flow
 
@@ -19,7 +17,7 @@ interface SavedLocationDao {
     suspend fun getAll(): List<String>
 
     @Query("SELECT name FROM saved_locations WHERE name LIKE :cityName")
-    fun getSavedLocation(cityName: String): Flow<String>
+    fun getSavedLocation(cityName: String): Flow<String?>
 
     @Query("DELETE FROM saved_locations WHERE name LIKE :cityName")
     suspend fun deleteCity(cityName: String)

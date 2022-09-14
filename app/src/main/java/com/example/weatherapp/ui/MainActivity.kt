@@ -7,14 +7,6 @@ import android.view.MenuItem
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -48,58 +40,55 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             val navController = rememberNavController()
-            Scaffold(topBar = {
-                Appbar(navigateToSavedLocations = {
-                    navController.navigate(ROUTE_SAVED)
-                })
-            }) {
-                NavHost(
-                    navController = navController,
-                    startDestination = ROUTE_SEARCH,
-                    modifier = Modifier.padding(it)
-                ) {
-                    composable(route = ROUTE_SEARCH) {
-                        SearchScreen(
-                            viewModel = hiltViewModel(),
-                            searchLocation = { locationName ->
-                                navController.navigate(
-                                    "$ROUTE_FORECAST/$locationName"
-                                )
-                            },
-                            getCurrentLocation = {
-                                constructLocationPermissionRequest(
-                                    LocationPermission.FINE,
-                                    onShowRationale = ::onGetLocationRationale,
-                                    onPermissionDenied = ::onLocationPermissionDenied,
-                                    requiresPermission = { navController.navigate(ROUTE_GPS) }
-                                ).launch()
-                            },
-                            selectUnitSystem = { unitSystem ->
-                                activityViewModel.unitSystem = unitSystem
-                            }
-                        )
-                    }
-                    composable(route = "$ROUTE_FORECAST/{$ARG_LOCATION}", arguments = listOf(
-                        navArgument(ARG_LOCATION) {
-                            type = NavType.StringType
-                        }
-                    )) { entry ->
-                        entry.arguments?.getString(ARG_LOCATION)?.let {
-                            ForecastScreen(
-                                viewModel = hiltViewModel(),
-                                locationName = it
+
+            NavHost(
+                navController = navController,
+                startDestination = ROUTE_SEARCH
+            ) {
+                composable(route = ROUTE_SEARCH) {
+                    SearchScreen(
+                        viewModel = hiltViewModel(),
+                        searchLocation = { locationName ->
+                            navController.navigate(
+                                "$ROUTE_FORECAST/$locationName"
                             )
-                        }
+                        },
+                        getCurrentLocation = {
+                            constructLocationPermissionRequest(
+                                LocationPermission.FINE,
+                                onShowRationale = ::onGetLocationRationale,
+                                onPermissionDenied = ::onLocationPermissionDenied,
+                                requiresPermission = { navController.navigate(ROUTE_GPS) }
+                            ).launch()
+                        },
+                        selectUnitSystem = { unitSystem ->
+                            activityViewModel.unitSystem = unitSystem
+                        },
+                        navigateToSavedLocations = { navController.navigate(ROUTE_SAVED) }
+                    )
+                }
+                composable(route = "$ROUTE_FORECAST/{$ARG_LOCATION}", arguments = listOf(
+                    navArgument(ARG_LOCATION) {
+                        type = NavType.StringType
                     }
-                    composable(route = "gps") {
-                        GPSScreen()
-                    }
-                    composable(route = "saved") {
-                        SavedLocationsScreen(
+                )) { entry ->
+                    entry.arguments?.getString(ARG_LOCATION)?.let {
+                        ForecastScreen(
                             viewModel = hiltViewModel(),
-                            selectLocation = { /*TODO*/ }
+                            locationName = it,
+                            navigateToSavedLocations = { navController.navigate(ROUTE_SAVED) },
+                            saveToFavorites = {}
                         )
                     }
+                }
+                composable(route = "gps") {
+                    GPSScreen()
+                }
+                composable(route = "saved") {
+                    SavedLocationsScreen(
+                        viewModel = hiltViewModel(),
+                        selectLocation = { /*TODO*/ }
+                    )
                 }
             }
         }
@@ -119,30 +108,6 @@ class MainActivity : AppCompatActivity() {
             }
             else -> false
         }
-    }
-
-    //////////
-    @Composable
-    fun Appbar(navigateToSavedLocations: () -> Unit) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    color = Color.White
-                )
-            },
-            backgroundColor = colorResource(id = R.color.royal_blue),
-            actions = {
-                IconButton(onClick = {
-                    navigateToSavedLocations()
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_favorites_list), "",
-                        tint = Color.White
-                    )
-                }
-            }
-        )
     }
 
     private fun onGetLocationRationale(permissionRequest: PermissionRequest) {

@@ -44,6 +44,8 @@ class ForecastViewModel @Inject constructor(
     private val getFavoriteLocationByName: GetFavoriteLocationByName,
     private val insertSavedLocation: InsertSavedLocation,
 ) : ObservableViewModel() {
+    var savedState by mutableStateOf(false)
+
     private var _locationName = MutableStateFlow<String?>(null)
     val locationName: StateFlow<String?> = _locationName
 
@@ -150,8 +152,9 @@ class ForecastViewModel @Inject constructor(
     private fun isSavedLocation(name: String?) {
         viewModelScope.launch {
             name?.let {
-                getFavoriteLocationByName.getSavedLocation(it).collect {
-                    _locationName.emit(it)
+                getFavoriteLocationByName.getSavedLocation(it).collect { savedName ->
+                    _locationName.emit(savedName)
+                    savedState = savedName != null
                 }
             }
         }
