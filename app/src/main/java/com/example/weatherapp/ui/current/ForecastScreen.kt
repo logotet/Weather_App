@@ -32,13 +32,18 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun ForecastScreen(viewModel: ForecastViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun ForecastScreen(
+    viewModel: ForecastViewModel,
+    locationName: String
+) {
     Surface(color = colorResource(id = R.color.jordi_blue)) {
         Column(
             modifier = Modifier
                 .fillMaxSize(1f)
                 .padding(8.dp)
         ) {
+
+//            viewModel.setupData(locationName, UnitSystem.METRIC)
             val weatherModel = viewModel.weatherModelState
 
             weatherModel?.let { model ->

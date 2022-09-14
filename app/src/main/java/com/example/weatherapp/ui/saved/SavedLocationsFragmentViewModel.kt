@@ -21,6 +21,10 @@ class SavedLocationsFragmentViewModel @Inject constructor(
 
     var isNetworkAvailable: Boolean = false
 
+    init {
+        loadData()
+    }
+
     fun loadData() {
         viewModelScope.launch {
             getFavoriteLocations.getFavoriteLocations().collect {

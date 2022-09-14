@@ -31,7 +31,10 @@ fun SearchScreen(
     getCurrentLocation: () -> Unit,
     selectUnitSystem: (UnitSystem) -> Unit
 ) {
-    Surface(color = colorResource(id = R.color.jordi_blue)) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = colorResource(id = R.color.jordi_blue)
+    ) {
         Column(modifier = Modifier.padding(top = 50.dp)) {
             val unitSystemText =
                 remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }

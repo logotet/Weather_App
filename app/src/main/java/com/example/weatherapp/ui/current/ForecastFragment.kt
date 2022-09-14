@@ -51,7 +51,7 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                ForecastScreen()
+//                ForecastScreen()
             }
         }
     }
