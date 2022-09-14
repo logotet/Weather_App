@@ -236,6 +236,7 @@ fun RecentLocationRow(city: City, selectLocation: (String) -> Unit) {
                 start = 20.dp,
                 top = 10.dp
             )
+            .fillMaxWidth()
             .clickable { selectLocation(city.cityName) }
     )
 }

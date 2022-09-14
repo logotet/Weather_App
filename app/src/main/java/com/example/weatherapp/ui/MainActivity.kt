@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
                             viewModel = hiltViewModel(),
                             locationName = it,
                             navigateToSavedLocations = { navController.navigate(ROUTE_SAVED) },
-                            saveToFavorites = {}
                         )
                     }
                 }
@@ -87,7 +86,11 @@ class MainActivity : AppCompatActivity() {
                 composable(route = "saved") {
                     SavedLocationsScreen(
                         viewModel = hiltViewModel(),
-                        selectLocation = { /*TODO*/ }
+                        selectLocation = { name ->
+                            navController.navigate(
+                                "$ROUTE_FORECAST/$name"
+                            )
+                        }
                     )
                 }
             }
