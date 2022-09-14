@@ -35,23 +35,28 @@ fun ForecastScreen(
     viewModel: ForecastViewModel,
     locationName: String,
     navigateToSavedLocations: () -> Unit,
-    saveToFavorites: () -> Unit,
 ) {
     Scaffold(topBar = {
         Appbar(
             title = stringResource(id = R.string.search),
             menuItems = {
+
+                val isSaved = viewModel.savedState
+                val heartIcon =
+                    if (isSaved) R.drawable.ic_heart_full else R.drawable.ic_heart_empty
+
                 IconButton(onClick = {
-                    saveToFavorites()
+                    if (isSaved)
+                        viewModel.removeLocationFromFavorites()
+                    else
+                        viewModel.saveLocationToFavorites()
                 }) {
-                    val isSaved = viewModel.savedState
-                    val heartIcon =
-                        if (isSaved) R.drawable.ic_heart_full else R.drawable.ic_heart_empty
                     Icon(
                         painter = painterResource(id = heartIcon), "",
                         tint = Color.White
                     )
                 }
+
                 IconButton(onClick = {
                     navigateToSavedLocations()
                 }) {
@@ -73,7 +78,7 @@ fun ForecastScreen(
                     .padding(8.dp)
             ) {
 
-//            viewModel.setupData(locationName, UnitSystem.METRIC)
+                viewModel.setupData(locationName, UnitSystem.METRIC)
                 val weatherModel = viewModel.weatherModelState
 
                 weatherModel?.let { model ->
