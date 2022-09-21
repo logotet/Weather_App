@@ -28,11 +28,11 @@ import com.example.weatherapp.ui.Appbar
 
 @Composable
 fun SavedLocationsScreen(
-    viewModel: SavedLocationsFragmentViewModel,
+    viewModel: SavedLocationsViewModel,
     selectLocation: (String) -> Unit
 ) {
 
-//    viewModel.loadData()
+    viewModel.loadData()
     val savedLocations = viewModel.locations.collectAsState(initial = emptyList())
 
     Scaffold(topBar = {
