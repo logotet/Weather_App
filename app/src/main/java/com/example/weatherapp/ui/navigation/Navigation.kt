@@ -12,15 +12,16 @@ fun NavController.navigateToForecastFromSaved(name: String) {
     this.navigate(
         "${NavRoutes.ROUTE_FORECAST}/$name"
     ) {
-        popUpTo(NavRoutes.ROUTE_FORECAST) {
+        popUpTo(NavRoutes.ROUTE_SAVED) {
             inclusive = true
         }
+        launchSingleTop = true
     }
 }
 
 fun NavController.navigateToForecastFromGps(locationName: String) {
     this.navigate(
-        "${NavRoutes}s.ROUTE_FORECAST}/$locationName"
+        "${NavRoutes.ROUTE_FORECAST}/$locationName"
     ) {
         popUpTo(NavRoutes.ROUTE_SEARCH)
     }
