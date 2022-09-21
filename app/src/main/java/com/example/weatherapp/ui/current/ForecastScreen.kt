@@ -39,7 +39,7 @@ fun ForecastScreen(
 ) {
     Scaffold(topBar = {
         Appbar(
-            title = stringResource(id = R.string.search),
+            title = stringResource(id = R.string.forecast_screen_title),
             navigateUp = { navigateUp() },
             menuItems = {
 
