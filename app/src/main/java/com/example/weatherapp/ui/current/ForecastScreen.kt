@@ -35,10 +35,12 @@ fun ForecastScreen(
     viewModel: ForecastViewModel,
     locationName: String,
     navigateToSavedLocations: () -> Unit,
+    navigateUp: () -> Unit
 ) {
     Scaffold(topBar = {
         Appbar(
             title = stringResource(id = R.string.search),
+            navigateUp = { navigateUp() },
             menuItems = {
 
                 val isSaved = viewModel.savedState

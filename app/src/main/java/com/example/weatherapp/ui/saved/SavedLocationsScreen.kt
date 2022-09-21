@@ -29,7 +29,8 @@ import com.example.weatherapp.ui.Appbar
 @Composable
 fun SavedLocationsScreen(
     viewModel: SavedLocationsViewModel,
-    selectLocation: (String) -> Unit
+    selectLocation: (String) -> Unit,
+    navigateUp: () -> Unit
 ) {
 
     viewModel.loadData()
@@ -38,7 +39,8 @@ fun SavedLocationsScreen(
     Scaffold(topBar = {
         Appbar(
             title = stringResource(id = R.string.favorites_screen_title),
-            menuItems = {}
+            menuItems = {},
+            navigateUp = { navigateUp() }
         )
     }) {
         Surface(

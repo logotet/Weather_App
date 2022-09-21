@@ -25,7 +25,6 @@ import com.example.weatherapp.ui.utils.ObservableViewModel
 import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.SingleLiveEvent
-import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,8 +51,6 @@ class ForecastViewModel @Inject constructor(
     var weatherModelState by mutableStateOf<CurrentWeatherModel?>(null)
 
     var hoursState by mutableStateOf<List<HourWeatherModel>>(emptyList())
-
-    var location by mutableStateOf(LatLng(20.0, 30.0))
 
     private var _coords = MutableStateFlow<Coord?>(null)
     val coords: StateFlow<Coord?> = _coords
