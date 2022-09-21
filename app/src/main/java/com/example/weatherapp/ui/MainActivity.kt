@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
                             viewModel = hiltViewModel(),
                             locationName = it,
                             navigateToSavedLocations = navController::navigateToSavedScreen,
+                            navigateUp = { navController.navigateUp() }
                         )
                     }
                 }
@@ -105,7 +106,8 @@ class MainActivity : AppCompatActivity() {
                         viewModel = hiltViewModel(),
                         selectLocation = { name ->
                             navController.navigateToForecastFromSaved(name)
-                        }
+                        },
+                        navigateUp = { navController.navigateUp() }
                     )
                 }
             }

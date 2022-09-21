@@ -31,11 +31,13 @@ fun SearchScreen(
     searchLocation: (String?) -> Unit,
     getCurrentLocation: () -> Unit,
     selectUnitSystem: (UnitSystem) -> Unit,
-    navigateToSavedLocations: () -> Unit
+    navigateToSavedLocations: () -> Unit,
 ) {
     Scaffold(topBar = {
         Appbar(
             title = stringResource(id = R.string.search),
+            navigateUp = {},
+            navigationIcon = {},
             menuItems = {
                 IconButton(onClick = {
                     navigateToSavedLocations()
