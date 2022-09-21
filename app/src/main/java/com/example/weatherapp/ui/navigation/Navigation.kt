@@ -1,19 +1,18 @@
 package com.example.weatherapp.ui.navigation
 
 import androidx.navigation.NavController
-import com.example.weatherapp.utils.AppConstants
 
 fun NavController.navigateToForecastFromSearch(locationName: String?) {
     this.navigate(
-        "${AppConstants.ROUTE_FORECAST}/$locationName"
+        "${NavRoutes.ROUTE_FORECAST}/$locationName"
     )
 }
 
 fun NavController.navigateToForecastFromSaved(name: String) {
     this.navigate(
-        "${AppConstants.ROUTE_FORECAST}/$name"
+        "${NavRoutes.ROUTE_FORECAST}/$name"
     ) {
-        popUpTo(AppConstants.ROUTE_FORECAST) {
+        popUpTo(NavRoutes.ROUTE_FORECAST) {
             inclusive = true
         }
     }
@@ -21,15 +20,15 @@ fun NavController.navigateToForecastFromSaved(name: String) {
 
 fun NavController.navigateToForecastFromGps(locationName: String) {
     this.navigate(
-        "${AppConstants.ROUTE_FORECAST}/$locationName"
+        "${NavRoutes}s.ROUTE_FORECAST}/$locationName"
     ) {
-        popUpTo(AppConstants.ROUTE_SEARCH)
+        popUpTo(NavRoutes.ROUTE_SEARCH)
     }
 }
 
 fun NavController.navigateToSavedScreen() {
-    this.navigate(AppConstants.ROUTE_SAVED) {
-        popUpTo(AppConstants.ROUTE_SAVED) {
+    this.navigate(NavRoutes.ROUTE_SAVED) {
+        popUpTo(NavRoutes.ROUTE_SAVED) {
             inclusive = true
         }
     }
