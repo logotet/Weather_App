@@ -7,7 +7,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.MainActivityViewModel
 import com.example.weatherapp.ui.utils.isNetworkAvailable
@@ -40,15 +39,15 @@ class SavedLocationsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                SavedLocationsScreen(viewModel) { name ->
-                    findNavController().navigate(
-                        SavedLocationsFragmentDirections.actionSavedLocationsFragmentToCurrentWeatherFragment(
-                            cityName = name
-                        )
-                    )
-                }
-            }
+//            setContent {
+//                SavedLocationsScreen(viewModel) { name ->
+//                    findNavController().navigate(
+//                        SavedLocationsFragmentDirections.actionSavedLocationsFragmentToCurrentWeatherFragment(
+//                            cityName = name
+//                        )
+//                    )
+//                }
+//            }
         }
     }
 

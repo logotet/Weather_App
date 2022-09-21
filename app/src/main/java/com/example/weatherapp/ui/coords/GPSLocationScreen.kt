@@ -37,7 +37,8 @@ fun GPSScreen(
     Scaffold(topBar = {
         Appbar(
             title = stringResource(id = R.string.gps_screen_title),
-            menuItems = {}
+            menuItems = {},
+            navigateUp = {}
         )
     }) {
         Surface(
