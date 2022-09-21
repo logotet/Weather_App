@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SavedLocationsFragmentViewModel @Inject constructor(
+class SavedLocationsViewModel @Inject constructor(
     private val getFavoriteLocations: GetFavoriteLocations,
 ) : ObservableViewModel() {
 

@@ -60,7 +60,7 @@ class WeatherLocalDataSource(private val weatherDatabase: WeatherDatabase) {
         return weatherDatabase.savedLocationDao().getAll()
     }
 
-    fun getSavedLocation(name: String): Flow<String> {
+    fun getSavedLocation(name: String): Flow<String?> {
         return weatherDatabase.savedLocationDao().getSavedLocation(name)
     }
 

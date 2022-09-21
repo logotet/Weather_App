@@ -15,4 +15,7 @@ object AppConstants {
 
     const val CACHE_TIMEOUT: Long = 300_000 //5m
     const val OLD_DATA_TIMEOUT: Long = 172_800_000 //48h
+
+    //Navigation args
+    const val ARG_LOCATION = "location"
 }

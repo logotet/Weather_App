@@ -1,60 +1,128 @@
 package com.example.weatherapp.ui
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+import android.view.View
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.weatherapp.R
-import com.example.weatherapp.databinding.ActivityMainBinding
+import com.example.weatherapp.ui.coords.GPSScreen
+import com.example.weatherapp.ui.current.ForecastScreen
+import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_FORECAST
+import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_GPS
+import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_SAVED
+import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_SEARCH
+import com.example.weatherapp.ui.navigation.navigateToForecastFromGps
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSaved
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSearch
+import com.example.weatherapp.ui.navigation.navigateToSavedScreen
+import com.example.weatherapp.ui.saved.SavedLocationsScreen
+import com.example.weatherapp.ui.search.SearchScreen
+import com.example.weatherapp.utils.AppConstants.ARG_LOCATION
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import permissions.dispatcher.PermissionRequest
+import permissions.dispatcher.ktx.LocationPermission
+import permissions.dispatcher.ktx.constructLocationPermissionRequest
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
     private val activityViewModel: MainActivityViewModel by viewModels()
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var navController: NavController
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val cancellationTokenSource = CancellationTokenSource()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.lifecycleOwner = this
-        binding.viewModel = activityViewModel
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        setSupportActionBar(binding.toolbar)
+        setContent {
+            val navController = rememberNavController()
 
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        binding.toolbar.setupWithNavController(
-            navController = navController,
-            configuration = appBarConfiguration
-        )
-    }
+            NavHost(
+                navController = navController,
+                startDestination = ROUTE_SEARCH
+            ) {
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
+                composable(route = ROUTE_SEARCH) {
+                    SearchScreen(
+                        viewModel = hiltViewModel(),
+                        searchLocation = { locationName ->
+                            navController.navigateToForecastFromSearch(locationName)
+                        },
+                        getCurrentLocation = {
+                            constructLocationPermissionRequest(
+                                LocationPermission.FINE,
+                                onShowRationale = ::onGetLocationRationale,
+                                onPermissionDenied = ::onLocationPermissionDenied,
+                                requiresPermission = { navController.navigate(ROUTE_GPS) }
+                            ).launch()
+                        },
+                        selectUnitSystem = { unitSystem ->
+                            activityViewModel.unitSystem = unitSystem
+                        },
+                        navigateToSavedLocations = { navController.navigateToSavedScreen() }
+                    )
+                }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_favorites -> {
-                navController.navigate(R.id.action_global_savedLocationsFragment)
-                true
+                composable(route = "$ROUTE_FORECAST/{$ARG_LOCATION}", arguments = listOf(
+                    navArgument(ARG_LOCATION) {
+                        type = NavType.StringType
+                    }
+                )) { entry ->
+                    entry.arguments?.getString(ARG_LOCATION)?.let {
+                        ForecastScreen(
+                            viewModel = hiltViewModel(),
+                            locationName = it,
+                            navigateToSavedLocations = navController::navigateToSavedScreen,
+                        )
+                    }
+                }
+
+                composable(route = ROUTE_GPS) {
+                    GPSScreen(
+                        viewModel = hiltViewModel(),
+                        fusedLocationProviderClient = fusedLocationClient,
+                        cancellationTokenSource = cancellationTokenSource,
+                        navigateToForecast = { locationName ->
+                            navController.navigateToForecastFromGps(locationName)
+                        }
+                    )
+                }
+
+                composable(route = ROUTE_SAVED) {
+                    SavedLocationsScreen(
+                        viewModel = hiltViewModel(),
+                        selectLocation = { name ->
+                            navController.navigateToForecastFromSaved(name)
+                        }
+                    )
+                }
             }
-            else -> false
         }
+    }
+
+    private fun onGetLocationRationale(permissionRequest: PermissionRequest) {
+        permissionRequest.proceed()
+    }
+
+    private fun onLocationPermissionDenied() {
+        Snackbar.make(
+            findViewById<View>
+                (android.R.id.content).rootView,
+            getString(R.string.location_denied),
+            Snackbar.LENGTH_LONG
+        ).show()
+        activityViewModel.barVisible = false
     }
 }

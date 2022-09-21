@@ -22,8 +22,6 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import permissions.dispatcher.PermissionRequest
-import permissions.dispatcher.ktx.LocationPermission
-import permissions.dispatcher.ktx.constructLocationPermissionRequest
 
 
 @AndroidEntryPoint
@@ -53,22 +51,22 @@ class SearchFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                SearchScreen(viewModel = viewModel,
-                    { locationName ->
-                        searchLocation(locationName)
-                    },
-                    {
-                        constructLocationPermissionRequest(
-                            LocationPermission.FINE,
-                            onShowRationale = ::onGetLocationRationale,
-                            onPermissionDenied = ::onLocationPermissionDenied,
-                            requiresPermission = ::goToCoordinatesFragment
-                        ).launch()
-                    },
-                    { unitSystem ->
-                        activityViewModel.unitSystem = unitSystem
-                    }
-                )
+//                SearchScreen(viewModel = viewModel,
+//                    searchLocation = { locationName ->
+//                        searchLocation(locationName)
+//                    },
+//                    getCurrentLocation = {
+//                        constructLocationPermissionRequest(
+//                            LocationPermission.FINE,
+//                            onShowRationale = ::onGetLocationRationale,
+//                            onPermissionDenied = ::onLocationPermissionDenied,
+//                            requiresPermission = ::goToCoordinatesFragment
+//                        ).launch()
+//                    },
+//                    selectUnitSystem = { unitSystem ->
+//                        activityViewModel.unitSystem = unitSystem
+//                    }
+//                )
             }
         }
     }

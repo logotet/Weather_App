@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SavedLocationsFragment : Fragment() {
-    private val viewModel: SavedLocationsFragmentViewModel by viewModels()
+    private val viewModel: SavedLocationsViewModel by viewModels()
     private val activityViewModel: MainActivityViewModel by activityViewModels()
 
     @Inject
