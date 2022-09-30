@@ -84,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                         ForecastScreen(
                             viewModel = hiltViewModel(),
                             locationName = it,
+                            unitSystem = activityViewModel.unitSystem,
                             navigateToSavedLocations = navController::navigateToSavedScreen,
                             navigateUp = { navController.navigateUp() }
                         )

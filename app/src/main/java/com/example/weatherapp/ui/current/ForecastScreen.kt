@@ -34,6 +34,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun ForecastScreen(
     viewModel: ForecastViewModel,
     locationName: String,
+    unitSystem: UnitSystem,
     navigateToSavedLocations: () -> Unit,
     navigateUp: () -> Unit
 ) {
@@ -80,7 +81,7 @@ fun ForecastScreen(
                     .padding(8.dp)
             ) {
 
-                viewModel.setupData(locationName, UnitSystem.METRIC)
+                viewModel.setupData(locationName, unitSystem)
                 val weatherModel = viewModel.weatherModelState
 
                 weatherModel?.let { model ->
@@ -90,8 +91,8 @@ fun ForecastScreen(
                         iconSize = 40.dp,
                     )
 
-                    val formattedTemperature = UnitSystem.METRIC.mapTemperature(model.temperature)
-                        .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+                    val formattedTemperature = unitSystem.mapTemperature(model.temperature)
+                        .formatTemperatureComposable(unitSystem = unitSystem)
                     TextAndIconForecast(
                         painter = rememberAsyncImagePainter(model.icon.getIconUrl()),
                         text = formattedTemperature,
@@ -126,7 +127,7 @@ fun ForecastScreen(
                         TextAndIconForecast(
                             modifier = Modifier.fillMaxWidth(0.6f),
                             painter = painterResource(id = R.drawable.ic_arrow_direction),
-                            text = model.windSpeed.formatSpeedComposable(UnitSystem.METRIC),
+                            text = model.windSpeed.formatSpeedComposable(unitSystem),
                             rotation = model.windDirection
                         )
                     }
@@ -160,7 +161,8 @@ fun ForecastScreen(
                                     iconCode = hour.hourIcon,
                                     humidity = hour.humidity,
                                     windSpeed = hour.hourWindSpeed,
-                                    rotation = hour.windDirection
+                                    rotation = hour.windDirection,
+                                    unitSystem = unitSystem
                                 )
                             }
                         }
@@ -256,7 +258,8 @@ fun Hour(
     temperature: Double,
     humidity: Int,
     windSpeed: Double,
-    rotation: Int
+    rotation: Int,
+    unitSystem: UnitSystem
 ) {
     Surface(
         color = colorResource(id = R.color.malibu)
@@ -281,8 +284,8 @@ fun Hour(
                 modifier = Modifier.size(60.dp)
             )
 
-            val formattedTemperature = UnitSystem.METRIC.mapTemperature(temperature)
-                .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+            val formattedTemperature = unitSystem.mapTemperature(temperature)
+                .formatTemperatureComposable(unitSystem = unitSystem)
 
             ForecastScreenHourText(text = formattedTemperature, fontSize = 28.sp)
 
@@ -303,7 +306,7 @@ fun Hour(
                     tint = Color.White
                 )
 
-                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = UnitSystem.METRIC)
+                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = unitSystem)
                 ForecastScreenHourText(text = formattedSpeed)
             }
         }
