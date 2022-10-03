@@ -106,9 +106,9 @@ fun ForecastScreen(
                         text = model.description.capitalizeFirstChar(),
                         textAlign = TextAlign.Center,
                         color = Color.White,
-                        fontSize = 32.sp,
+                        fontSize = 28.sp,
                         modifier = Modifier
-                            .padding(top = 20.dp)
+                            .padding(vertical = 10.dp)
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally)
                     )
@@ -134,11 +134,11 @@ fun ForecastScreen(
 
                     Text(
                         text = stringResource(id = R.string.hourly),
-                        fontSize = 24.sp,
+                        fontSize = 16.sp,
                         color = Color.White,
                         modifier = Modifier.padding(
                             top = 20.dp,
-                            start = 8.dp,
+                            start = 4.dp,
                             bottom = 4.dp
                         )
                     )
@@ -173,13 +173,16 @@ fun ForecastScreen(
                         model.lon
                     )
                     val cameraPositionState = rememberCameraPositionState {
-                        position = CameraPosition.fromLatLngZoom(location, 10f)
+                        position = CameraPosition.fromLatLngZoom(
+                            location,
+                            10f
+                        )
                     }
                     GoogleMap(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(400.dp)
-                            .padding(top = 30.dp),
+                            .padding(top = 10.dp),
                         cameraPositionState = cameraPositionState
                     ) {
                         Marker(
@@ -202,12 +205,12 @@ fun TextAndIconForecast(
     tint: Color = Color.White,
     iconSize: Dp = 30.dp,
     rotation: Int = 0,
-    fontSize: TextUnit = 32.sp
+    fontSize: TextUnit = 28.sp
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
+            .padding(top = 10.dp)
             .height(rowHeight),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -219,10 +222,13 @@ fun TextAndIconForecast(
             modifier = iconModifier
                 .size(iconSize)
                 .rotate(rotation.toFloat())
-                .padding(end = 4.dp)
+                .padding(end = 10.dp)
         )
 
-        ForecastScreenText(text = text, fontSize = fontSize)
+        ForecastScreenText(
+            text = text,
+            fontSize = fontSize
+        )
     }
 }
 
@@ -274,23 +280,24 @@ fun Hour(
             val hourValue = hour.formatHour(timeOffset)
             ForecastScreenHourText(
                 text = hourValue,
-                padding = 2.dp
+                padding = 2.dp,
+                fontSize = 16.sp
             )
 
             Icon(
                 painter = rememberAsyncImagePainter(iconCode.getIconUrl()),
                 contentDescription = null,
                 tint = Color.Unspecified,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(50.dp),
             )
 
             val formattedTemperature = unitSystem.mapTemperature(temperature)
                 .formatTemperatureComposable(unitSystem = unitSystem)
 
-            ForecastScreenHourText(text = formattedTemperature, fontSize = 28.sp)
+            ForecastScreenHourText(text = formattedTemperature)
 
             val formattedHumidity = humidity.formatHumidityComposable()
-            ForecastScreenHourText(text = formattedHumidity)
+            ForecastScreenHourText(text = formattedHumidity, fontSize = 16.sp)
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -307,7 +314,10 @@ fun Hour(
                 )
 
                 val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = unitSystem)
-                ForecastScreenHourText(text = formattedSpeed)
+                ForecastScreenHourText(
+                    text = formattedSpeed,
+                    fontSize = 16.sp
+                )
             }
         }
     }
