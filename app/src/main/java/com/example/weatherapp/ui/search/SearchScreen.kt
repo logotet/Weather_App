@@ -138,7 +138,7 @@ fun UnitsRadioGroup(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 50.dp)
+            .padding(top = 30.dp)
     ) {
         unitsList.forEach { unit ->
             Column(
@@ -201,7 +201,10 @@ private fun ButtonSearchScreen(
         onClick = action,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),
+            .padding(
+                vertical = 10.dp,
+                horizontal = 20.dp
+            )
     ) {
         Text(text = btnText)
     }
@@ -231,7 +234,7 @@ private fun TextSearchScreen(
 fun RecentLocationRow(city: City, selectLocation: (String) -> Unit) {
     Text(
         text = city.cityName,
-        fontSize = 28.sp,
+        fontSize = 24.sp,
         color = Color.White,
         modifier = Modifier
             .padding(
