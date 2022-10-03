@@ -18,4 +18,5 @@ object AppConstants {
 
     //Navigation args
     const val ARG_LOCATION = "location"
+    const val ARG_UNIT_SYSTEM = "units"
 }
