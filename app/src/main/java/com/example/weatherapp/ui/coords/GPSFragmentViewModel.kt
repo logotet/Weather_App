@@ -23,11 +23,7 @@ class GPSFragmentViewModel @Inject constructor(
     private val deleteCurrentLocation: DeleteCurrentLocation
 ) : ObservableViewModel() {
 
-    var locationName2 by mutableStateOf<String?>(null)
-
-    private val _locationName = MutableSharedFlow<String>()
-    val locationName: SharedFlow<String>
-        get() = _locationName.asSharedFlow()
+    var locationName by mutableStateOf<String?>(null)
 
     private val _errorMessage = MutableSharedFlow<String>()
     val errorMessage: SharedFlow<String>
@@ -68,8 +64,7 @@ class GPSFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             getCurrentLocation.getCurrentLocation().collect { location ->
                 location?.name?.let {
-                    _locationName.emit(it)
-                    locationName2 = it
+                    locationName = it
                 }
             }
         }

@@ -19,8 +19,6 @@ class SavedLocationsViewModel @Inject constructor(
     val locations: SharedFlow<List<LocalWeatherModel>>
         get() = _locations
 
-    var isNetworkAvailable: Boolean = false
-
     fun loadData() {
         viewModelScope.launch {
             getFavoriteLocations.getFavoriteLocations().collect {

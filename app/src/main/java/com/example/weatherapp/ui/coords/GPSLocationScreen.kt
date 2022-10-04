@@ -56,7 +56,7 @@ fun GPSScreen(
         }
     }
 
-    val location = viewModel.locationName2
+    val location = viewModel.locationName
     location?.let {
         LaunchedEffect(key1 = true) {
             navigateToForecast(location)

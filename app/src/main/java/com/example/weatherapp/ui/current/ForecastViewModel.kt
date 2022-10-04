@@ -14,7 +14,6 @@ import com.example.weatherapp.interactors.localcalls.locations.GetFavoriteLocati
 import com.example.weatherapp.interactors.localcalls.locations.GetLocationByName
 import com.example.weatherapp.interactors.localcalls.locations.InsertSavedLocation
 import com.example.weatherapp.interactors.localcalls.locations.RemoveLocationFromFavorites
-import com.example.weatherapp.models.api.Coord
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.measure.UnitSystem
@@ -26,8 +25,6 @@ import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,15 +42,9 @@ class ForecastViewModel @Inject constructor(
 ) : ObservableViewModel() {
     var savedState by mutableStateOf(false)
 
-    private var _locationName = MutableStateFlow<String?>(null)
-    val locationName: StateFlow<String?> = _locationName
-
     var weatherModelState by mutableStateOf<CurrentWeatherModel?>(null)
 
     var hoursState by mutableStateOf<List<HourWeatherModel>>(emptyList())
-
-    private var _coords = MutableStateFlow<Coord?>(null)
-    val coords: StateFlow<Coord?> = _coords
 
     var unitSystem: UnitSystem = UnitSystem.METRIC
 
@@ -144,7 +135,6 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch {
             name?.let {
                 getFavoriteLocationByName.getSavedLocation(it).collect { savedName ->
-                    _locationName.emit(savedName)
                     savedState = savedName != null
                 }
             }

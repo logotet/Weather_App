@@ -11,9 +11,7 @@ import com.example.weatherapp.interactors.apicalls.GetCurrentCityWeather
 import com.example.weatherapp.interactors.apicalls.GetCurrentCoordWeather
 import com.example.weatherapp.interactors.apicalls.GetHourlyWeather
 import com.example.weatherapp.repository.Repository
-import com.example.weatherapp.ui.hours.HourViewModel
 import com.example.weatherapp.utils.AppConstants
-import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.utils.ResourceProvider
 import dagger.Module
 import dagger.Provides
@@ -87,11 +85,6 @@ class AppModule {
     @Singleton
     fun providesGetHourlyWeather(repository: Repository): GetHourlyWeather =
         GetHourlyWeather(repository)
-
-    @Provides
-    @Singleton
-    fun providesHourViewModel(unitSystem: UnitSystem, resourceProvider: ResourceProvider): HourViewModel =
-        HourViewModel(unitSystem, resourceProvider)
 
     @Provides
     @Singleton
