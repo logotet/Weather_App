@@ -81,7 +81,8 @@ fun ForecastScreen(
                     .padding(8.dp)
             ) {
 
-                viewModel.setupData(locationName, unitSystem)
+                viewModel.setData(locationName, unitSystem)
+
                 val weatherModel = viewModel.weatherModelState
 
                 weatherModel?.let { model ->

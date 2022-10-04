@@ -60,7 +60,6 @@ class ForecastFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
 
         unitSystem = activityViewModel.unitSystem
-        viewModel.setupData(args.cityName, unitSystem)
     }
 
     override fun onMapReady(googleMap: GoogleMap) {

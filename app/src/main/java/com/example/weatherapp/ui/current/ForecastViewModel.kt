@@ -63,22 +63,18 @@ class ForecastViewModel @Inject constructor(
     val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
 
-    private var _errorDatabaseMessage = SingleLiveEvent<String?>()
-    val errorDatabaseMessage: SingleLiveEvent<String?>
-        get() = _errorDatabaseMessage
-
-    private var _cancelRefresh = SingleLiveEvent<Unit>()
-    val cancelRefresh: SingleLiveEvent<Unit>
-        get() = _cancelRefresh
-
-    fun setupData(city: String?, unitSystem: UnitSystem) {
-        this.unitSystem = unitSystem
-        if (!city.isNullOrEmpty()) {
-            //todo handle all the data calls in a separate usecase
-            getNetworkWeatherResponse(city)
-            getWeatherFromDatabase(city)
-            getLocalHours(city)
+    var cityName: String = ""
+        set(value) {
+            if (weatherModelState == null) {
+                getNetworkWeatherResponse(value)
+                getWeatherFromDatabase(value)
+                getLocalHours(value)
+            }
         }
+
+    fun setData(cityName: String, unitSystem: UnitSystem) {
+        this.cityName = cityName
+        this.unitSystem = unitSystem
     }
 
     private fun getNetworkWeatherResponse(city: String?) {
@@ -88,9 +84,7 @@ class ForecastViewModel @Inject constructor(
                     city?.let {
                         getCurrentCityWeather.getCurrentWeather(it)
                             .collectResult(
-                                {
-                                    _cancelRefresh.call()
-                                },
+                                {},
                                 {
                                     _errorMessage.value = it.message
                                 }
@@ -109,8 +103,8 @@ class ForecastViewModel @Inject constructor(
             getLocationByName.getCity(city).collectResult(
                 {
                     weatherModelState = it
-                    getNetworkHours()
                     isSavedLocation(it?.name)
+                    getNetworkHours()
                 },
                 {}
             )
