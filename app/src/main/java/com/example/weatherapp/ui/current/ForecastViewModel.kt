@@ -14,7 +14,6 @@ import com.example.weatherapp.interactors.localcalls.locations.GetFavoriteLocati
 import com.example.weatherapp.interactors.localcalls.locations.GetLocationByName
 import com.example.weatherapp.interactors.localcalls.locations.InsertSavedLocation
 import com.example.weatherapp.interactors.localcalls.locations.RemoveLocationFromFavorites
-import com.example.weatherapp.models.api.Coord
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.local.SavedLocation
 import com.example.weatherapp.models.measure.UnitSystem
@@ -26,8 +25,6 @@ import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.ResourceProvider
 import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,15 +42,9 @@ class ForecastViewModel @Inject constructor(
 ) : ObservableViewModel() {
     var savedState by mutableStateOf(false)
 
-    private var _locationName = MutableStateFlow<String?>(null)
-    val locationName: StateFlow<String?> = _locationName
-
     var weatherModelState by mutableStateOf<CurrentWeatherModel?>(null)
 
     var hoursState by mutableStateOf<List<HourWeatherModel>>(emptyList())
-
-    private var _coords = MutableStateFlow<Coord?>(null)
-    val coords: StateFlow<Coord?> = _coords
 
     var unitSystem: UnitSystem = UnitSystem.METRIC
 
@@ -63,22 +54,18 @@ class ForecastViewModel @Inject constructor(
     val errorMessage: SingleLiveEvent<String?>
         get() = _errorMessage
 
-    private var _errorDatabaseMessage = SingleLiveEvent<String?>()
-    val errorDatabaseMessage: SingleLiveEvent<String?>
-        get() = _errorDatabaseMessage
-
-    private var _cancelRefresh = SingleLiveEvent<Unit>()
-    val cancelRefresh: SingleLiveEvent<Unit>
-        get() = _cancelRefresh
-
-    fun setupData(city: String?, unitSystem: UnitSystem) {
-        this.unitSystem = unitSystem
-        if (!city.isNullOrEmpty()) {
-            //todo handle all the data calls in a separate usecase
-            getNetworkWeatherResponse(city)
-            getWeatherFromDatabase(city)
-            getLocalHours(city)
+    var cityName: String = ""
+        set(value) {
+            if (weatherModelState == null) {
+                getNetworkWeatherResponse(value)
+                getWeatherFromDatabase(value)
+                getLocalHours(value)
+            }
         }
+
+    fun setData(cityName: String, unitSystem: UnitSystem) {
+        this.cityName = cityName
+        this.unitSystem = unitSystem
     }
 
     private fun getNetworkWeatherResponse(city: String?) {
@@ -88,9 +75,7 @@ class ForecastViewModel @Inject constructor(
                     city?.let {
                         getCurrentCityWeather.getCurrentWeather(it)
                             .collectResult(
-                                {
-                                    _cancelRefresh.call()
-                                },
+                                {},
                                 {
                                     _errorMessage.value = it.message
                                 }
@@ -109,8 +94,8 @@ class ForecastViewModel @Inject constructor(
             getLocationByName.getCity(city).collectResult(
                 {
                     weatherModelState = it
-                    getNetworkHours()
                     isSavedLocation(it?.name)
+                    getNetworkHours()
                 },
                 {}
             )
@@ -150,7 +135,6 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch {
             name?.let {
                 getFavoriteLocationByName.getSavedLocation(it).collect { savedName ->
-                    _locationName.emit(savedName)
                     savedState = savedName != null
                 }
             }
