@@ -6,10 +6,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-fun ViewModel.onNetworkAvailability(
+suspend fun ViewModel.onNetworkAvailability(
     isAvlb: Boolean,
     onAvailable: () -> Unit,
-    onUnavailable: () -> Unit,
+    onUnavailable: suspend () -> Unit,
 ) {
     if (isAvlb) {
         onAvailable()

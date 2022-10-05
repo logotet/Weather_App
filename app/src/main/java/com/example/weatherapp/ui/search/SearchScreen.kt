@@ -1,5 +1,6 @@
 package com.example.weatherapp.ui.search
 
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,23 +35,27 @@ fun SearchScreen(
     selectUnitSystem: (UnitSystem) -> Unit,
     navigateToSavedLocations: () -> Unit,
 ) {
-    Scaffold(topBar = {
-        Appbar(
-            title = stringResource(id = R.string.search),
-            navigateUp = {},
-            navigationIcon = {},
-            menuItems = {
-                IconButton(onClick = {
-                    navigateToSavedLocations()
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_favorites_list), "",
-                        tint = Color.White
-                    )
+    val scaffoldState = rememberScaffoldState()
+    Scaffold(
+        topBar = {
+            Appbar(
+                title = stringResource(id = R.string.search),
+                navigateUp = {},
+                navigationIcon = {},
+                menuItems = {
+                    IconButton(onClick = {
+                        navigateToSavedLocations()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_favorites_list), "",
+                            tint = Color.White
+                        )
+                    }
                 }
-            }
-        )
-    }) {
+            )
+        },
+        scaffoldState = scaffoldState
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,8 +95,15 @@ fun SearchScreen(
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
 
+                val context = LocalContext.current
+                val errorMessage = stringResource(R.string.valid_location)
                 ButtonSearchScreen(
-                    { searchLocation(locationNameText.text) },
+                    {
+                        if (locationNameText.text.isNotEmpty())
+                            searchLocation(locationNameText.text)
+                        else
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    },
                     stringResource(R.string.search)
                 )
 
