@@ -21,11 +21,10 @@ import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.utils.mapToCurrentHours
 import com.example.weatherapp.ui.utils.ObservableViewModel
+import com.example.weatherapp.ui.utils.onNetworkAvailability
 import com.example.weatherapp.utils.ResourceProvider
+import com.example.weatherapp.utils.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,8 +48,11 @@ class ForecastViewModel @Inject constructor(
 
     var unitSystem: UnitSystem = UnitSystem.METRIC
 
-    private var _errorMessage = MutableSharedFlow<String?>()
-    val errorMessage: SharedFlow<String?> = _errorMessage.asSharedFlow()
+    private var isNetworkAvailable: Boolean = true
+
+    private var _errorMessage = SingleLiveEvent<String?>()
+    val errorMessage: SingleLiveEvent<String?>
+        get() = _errorMessage
 
     var cityName: String = ""
         set(value) {
@@ -67,18 +69,24 @@ class ForecastViewModel @Inject constructor(
     }
 
     private fun getNetworkWeatherResponse(city: String?) {
+        onNetworkAvailability(isNetworkAvailable,
+            {
                 viewModelScope.launch {
                     city?.let {
                         getCurrentCityWeather.getCurrentWeather(it)
                             .collectResult(
                                 {},
                                 {
-                                    _errorMessage.emit(resourceProvider.getString(R.string.no_location_found))
+                                    _errorMessage.value = it.message
                                 }
                             )
                     }
                 }
                 notifyChange()
+            },
+            {
+                _errorMessage.value = resourceProvider.getString(R.string.no_network_message)
+            })
     }
 
     private fun getWeatherFromDatabase(city: String) {
@@ -106,7 +114,7 @@ class ForecastViewModel @Inject constructor(
                         insertRecentCity()
                     },
                     {
-                        _errorMessage.emit(it.message)
+                        _errorMessage.value = it.message
                     }
                 )
                 notifyChange()

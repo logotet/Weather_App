@@ -4,6 +4,7 @@ import com.example.weatherapp.data.Result
 import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import retrofit2.HttpException
@@ -63,7 +64,7 @@ fun <T> Flow<T>.mapToResult(): Flow<Result<T>> {
 
 suspend inline fun <T> Flow<Result<T>>.collectResult(
     crossinline onSuccess: (T) -> Unit,
-    crossinline onError: suspend (Result.Error<T>) -> Unit,
+    crossinline onError: (Result.Error<T>) -> Unit,
 ) {
     this@collectResult.collect {
         when (it) {

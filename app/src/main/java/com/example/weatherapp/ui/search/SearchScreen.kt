@@ -1,6 +1,5 @@
 package com.example.weatherapp.ui.search
 
-import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,8 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,8 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.example.weatherapp.R
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.measure.UnitSystem
@@ -37,49 +32,24 @@ fun SearchScreen(
     getCurrentLocation: () -> Unit,
     selectUnitSystem: (UnitSystem) -> Unit,
     navigateToSavedLocations: () -> Unit,
-    handleGPSActivation: (ScaffoldState) -> Unit
 ) {
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    val scaffoldState = rememberScaffoldState()
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    handleGPSActivation(scaffoldState)
+    Scaffold(topBar = {
+        Appbar(
+            title = stringResource(id = R.string.search),
+            navigateUp = {},
+            navigationIcon = {},
+            menuItems = {
+                IconButton(onClick = {
+                    navigateToSavedLocations()
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_favorites_list), "",
+                        tint = Color.White
+                    )
                 }
-                else -> {}
             }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            Appbar(
-                title = stringResource(id = R.string.search),
-                navigateUp = {},
-                navigationIcon = {},
-                menuItems = {
-                    IconButton(onClick = {
-                        navigateToSavedLocations()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_favorites_list), "",
-                            tint = Color.White
-                        )
-                    }
-                }
-            )
-        },
-        scaffoldState = scaffoldState
-    ) {
+        )
+    }) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,15 +89,8 @@ fun SearchScreen(
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
 
-                val context = LocalContext.current
-                val errorMessage = stringResource(R.string.valid_location)
                 ButtonSearchScreen(
-                    {
-                        if (locationNameText.text.isNotEmpty())
-                            searchLocation(locationNameText.text)
-                        else
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-                    },
+                    { searchLocation(locationNameText.text) },
                     stringResource(R.string.search)
                 )
 

@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -30,7 +29,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ForecastScreen(
@@ -40,44 +38,39 @@ fun ForecastScreen(
     navigateToSavedLocations: () -> Unit,
     navigateUp: () -> Unit
 ) {
-    val scaffoldState = rememberScaffoldState()
+    Scaffold(topBar = {
+        Appbar(
+            title = stringResource(id = R.string.forecast_screen_title),
+            navigateUp = { navigateUp() },
+            menuItems = {
 
-    Scaffold(
-        topBar = {
-            Appbar(
-                title = stringResource(id = R.string.forecast_screen_title),
-                navigateUp = { navigateUp() },
-                menuItems = {
+                val isSaved = viewModel.savedState
+                val heartIcon =
+                    if (isSaved) R.drawable.ic_heart_full else R.drawable.ic_heart_empty
 
-                    val isSaved = viewModel.savedState
-                    val heartIcon =
-                        if (isSaved) R.drawable.ic_heart_full else R.drawable.ic_heart_empty
-
-                    IconButton(onClick = {
-                        if (isSaved)
-                            viewModel.removeLocationFromFavorites()
-                        else
-                            viewModel.saveLocationToFavorites()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = heartIcon), "",
-                            tint = Color.White
-                        )
-                    }
-
-                    IconButton(onClick = {
-                        navigateToSavedLocations()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_favorites_list), "",
-                            tint = Color.White
-                        )
-                    }
+                IconButton(onClick = {
+                    if (isSaved)
+                        viewModel.removeLocationFromFavorites()
+                    else
+                        viewModel.saveLocationToFavorites()
+                }) {
+                    Icon(
+                        painter = painterResource(id = heartIcon), "",
+                        tint = Color.White
+                    )
                 }
-            )
-        },
-        scaffoldState = scaffoldState
-    ) {
+
+                IconButton(onClick = {
+                    navigateToSavedLocations()
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_favorites_list), "",
+                        tint = Color.White
+                    )
+                }
+            }
+        )
+    }) {
         Surface(
             modifier = Modifier.padding(it),
             color = colorResource(id = R.color.jordi_blue)
@@ -91,13 +84,6 @@ fun ForecastScreen(
                 viewModel.setData(locationName, unitSystem)
 
                 val weatherModel = viewModel.weatherModelState
-
-                LaunchedEffect(Unit) {
-                    viewModel.errorMessage.collectLatest { message ->
-                        message?.let { scaffoldState.snackbarHostState.showSnackbar(message) }
-                        navigateUp()
-                    }
-                }
 
                 weatherModel?.let { model ->
                     TextAndIconForecast(

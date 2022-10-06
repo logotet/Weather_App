@@ -1,16 +1,11 @@
 package com.example.weatherapp.ui
 
-import android.content.Context
-import android.content.Intent
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,11 +14,14 @@ import androidx.navigation.navArgument
 import com.example.weatherapp.R
 import com.example.weatherapp.ui.coords.GPSScreen
 import com.example.weatherapp.ui.current.ForecastScreen
-import com.example.weatherapp.ui.navigation.*
 import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_FORECAST
 import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_GPS
 import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_SAVED
 import com.example.weatherapp.ui.navigation.NavRoutes.Companion.ROUTE_SEARCH
+import com.example.weatherapp.ui.navigation.navigateToForecastFromGps
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSaved
+import com.example.weatherapp.ui.navigation.navigateToForecastFromSearch
+import com.example.weatherapp.ui.navigation.navigateToSavedScreen
 import com.example.weatherapp.ui.saved.SavedLocationsScreen
 import com.example.weatherapp.ui.search.SearchScreen
 import com.example.weatherapp.utils.AppConstants.ARG_LOCATION
@@ -32,7 +30,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.LocationPermission
 import permissions.dispatcher.ktx.constructLocationPermissionRequest
@@ -43,8 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val cancellationTokenSource = CancellationTokenSource()
-
-    private var gpsActivationLaunched: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                 navController = navController,
                 startDestination = ROUTE_SEARCH
             ) {
+
                 composable(route = ROUTE_SEARCH) {
                     SearchScreen(
                         viewModel = hiltViewModel(),
@@ -69,30 +65,13 @@ class MainActivity : AppCompatActivity() {
                                 LocationPermission.FINE,
                                 onShowRationale = ::onGetLocationRationale,
                                 onPermissionDenied = ::onLocationPermissionDenied,
-                                requiresPermission = {
-                                    navController.navigateToGPSScreen(
-                                        { isGPSEnabled() },
-                                        { openGPSSystemPage() }
-                                    )
-                                }
+                                requiresPermission = { navController.navigate(ROUTE_GPS) }
                             ).launch()
                         },
                         selectUnitSystem = { unitSystem ->
                             activityViewModel.unitSystem = unitSystem
                         },
-                        navigateToSavedLocations = { navController.navigateToSavedScreen() },
-                        handleGPSActivation = { scaffoldState ->
-                            if (gpsActivationLaunched && isGPSEnabled()) {
-                                navController.navigate(ROUTE_GPS)
-                                gpsActivationLaunched = false
-                            } else if (gpsActivationLaunched && !isGPSEnabled()) {
-                                lifecycle.coroutineScope.launch {
-                                    scaffoldState.snackbarHostState.showSnackbar(
-                                        getString(R.string.location_turned_off)
-                                    )
-                                }
-                            }
-                        }
+                        navigateToSavedLocations = { navController.navigateToSavedScreen() }
                     )
                 }
 
@@ -136,11 +115,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun openGPSSystemPage() {
-        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-        gpsActivationLaunched = true
-    }
-
     private fun onGetLocationRationale(permissionRequest: PermissionRequest) {
         permissionRequest.proceed()
     }
@@ -153,10 +127,5 @@ class MainActivity : AppCompatActivity() {
             Snackbar.LENGTH_LONG
         ).show()
         activityViewModel.barVisible = false
-    }
-
-    private fun isGPSEnabled(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 }
