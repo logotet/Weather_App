@@ -67,18 +67,20 @@ class ForecastViewModel @Inject constructor(
     }
 
     private fun getNetworkWeatherResponse(city: String?) {
-                viewModelScope.launch {
-                    city?.let {
-                        getCurrentCityWeather.getCurrentWeather(it)
-                            .collectResult(
-                                {},
-                                {
-                                    _errorMessage.emit(resourceProvider.getString(R.string.no_location_found))
-                                }
-                            )
-                    }
-                }
-                notifyChange()
+        viewModelScope.launch {
+            city?.let {
+                getCurrentCityWeather.getCurrentWeather(it)
+                    .collectResult(
+                        {},
+                        {
+                            viewModelScope.launch {
+                                _errorMessage.emit(resourceProvider.getString(R.string.no_location_found))
+                            }
+                        }
+                    )
+            }
+        }
+        notifyChange()
     }
 
     private fun getWeatherFromDatabase(city: String) {
@@ -106,7 +108,9 @@ class ForecastViewModel @Inject constructor(
                         insertRecentCity()
                     },
                     {
-                        _errorMessage.emit(it.message)
+                        viewModelScope.launch {
+                            _errorMessage.emit(it.message)
+                        }
                     }
                 )
                 notifyChange()

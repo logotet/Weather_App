@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 suspend fun ViewModel.onNetworkAvailability(
     isAvlb: Boolean,
     onAvailable: () -> Unit,
-    onUnavailable: suspend () -> Unit,
+    onUnavailable: () -> Unit,
 ) {
     if (isAvlb) {
         onAvailable()
