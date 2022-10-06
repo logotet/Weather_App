@@ -34,3 +34,14 @@ fun NavController.navigateToSavedScreen() {
         }
     }
 }
+
+fun NavController.navigateToGPSScreen(
+    isGPSEnabled: () -> Boolean,
+    startGPS: () -> Unit
+) {
+    if (isGPSEnabled()) {
+        this.navigate(NavRoutes.ROUTE_GPS)
+    } else {
+        startGPS()
+    }
+}

@@ -41,6 +41,7 @@
     <string name="no_network_message">No network detected</string>
     <string name="no_location_found">There is no location with that name</string>
     <string name="location_denied">Location Access Denied</string>
+    <string name="location_turned_off">Turn on your location service to use this feature</string>
     <string name="valid_location">Enter valid location</string>
     <string name="search_button_pressed">weather_search_button_pressed</string>
     <string name="location_button_pressed">weather_location_button_pressed</string>

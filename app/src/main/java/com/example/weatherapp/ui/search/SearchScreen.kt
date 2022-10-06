@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.weatherapp.R
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.measure.UnitSystem
@@ -34,8 +37,29 @@ fun SearchScreen(
     getCurrentLocation: () -> Unit,
     selectUnitSystem: (UnitSystem) -> Unit,
     navigateToSavedLocations: () -> Unit,
+    handleGPSActivation: (ScaffoldState) -> Unit
 ) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     val scaffoldState = rememberScaffoldState()
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    handleGPSActivation(scaffoldState)
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Scaffold(
         topBar = {
             Appbar(
