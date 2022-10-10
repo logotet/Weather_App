@@ -3,7 +3,9 @@ package com.example.weatherapp.ui.current
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -79,7 +81,9 @@ fun ForecastScreen(
         scaffoldState = scaffoldState
     ) {
         Surface(
-            modifier = Modifier.padding(it),
+            modifier = Modifier
+                .padding(it)
+                .verticalScroll(rememberScrollState()),
             color = colorResource(id = R.color.jordi_blue)
         ) {
             Column(
@@ -140,7 +144,12 @@ fun ForecastScreen(
                         )
 
                         TextAndIconForecast(
-                            modifier = Modifier.fillMaxWidth(0.6f),
+                            modifier = Modifier
+                                .fillMaxWidth(0.6f)
+                                .alignByBaseline(),
+                            textModifier = Modifier
+                                .padding(start = 4.dp)
+                                .alignByBaseline(),
                             painter = painterResource(id = R.drawable.ic_arrow_direction),
                             text = model.windSpeed.formatSpeedComposable(unitSystem),
                             rotation = model.windDirection
@@ -214,6 +223,7 @@ fun ForecastScreen(
 fun TextAndIconForecast(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
+    textModifier: Modifier = Modifier,
     rowHeight: Dp = 48.dp,
     painter: Painter,
     text: String,
@@ -241,6 +251,7 @@ fun TextAndIconForecast(
         )
 
         ForecastScreenText(
+            modifier = textModifier,
             text = text,
             fontSize = fontSize
         )
@@ -248,8 +259,13 @@ fun TextAndIconForecast(
 }
 
 @Composable
-fun ForecastScreenText(text: String, fontSize: TextUnit) {
+fun ForecastScreenText(
+    modifier: Modifier = Modifier,
+    text: String,
+    fontSize: TextUnit
+) {
     Text(
+        modifier = modifier,
         text = text,
         fontSize = fontSize,
         color = Color.White,
