@@ -103,7 +103,7 @@ fun ForecastScreen(
                     TextAndIconForecast(
                         painter = painterResource(id = R.drawable.ic_location_name),
                         text = model.name,
-                        iconSize = 40.dp,
+                        iconSize = 50.dp,
                     )
 
                     val formattedTemperature = unitSystem.mapTemperature(model.temperature)
@@ -141,6 +141,11 @@ fun ForecastScreen(
 
                         TextAndIconForecast(
                             modifier = Modifier.fillMaxWidth(0.6f),
+                            iconModifier = Modifier
+                                .padding(end = 6.dp)
+                                .size(32.dp)
+                                .fillMaxSize()
+                                .align(Alignment.CenterVertically),
                             painter = painterResource(id = R.drawable.ic_arrow_direction),
                             text = model.windSpeed.formatSpeedComposable(unitSystem),
                             rotation = model.windDirection
@@ -237,10 +242,10 @@ fun TextAndIconForecast(
             modifier = iconModifier
                 .size(iconSize)
                 .rotate(rotation.toFloat())
-                .padding(end = 10.dp)
         )
 
         ForecastScreenText(
+            modifier = Modifier,
             text = text,
             fontSize = fontSize
         )
@@ -248,8 +253,13 @@ fun TextAndIconForecast(
 }
 
 @Composable
-fun ForecastScreenText(text: String, fontSize: TextUnit) {
+fun ForecastScreenText(
+    modifier: Modifier = Modifier,
+    text: String,
+    fontSize: TextUnit
+) {
     Text(
+        modifier = modifier,
         text = text,
         fontSize = fontSize,
         color = Color.White,
