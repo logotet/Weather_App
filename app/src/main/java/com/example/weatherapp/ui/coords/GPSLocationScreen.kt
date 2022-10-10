@@ -38,7 +38,8 @@ fun GPSScreen(
         Appbar(
             title = stringResource(id = R.string.gps_screen_title),
             menuItems = {},
-            navigateUp = {}
+            navigateUp = {},
+            navigationIcon = null
         )
     }) {
         Surface(

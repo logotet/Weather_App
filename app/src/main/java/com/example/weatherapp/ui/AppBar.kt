@@ -16,7 +16,7 @@ fun Appbar(
     title: String,
     menuItems: @Composable () -> Unit,
     navigateUp: () -> Unit,
-    navigationIcon: @Composable () -> Unit = {
+    navigationIcon: @Composable (() -> Unit)? = {
         IconButton(onClick = { navigateUp() }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
