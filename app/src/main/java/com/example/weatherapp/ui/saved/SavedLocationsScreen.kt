@@ -103,5 +103,37 @@ fun SavedLocationRow(
 @Preview(showBackground = true)
 @Composable
 fun SomePreview() {
-//        SavedLocationsScreen()
+    Scaffold(topBar = {
+        Appbar(
+            title = stringResource(id = R.string.favorites_screen_title),
+            menuItems = {},
+            navigateUp = { }
+        )
+    }) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            color = colorResource(id = R.color.jordi_blue),
+        ) {
+            LazyColumn() {
+                items(7) {
+                    SavedLocationRow(
+                        localWeatherModel = LocalWeatherModel(
+                            name = "Sofia",
+                            description = "Broken clouds",
+                            temperature = 300.0,
+                            windSpeed = 20.0,
+                            humidity = 20,
+                            icon = "",
+                            lat = 20.0,
+                            lon = 20.0,
+                            windDirection = 20,
+                            addedAt = 1235676
+                        )
+                    ) {}
+                }
+            }
+        }
+    }
 }

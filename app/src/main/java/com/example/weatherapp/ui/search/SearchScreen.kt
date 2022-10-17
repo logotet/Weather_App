@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -286,3 +287,99 @@ fun RecentLocationRow(city: City, selectLocation: (String) -> Unit) {
 fun String.capitalizeFirst(): String {
     return this.lowercase().replaceFirstChar { it.uppercase() }
 }
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun SearchScreenPreview() {
+    Scaffold(
+        topBar = {
+            Appbar(
+                title = stringResource(id = R.string.search),
+                navigateUp = {},
+                navigationIcon = {},
+                menuItems = {
+                    IconButton(onClick = {
+                        { }
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_favorites_list), "",
+                            tint = Color.White
+                        )
+                    }
+                }
+            )
+        },
+//        scaffoldState = scaffoldState
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(it),
+            color = colorResource(id = R.color.jordi_blue)
+        ) {
+            Column(modifier = Modifier.padding(top = 50.dp)) {
+                val unitSystemText =
+                    remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }
+                TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
+
+                UnitsRadioGroup(
+                    { }
+                ) { newUnitText ->
+                    unitSystemText.value =
+                        newUnitText.capitalizeFirst()
+                }
+
+                var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
+                TextField(
+                    value = locationNameText,
+                    label = { Text(text = stringResource(id = R.string.city)) },
+                    onValueChange = { newInput ->
+                        locationNameText = newInput
+                    },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    shape = TextFieldDefaults.OutlinedTextFieldShape,
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_search),
+                            contentDescription = null
+                        )
+                    },
+                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
+                )
+
+                val context = LocalContext.current
+                val errorMessage = stringResource(R.string.valid_location)
+                ButtonSearchScreen(
+                    {
+                        if (locationNameText.text.isNotEmpty()) {
+                        } else
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                    },
+                    stringResource(R.string.search)
+                )
+
+                TextSearchScreen(
+                    stringResource(R.string.or),
+                    textAlign = TextAlign.Center
+                )
+
+                ButtonSearchScreen(
+                    { },
+                    stringResource(R.string.get_my_location)
+                )
+
+                LazyColumn {
+                    items(5) { recentLocation ->
+                        RecentLocationRow(City("Sofia")) { selectedLocation ->
+                            { }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
