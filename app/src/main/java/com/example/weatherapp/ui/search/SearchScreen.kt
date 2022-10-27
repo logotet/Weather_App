@@ -2,6 +2,7 @@ package com.example.weatherapp.ui.search
 
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -178,6 +179,10 @@ fun UnitsRadioGroup(
             .fillMaxWidth()
             .padding(top = 30.dp)
     ) {
+
+        val blueColor = colorResource(id = R.color.royal_blue)
+        val lightGreyColor = colorResource(id = R.color.light_grey)
+
         unitsList.forEach { unit ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -203,11 +208,12 @@ fun UnitsRadioGroup(
                         contentAlignment = Alignment.Center
                     ) {
                         Canvas(modifier = Modifier.size(70.dp), onDraw = {
+
                             drawCircle(
                                 color = if (selectedValue == unit) {
-                                    Color.Blue
+                                    blueColor
                                 } else {
-                                    Color.LightGray
+                                    lightGreyColor
                                 }
                             )
                         })
@@ -235,6 +241,8 @@ private fun ButtonSearchScreen(
     action: () -> Unit,
     btnText: String
 ) {
+    val colorBlue = colorResource(id = R.color.royal_blue)
+
     Button(
         onClick = action,
         modifier = Modifier
@@ -243,6 +251,7 @@ private fun ButtonSearchScreen(
                 vertical = 10.dp,
                 horizontal = 20.dp
             )
+            .background(colorBlue)
     ) {
         Text(text = btnText)
     }
@@ -309,7 +318,6 @@ fun SearchScreenPreview() {
                 }
             )
         },
-//        scaffoldState = scaffoldState
     ) {
         Surface(
             modifier = Modifier
