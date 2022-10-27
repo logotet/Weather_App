@@ -6,6 +6,18 @@ plugins {
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
     id("androidx.navigation.safeargs.kotlin")
+    id 'com.google.devtools.ksp' version '1.7.0-1.0.6'
+}
+
+kotlin {
+    sourceSets {
+        debug {
+            kotlin.srcDir("build/generated/ksp/debug/kotlin")
+        }
+        release {
+            kotlin.srcDir("build/generated/ksp/release/kotlin")
+        }
+    }
 }
 
 android {
@@ -129,6 +141,10 @@ dependencies {
 
     //Google Map Compose
     implementation "com.google.maps.android:maps-compose:1.0.0"
+
+    //Rafael Navigation
+    implementation 'io.github.raamcosta.compose-destinations:core:1.7.21-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.21-beta'
 }
 
 kapt {

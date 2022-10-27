@@ -61,8 +61,7 @@ fun Double?.formatSpeed(resourceProvider: ResourceProvider, unitSystem: UnitSyst
 @Composable
 fun Double?.formatSpeedComposable(unitSystem: UnitSystem): String {
     val speedFormat = when (unitSystem) {
-        UnitSystem.METRIC -> stringResource(id = R.string.metric_standard_speed_format)
-        UnitSystem.STANDARD -> stringResource(id = R.string.standard_temperature_format)
+        UnitSystem.METRIC, UnitSystem.STANDARD -> stringResource(id = R.string.metric_standard_speed_format)
         UnitSystem.IMPERIAL -> stringResource(id = R.string.imperial_speed_format)
     }
     return stringResource(R.string.speed_format, this ?: 0.0, speedFormat)

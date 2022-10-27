@@ -1,5 +1,9 @@
 package com.example.weatherapp.ui.search
 
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -25,32 +29,53 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.weatherapp.R
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.Appbar
+import com.example.weatherapp.ui.destinations.ForecastScreenDestination
+import com.example.weatherapp.ui.destinations.GPSScreenDestination
+import com.example.weatherapp.ui.destinations.SavedLocationsScreenDestination
+import com.example.weatherapp.ui.navigation.navigateToGPSScreen
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import permissions.dispatcher.PermissionRequest
+import permissions.dispatcher.ktx.LocationPermission
+import permissions.dispatcher.ktx.constructLocationPermissionRequest
 
+@RootNavGraph(start = true)
+@Destination
 @Composable
 fun SearchScreen(
-    viewModel: SearchViewModel,
-    searchLocation: (String?) -> Unit,
-    getCurrentLocation: () -> Unit,
-    selectUnitSystem: (UnitSystem) -> Unit,
-    navigateToSavedLocations: () -> Unit,
-    handleGPSActivation: (ScaffoldState) -> Unit
+    viewModel: SearchViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator,
 ) {
+    val context = LocalContext.current
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val scaffoldState = rememberScaffoldState()
 
+    var isGPSActivationLaunched = false
+    val isGPSEnabled = {
+        val locationManager =
+            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    }
+
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    handleGPSActivation(scaffoldState)
+                    if (isGPSActivationLaunched && isGPSEnabled()) {
+                        navigator.navigate(GPSScreenDestination)
+                    }
+                    isGPSActivationLaunched = false
                 }
                 else -> {}
             }
@@ -70,7 +95,11 @@ fun SearchScreen(
                 navigationIcon = {},
                 menuItems = {
                     IconButton(onClick = {
-                        navigateToSavedLocations()
+                        navigator.navigate(SavedLocationsScreenDestination) {
+                            popUpTo(SavedLocationsScreenDestination.route) {
+                                inclusive = true
+                            }
+                        }
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_favorites_list), "",
@@ -91,10 +120,18 @@ fun SearchScreen(
             Column(modifier = Modifier.padding(top = 50.dp)) {
                 val unitSystemText =
                     remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }
+
                 TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
 
+                var unit by remember {
+                    mutableStateOf(UnitSystem.METRIC)
+                }
+
                 UnitsRadioGroup(
-                    selectUnitSystem
+                    { selectedUnits
+                        ->
+                        unit = selectedUnits
+                    }
                 ) { newUnitText ->
                     unitSystemText.value =
                         newUnitText.capitalizeFirst()
@@ -121,12 +158,15 @@ fun SearchScreen(
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
 
-                val context = LocalContext.current
                 val errorMessage = stringResource(R.string.valid_location)
                 ButtonSearchScreen(
                     {
                         if (locationNameText.text.isNotEmpty())
-                            searchLocation(locationNameText.text)
+                            navigator.navigate(
+                                ForecastScreenDestination.invoke(
+                                    locationNameText.text, unit
+                                )
+                            )
                         else
                             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                     },
@@ -138,8 +178,31 @@ fun SearchScreen(
                     textAlign = TextAlign.Center
                 )
 
+                val locationDeniedMessage = stringResource(id = R.string.location_denied)
                 ButtonSearchScreen(
-                    getCurrentLocation,
+                    {
+                        val onLocationPermissionDenied = {
+//                            scaffoldState.snackbarHostState.showSnackbar(locationDeniedMessage)
+                        }
+
+                        val openGPSSystemPage =
+                            {
+                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                                isGPSActivationLaunched = true
+                            }
+
+                        (context as? FragmentActivity)?.constructLocationPermissionRequest(
+                            LocationPermission.FINE,
+                            onShowRationale = ::onGetLocationRationale,
+                            onPermissionDenied = { onLocationPermissionDenied() },
+                            requiresPermission = {
+                                navigator.navigateToGPSScreen(
+                                    { isGPSEnabled() },
+                                    { openGPSSystemPage() }
+                                )
+                            }
+                        )?.launch()
+                    },
                     stringResource(R.string.get_my_location)
                 )
 
@@ -156,7 +219,12 @@ fun SearchScreen(
                 LazyColumn {
                     items(recentLocationsList.value) { recentLocation ->
                         RecentLocationRow(recentLocation) { selectedLocation ->
-                            searchLocation(selectedLocation)
+                            navigator.navigate(
+                                ForecastScreenDestination.invoke(
+                                    selectedLocation,
+                                    unit
+                                )
+                            )
                         }
                     }
                 }
@@ -358,13 +426,9 @@ fun SearchScreenPreview() {
                     colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
                 )
 
-                val context = LocalContext.current
                 val errorMessage = stringResource(R.string.valid_location)
                 ButtonSearchScreen(
                     {
-                        if (locationNameText.text.isNotEmpty()) {
-                        } else
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                     },
                     stringResource(R.string.search)
                 )
@@ -380,14 +444,17 @@ fun SearchScreenPreview() {
                 )
 
                 LazyColumn {
-                    items(5) { recentLocation ->
-                        RecentLocationRow(City("Sofia")) { selectedLocation ->
-                            { }
+                    items(5) {
+                        RecentLocationRow(City("Sofia")) {
                         }
                     }
                 }
             }
         }
     }
+}
+
+private fun onGetLocationRationale(permissionRequest: PermissionRequest) {
+    permissionRequest.proceed()
 }
 
