@@ -9,25 +9,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherapp.R
+import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.ui.Appbar
+import com.example.weatherapp.ui.destinations.ForecastScreenDestination
+import com.example.weatherapp.ui.destinations.SearchScreenDestination
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@Destination
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun GPSScreen(
-    viewModel: GPSFragmentViewModel,
-    fusedLocationProviderClient: FusedLocationProviderClient,
-    cancellationTokenSource: CancellationTokenSource,
-    navigateToForecast: (String) -> Unit
+    viewModel: GPSFragmentViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator,
 ) {
+
+    val fusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(LocalContext.current)
+    val cancellationTokenSource = CancellationTokenSource()
+
     getCurrentLocation(
         fusedLocationProviderClient,
         cancellationTokenSource,
@@ -60,7 +72,9 @@ fun GPSScreen(
     val location = viewModel.locationName
     location?.let {
         LaunchedEffect(key1 = true) {
-            navigateToForecast(location)
+            navigator.navigate(ForecastScreenDestination.invoke(location, UnitSystem.METRIC)) {
+                popUpTo(SearchScreenDestination.route)
+            }
         }
     }
 }

@@ -23,26 +23,30 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.weatherapp.R
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.utils.*
 import com.example.weatherapp.ui.Appbar
+import com.example.weatherapp.ui.destinations.SavedLocationsScreenDestination
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 
+@Destination
 @Composable
 fun ForecastScreen(
-    viewModel: ForecastViewModel,
+    viewModel: ForecastViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator,
     locationName: String,
     unitSystem: UnitSystem,
-    navigateToSavedLocations: () -> Unit,
-    navigateUp: () -> Unit
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -50,7 +54,7 @@ fun ForecastScreen(
         topBar = {
             Appbar(
                 title = stringResource(id = R.string.forecast_screen_title),
-                navigateUp = { navigateUp() },
+                navigateUp = { navigator.navigateUp() },
                 menuItems = {
 
                     val isSaved = viewModel.savedState
@@ -70,7 +74,7 @@ fun ForecastScreen(
                     }
 
                     IconButton(onClick = {
-                        navigateToSavedLocations()
+                        navigator.navigate(SavedLocationsScreenDestination)
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_favorites_list), "",
@@ -101,7 +105,7 @@ fun ForecastScreen(
                 LaunchedEffect(Unit) {
                     viewModel.errorMessage.collectLatest { message ->
                         message?.let { scaffoldState.snackbarHostState.showSnackbar(message) }
-                        navigateUp()
+                        navigator.navigateUp()
                     }
                 }
 
@@ -145,6 +149,7 @@ fun ForecastScreen(
                             text = model.humidity.formatHumidityComposable()
                         )
 
+                        val formattedTWindSpeed = unitSystem.mapWindSpeed(model.windSpeed)
                         TextAndIconForecast(
                             modifier = Modifier.fillMaxWidth(0.6f),
                             iconModifier = Modifier
@@ -153,7 +158,7 @@ fun ForecastScreen(
                                 .fillMaxSize()
                                 .align(Alignment.CenterVertically),
                             painter = painterResource(id = R.drawable.ic_arrow_direction),
-                            text = model.windSpeed.formatSpeedComposable(unitSystem),
+                            text = formattedTWindSpeed.formatSpeedComposable(unitSystem),
                             rotation = model.windDirection
                         )
                     }
@@ -345,9 +350,9 @@ fun Hour(
                     tint = Color.White
                 )
 
-                val formattedSpeed = windSpeed.formatSpeedComposable(unitSystem = unitSystem)
+                val formattedSpeed = unitSystem.mapWindSpeed(windSpeed)
                 ForecastScreenHourText(
-                    text = formattedSpeed,
+                    text = formattedSpeed.formatSpeedComposable(unitSystem = unitSystem),
                     fontSize = 16.sp
                 )
             }
@@ -360,7 +365,6 @@ fun Hour(
 fun ForecastScreenPreview() {
     Surface(
         modifier = Modifier,
-//            .padding(it)
         color = colorResource(id = R.color.jordi_blue)
     ) {
         Column {

@@ -19,18 +19,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.weatherapp.R
 import com.example.weatherapp.models.local.LocalWeatherModel
 import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.utils.formatTemperatureComposable
 import com.example.weatherapp.models.utils.mapTemperature
 import com.example.weatherapp.ui.Appbar
+import com.example.weatherapp.ui.destinations.ForecastScreenDestination
+import com.example.weatherapp.ui.destinations.SavedLocationsScreenDestination
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@Destination
 @Composable
 fun SavedLocationsScreen(
-    viewModel: SavedLocationsViewModel,
-    selectLocation: (String) -> Unit,
-    navigateUp: () -> Unit
+    viewModel: SavedLocationsViewModel = hiltViewModel(),
+    navigator: DestinationsNavigator,
 ) {
 
     viewModel.loadData()
@@ -40,7 +45,7 @@ fun SavedLocationsScreen(
         Appbar(
             title = stringResource(id = R.string.favorites_screen_title),
             menuItems = {},
-            navigateUp = { navigateUp() }
+            navigateUp = { navigator.navigateUp() }
         )
     }) {
         Surface(
@@ -52,7 +57,17 @@ fun SavedLocationsScreen(
             LazyColumn() {
                 items(savedLocations.value) { location ->
                     SavedLocationRow(localWeatherModel = location) { name ->
-                        selectLocation(name)
+                        navigator.navigate(
+                            ForecastScreenDestination.invoke(
+                                name,
+                                UnitSystem.METRIC
+                            )
+                        ) {
+                            popUpTo(SavedLocationsScreenDestination.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
                     }
                 }
             }
