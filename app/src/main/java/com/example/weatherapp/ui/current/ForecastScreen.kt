@@ -84,7 +84,8 @@ fun ForecastScreen(
                 }
             )
         },
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        backgroundColor = colorResource(id = R.color.jordi_blue)
     ) {
         Surface(
             modifier = Modifier
@@ -106,6 +107,18 @@ fun ForecastScreen(
                     viewModel.errorMessage.collectLatest { message ->
                         message?.let { scaffoldState.snackbarHostState.showSnackbar(message) }
                         navigator.navigateUp()
+                    }
+                }
+
+                if (weatherModel == null) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(600.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
 
