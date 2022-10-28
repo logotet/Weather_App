@@ -143,8 +143,8 @@ dependencies {
     implementation "com.google.maps.android:maps-compose:1.0.0"
 
     //Rafael Navigation
-    implementation 'io.github.raamcosta.compose-destinations:core:1.7.21-beta'
-    ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.21-beta'
+    implementation 'io.github.raamcosta.compose-destinations:core:1.7.23-beta'
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.23-beta'
 }
 
 kapt {
