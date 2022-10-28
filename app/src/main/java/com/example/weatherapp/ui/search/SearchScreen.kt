@@ -299,13 +299,16 @@ fun UnitsRadioGroup(
                     Box(
                         contentAlignment = Alignment.Center
                     ) {
+                        val colorBlue = colorResource(R.color.royal_blue)
+                        val colorGrey = colorResource(R.color.dusty_grey)
+
                         Canvas(modifier = Modifier.size(70.dp), onDraw = {
 
                             drawCircle(
                                 color = if (selectedValue == unit) {
-                                    blueColor
+                                    colorBlue
                                 } else {
-                                    lightGreyColor
+                                    colorGrey
                                 }
                             )
                         })
