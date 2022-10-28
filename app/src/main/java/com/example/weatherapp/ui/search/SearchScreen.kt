@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +25,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -121,6 +125,8 @@ fun SearchScreen(
                 val unitSystemText =
                     remember { mutableStateOf(UnitSystem.METRIC.name.capitalizeFirst()) }
 
+                val errorMessage = stringResource(R.string.valid_location)
+
                 TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
 
                 var unit by remember {
@@ -138,6 +144,7 @@ fun SearchScreen(
                 }
 
                 var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
+
                 TextField(
                     value = locationNameText,
                     label = { Text(text = stringResource(id = R.string.city)) },
@@ -145,6 +152,7 @@ fun SearchScreen(
                         locationNameText = newInput
                     },
                     singleLine = true,
+                    maxLines = 1,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
@@ -155,20 +163,19 @@ fun SearchScreen(
                             contentDescription = null
                         )
                     },
-                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White)
+                    colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.White),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions {
+                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
+                    }
                 )
 
-                val errorMessage = stringResource(R.string.valid_location)
                 ButtonSearchScreen(
                     {
-                        if (locationNameText.text.isNotEmpty())
-                            navigator.navigate(
-                                ForecastScreenDestination.invoke(
-                                    locationNameText.text, unit
-                                )
-                            )
-                        else
-                            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
                     },
                     stringResource(R.string.search)
                 )
@@ -231,6 +238,23 @@ fun SearchScreen(
             }
         }
     }
+}
+
+private fun searchLocation(
+    locationNameText: TextFieldValue,
+    navigator: DestinationsNavigator,
+    unit: UnitSystem,
+    context: Context,
+    errorMessage: String
+) {
+    if (locationNameText.text.isNotEmpty())
+        navigator.navigate(
+            ForecastScreenDestination.invoke(
+                locationNameText.text, unit
+            )
+        )
+    else
+        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
