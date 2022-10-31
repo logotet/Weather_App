@@ -66,7 +66,6 @@ fun SearchScreen(
     val scaffoldState = rememberScaffoldState()
 
     var isGPSActivationLaunched = false
-
     var units by remember {
         mutableStateOf(UnitSystem.METRIC)
     }
