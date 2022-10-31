@@ -35,7 +35,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun SavedLocationsScreen(
     viewModel: SavedLocationsViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
 ) {
 
     viewModel.loadData()

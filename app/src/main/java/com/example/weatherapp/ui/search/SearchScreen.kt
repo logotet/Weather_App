@@ -57,7 +57,7 @@ import permissions.dispatcher.ktx.constructLocationPermissionRequest
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
 
@@ -66,17 +66,12 @@ fun SearchScreen(
     val scaffoldState = rememberScaffoldState()
 
     var isGPSActivationLaunched = false
-    val isGPSEnabled = {
-        val locationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    if (isGPSActivationLaunched && isGPSEnabled()) {
+                    if (isGPSActivationLaunched && isGPSEnabled(context)) {
                         navigator.navigate(GPSScreenDestination)
                     }
                     isGPSActivationLaunched = false
@@ -192,20 +187,17 @@ fun SearchScreen(
 //                            scaffoldState.snackbarHostState.showSnackbar(locationDeniedMessage)
                         }
 
-                        val openGPSSystemPage =
-                            {
-                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                                isGPSActivationLaunched = true
-                            }
-
                         (context as? FragmentActivity)?.constructLocationPermissionRequest(
                             LocationPermission.FINE,
                             onShowRationale = ::onGetLocationRationale,
                             onPermissionDenied = { onLocationPermissionDenied() },
                             requiresPermission = {
                                 navigator.navigateToGPSScreen(
-                                    { isGPSEnabled() },
-                                    { openGPSSystemPage() }
+                                    { isGPSEnabled(context) },
+                                    {
+                                        isGPSActivationLaunched = true
+                                        openGPSSystemPage(context)
+                                    }
                                 )
                             }
                         )?.launch()
@@ -238,6 +230,16 @@ fun SearchScreen(
             }
         }
     }
+}
+
+private fun isGPSEnabled(context: Context): Boolean {
+    val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+}
+
+private fun openGPSSystemPage(context: Context) {
+    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
 }
 
 private fun searchLocation(
