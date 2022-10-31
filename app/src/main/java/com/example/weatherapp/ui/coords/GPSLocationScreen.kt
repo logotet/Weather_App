@@ -33,7 +33,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun GPSScreen(
     viewModel: GPSFragmentViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
 ) {
 
     val fusedLocationProviderClient =

@@ -46,7 +46,7 @@ fun ForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
     locationName: String,
-    unitSystem: UnitSystem,
+    unitSystem: UnitSystem
 ) {
     val scaffoldState = rememberScaffoldState()
 
