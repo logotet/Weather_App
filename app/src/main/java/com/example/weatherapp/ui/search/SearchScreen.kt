@@ -57,7 +57,7 @@ import permissions.dispatcher.ktx.constructLocationPermissionRequest
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator,
+    navigator: DestinationsNavigator
 ) {
     val context = LocalContext.current
 
@@ -66,18 +66,17 @@ fun SearchScreen(
     val scaffoldState = rememberScaffoldState()
 
     var isGPSActivationLaunched = false
-    val isGPSEnabled = {
-        val locationManager =
-            context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+    var units by remember {
+        mutableStateOf(UnitSystem.METRIC)
     }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
-                    if (isGPSActivationLaunched && isGPSEnabled()) {
-                        navigator.navigate(GPSScreenDestination)
+                    if (isGPSActivationLaunched && isGPSEnabled(context)) {
+                        navigator.navigate(GPSScreenDestination.invoke(units))
                     }
                     isGPSActivationLaunched = false
                 }
@@ -99,7 +98,7 @@ fun SearchScreen(
                 navigationIcon = {},
                 menuItems = {
                     IconButton(onClick = {
-                        navigator.navigate(SavedLocationsScreenDestination) {
+                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = units)) {
                             popUpTo(SavedLocationsScreenDestination.route) {
                                 inclusive = true
                             }
@@ -129,14 +128,10 @@ fun SearchScreen(
 
                 TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
 
-                var unit by remember {
-                    mutableStateOf(UnitSystem.METRIC)
-                }
-
                 UnitsRadioGroup(
                     { selectedUnits
                         ->
-                        unit = selectedUnits
+                        units = selectedUnits
                     }
                 ) { newUnitText ->
                     unitSystemText.value =
@@ -169,13 +164,13 @@ fun SearchScreen(
                         imeAction = ImeAction.Search
                     ),
                     keyboardActions = KeyboardActions {
-                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
+                        searchLocation(locationNameText, navigator, units, context, errorMessage)
                     }
                 )
 
                 ButtonSearchScreen(
                     {
-                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
+                        searchLocation(locationNameText, navigator, units, context, errorMessage)
                     },
                     stringResource(R.string.search)
                 )
@@ -192,20 +187,18 @@ fun SearchScreen(
 //                            scaffoldState.snackbarHostState.showSnackbar(locationDeniedMessage)
                         }
 
-                        val openGPSSystemPage =
-                            {
-                                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                                isGPSActivationLaunched = true
-                            }
-
                         (context as? FragmentActivity)?.constructLocationPermissionRequest(
                             LocationPermission.FINE,
                             onShowRationale = ::onGetLocationRationale,
                             onPermissionDenied = { onLocationPermissionDenied() },
                             requiresPermission = {
                                 navigator.navigateToGPSScreen(
-                                    { isGPSEnabled() },
-                                    { openGPSSystemPage() }
+                                    units,
+                                    { isGPSEnabled(context) },
+                                    {
+                                        isGPSActivationLaunched = true
+                                        openGPSSystemPage(context)
+                                    }
                                 )
                             }
                         )?.launch()
@@ -229,7 +222,7 @@ fun SearchScreen(
                             navigator.navigate(
                                 ForecastScreenDestination.invoke(
                                     selectedLocation,
-                                    unit
+                                    units
                                 )
                             )
                         }
@@ -238,6 +231,16 @@ fun SearchScreen(
             }
         }
     }
+}
+
+private fun isGPSEnabled(context: Context): Boolean {
+    val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+}
+
+private fun openGPSSystemPage(context: Context) {
+    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
 }
 
 private fun searchLocation(

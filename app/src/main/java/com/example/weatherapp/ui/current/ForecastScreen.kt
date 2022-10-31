@@ -46,7 +46,7 @@ fun ForecastScreen(
     viewModel: ForecastViewModel = hiltViewModel(),
     navigator: DestinationsNavigator,
     locationName: String,
-    unitSystem: UnitSystem,
+    unitSystem: UnitSystem
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -74,7 +74,7 @@ fun ForecastScreen(
                     }
 
                     IconButton(onClick = {
-                        navigator.navigate(SavedLocationsScreenDestination)
+                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = unitSystem))
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_favorites_list), "",
