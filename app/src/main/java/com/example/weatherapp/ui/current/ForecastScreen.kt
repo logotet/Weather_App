@@ -30,6 +30,7 @@ import com.example.weatherapp.models.measure.UnitSystem
 import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.utils.*
 import com.example.weatherapp.ui.Appbar
+import com.example.weatherapp.ui.destinations.ForecastScreenDestination
 import com.example.weatherapp.ui.destinations.SavedLocationsScreenDestination
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -74,7 +75,13 @@ fun ForecastScreen(
                     }
 
                     IconButton(onClick = {
-                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = unitSystem))
+                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = unitSystem)) {
+                            popUpTo(ForecastScreenDestination.route) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_favorites_list), "",
