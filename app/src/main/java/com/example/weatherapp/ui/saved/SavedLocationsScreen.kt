@@ -35,7 +35,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun SavedLocationsScreen(
     viewModel: SavedLocationsViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator
+    navigator: DestinationsNavigator,
+    units: UnitSystem
 ) {
 
     viewModel.loadData()
@@ -56,11 +57,11 @@ fun SavedLocationsScreen(
         ) {
             LazyColumn() {
                 items(savedLocations.value) { location ->
-                    SavedLocationRow(localWeatherModel = location) { name ->
+                    SavedLocationRow(localWeatherModel = location, units = units) { name ->
                         navigator.navigate(
                             ForecastScreenDestination.invoke(
                                 name,
-                                UnitSystem.METRIC
+                                units
                             )
                         ) {
                             popUpTo(SavedLocationsScreenDestination.route) {
@@ -78,6 +79,7 @@ fun SavedLocationsScreen(
 @Composable
 fun SavedLocationRow(
     localWeatherModel: LocalWeatherModel,
+    units: UnitSystem,
     selectLocation: (String) -> Unit
 ) {
     Row(
@@ -100,8 +102,8 @@ fun SavedLocationRow(
                 .weight(2f)
         )
 
-        val formattedTemperature = UnitSystem.METRIC.mapTemperature(localWeatherModel.temperature)
-            .formatTemperatureComposable(unitSystem = UnitSystem.METRIC)
+        val formattedTemperature = units.mapTemperature(localWeatherModel.temperature)
+            .formatTemperatureComposable(unitSystem = units)
 
         Text(
             text = formattedTemperature,
@@ -145,7 +147,8 @@ fun SomePreview() {
                             lon = 20.0,
                             windDirection = 20,
                             addedAt = 1235676
-                        )
+                        ),
+                        units = UnitSystem.METRIC
                     ) {}
                 }
             }

@@ -66,13 +66,16 @@ fun SearchScreen(
     val scaffoldState = rememberScaffoldState()
 
     var isGPSActivationLaunched = false
+    var units by remember {
+        mutableStateOf(UnitSystem.METRIC)
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
                     if (isGPSActivationLaunched && isGPSEnabled(context)) {
-                        navigator.navigate(GPSScreenDestination)
+                        navigator.navigate(GPSScreenDestination.invoke(units))
                     }
                     isGPSActivationLaunched = false
                 }
@@ -94,7 +97,7 @@ fun SearchScreen(
                 navigationIcon = {},
                 menuItems = {
                     IconButton(onClick = {
-                        navigator.navigate(SavedLocationsScreenDestination) {
+                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = units)) {
                             popUpTo(SavedLocationsScreenDestination.route) {
                                 inclusive = true
                             }
@@ -124,14 +127,10 @@ fun SearchScreen(
 
                 TextSearchScreen(text = unitSystemText.value, TextAlign.Center, 26.sp)
 
-                var unit by remember {
-                    mutableStateOf(UnitSystem.METRIC)
-                }
-
                 UnitsRadioGroup(
                     { selectedUnits
                         ->
-                        unit = selectedUnits
+                        units = selectedUnits
                     }
                 ) { newUnitText ->
                     unitSystemText.value =
@@ -164,13 +163,13 @@ fun SearchScreen(
                         imeAction = ImeAction.Search
                     ),
                     keyboardActions = KeyboardActions {
-                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
+                        searchLocation(locationNameText, navigator, units, context, errorMessage)
                     }
                 )
 
                 ButtonSearchScreen(
                     {
-                        searchLocation(locationNameText, navigator, unit, context, errorMessage)
+                        searchLocation(locationNameText, navigator, units, context, errorMessage)
                     },
                     stringResource(R.string.search)
                 )
@@ -193,6 +192,7 @@ fun SearchScreen(
                             onPermissionDenied = { onLocationPermissionDenied() },
                             requiresPermission = {
                                 navigator.navigateToGPSScreen(
+                                    units,
                                     { isGPSEnabled(context) },
                                     {
                                         isGPSActivationLaunched = true
@@ -221,7 +221,7 @@ fun SearchScreen(
                             navigator.navigate(
                                 ForecastScreenDestination.invoke(
                                     selectedLocation,
-                                    unit
+                                    units
                                 )
                             )
                         }

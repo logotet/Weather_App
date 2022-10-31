@@ -74,7 +74,7 @@ fun ForecastScreen(
                     }
 
                     IconButton(onClick = {
-                        navigator.navigate(SavedLocationsScreenDestination)
+                        navigator.navigate(SavedLocationsScreenDestination.invoke(units = unitSystem))
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_favorites_list), "",
