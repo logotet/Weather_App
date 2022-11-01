@@ -6,12 +6,12 @@ import android.location.LocationManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -139,9 +139,9 @@ fun SearchScreen(
 
                 var locationNameText by remember { mutableStateOf(TextFieldValue("")) }
 
-                TextField(
+                OutlinedTextField(
                     value = locationNameText,
-                    label = { Text(text = stringResource(id = R.string.city)) },
+                    placeholder = { Text(text = stringResource(id = R.string.city)) },
                     onValueChange = { newInput ->
                         locationNameText = newInput
                     },
@@ -150,7 +150,7 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
-                    shape = TextFieldDefaults.OutlinedTextFieldShape,
+                    shape = RoundedCornerShape(6.dp),
                     leadingIcon = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_search),
@@ -341,14 +341,19 @@ private fun ButtonSearchScreen(
     val colorBlue = colorResource(id = R.color.royal_blue)
 
     Button(
-        onClick = action,
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 vertical = 10.dp,
                 horizontal = 20.dp
             )
-            .background(colorBlue)
+            .height(46.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorBlue,
+            contentColor = Color.White
+        ),
+        onClick = action,
+        shape = RoundedCornerShape(8.dp),
     ) {
         Text(text = btnText)
     }
