@@ -94,7 +94,7 @@ fun SearchScreen(
             Appbar(
                 title = stringResource(id = R.string.search),
                 navigateUp = {},
-                navigationIcon = {},
+                navigationIcon = null,
                 menuItems = {
                     IconButton(onClick = {
                         navigator.navigate(SavedLocationsScreenDestination.invoke(units = units)) {
