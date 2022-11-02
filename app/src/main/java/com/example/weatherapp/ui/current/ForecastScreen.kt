@@ -103,7 +103,6 @@ fun ForecastScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize(1f)
-                    .padding(8.dp)
             ) {
 
                 viewModel.setData(locationName, unitSystem)
@@ -201,9 +200,13 @@ fun ForecastScreen(
                             topEnd = 10.dp,
                             bottomEnd = 10.dp,
                             bottomStart = 10.dp
-                        )
+                        ),
+                        color = colorResource(id = R.color.malibu)
                     ) {
-                        LazyRow {
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                        ) {
                             items(hours) { hour ->
                                 Hour(
                                     hour = hour.hour,
@@ -233,7 +236,11 @@ fun ForecastScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(400.dp)
-                            .padding(top = 10.dp),
+                            .padding(
+                                top = 10.dp,
+                                start = 4.dp,
+                                end = 4.dp
+                            ),
                         cameraPositionState = cameraPositionState
                     ) {
                         Marker(
