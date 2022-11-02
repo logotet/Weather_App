@@ -2,6 +2,7 @@ package com.example.weatherapp.utils
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
@@ -16,9 +17,12 @@ class ResourceProvider(
     fun getString(@StringRes stringId: Int, vararg arg: Any): String =
         context.getString(stringId, *arg)
 
+    fun getColorResource(@ColorRes colorId: Int): Int =
+        context.getColor(colorId)
+
     fun getDrawableResource(@DrawableRes drawableId: Int): Drawable? =
         ContextCompat.getDrawable(context, drawableId)
 
-    fun getDrawable(@DrawableRes drawableId: Int,vararg arg: Any): Drawable? =
+    fun getDrawable(@DrawableRes drawableId: Int, vararg arg: Any): Drawable? =
         ContextCompat.getDrawable(context, drawableId)
 }

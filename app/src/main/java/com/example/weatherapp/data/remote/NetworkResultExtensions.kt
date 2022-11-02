@@ -4,7 +4,6 @@ import com.example.weatherapp.data.Result
 import com.example.weatherapp.models.error.WeatherErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.transform
 import retrofit2.HttpException

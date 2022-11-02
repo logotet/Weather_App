@@ -149,7 +149,7 @@ class Repository(
     }
 
     //Saved Location
-    fun getSavedLocation(name: String): Flow<String> {
+    fun getSavedLocation(name: String): Flow<String?> {
         return weatherLocalDataSource.getSavedLocation(name)
     }
 

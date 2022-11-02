@@ -1,11 +1,11 @@
 package com.example.weatherapp.utils
 
 import com.example.weatherapp.models.api.CurrentWeather
-import com.example.weatherapp.models.ui.CurrentWeatherModel
 import com.example.weatherapp.models.api.HourApiResponseModel
-import com.example.weatherapp.models.ui.HourWeatherModel
 import com.example.weatherapp.models.local.LocalHour
 import com.example.weatherapp.models.local.LocalWeatherModel
+import com.example.weatherapp.models.ui.CurrentWeatherModel
+import com.example.weatherapp.models.ui.HourWeatherModel
 
 fun CurrentWeather.mapApiToCurrentModel(): CurrentWeatherModel {
     return CurrentWeatherModel(
@@ -25,7 +25,7 @@ fun HourApiResponseModel?.mapToHourWeatherModel(): List<HourWeatherModel> {
     val hours = mutableListOf<HourWeatherModel>()
     this?.let {
         val hoursApiResponse = this?.hourly
-        hoursApiResponse.forEach { h ->
+        hoursApiResponse?.forEach { h ->
             hours.add(
                 HourWeatherModel(
                     h.temp,
