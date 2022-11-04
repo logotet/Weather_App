@@ -9,11 +9,12 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -116,6 +117,7 @@ fun SearchScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(it),
             color = colorResource(id = R.color.jordi_blue)
         ) {
@@ -215,8 +217,8 @@ fun SearchScreen(
                     )
                 }
 
-                LazyColumn {
-                    items(recentLocationsList.value) { recentLocation ->
+                Column {
+                    recentLocationsList.value.forEach { recentLocation ->
                         RecentLocationRow(recentLocation) { selectedLocation ->
                             navigator.navigate(
                                 ForecastScreenDestination.invoke(
