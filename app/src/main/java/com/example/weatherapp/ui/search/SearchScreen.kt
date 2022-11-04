@@ -49,6 +49,7 @@ import com.example.weatherapp.ui.navigation.navigateToGPSScreen
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.collectLatest
 import permissions.dispatcher.PermissionRequest
 import permissions.dispatcher.ktx.LocationPermission
 import permissions.dispatcher.ktx.constructLocationPermissionRequest
@@ -182,16 +183,19 @@ fun SearchScreen(
                 )
 
                 val locationDeniedMessage = stringResource(id = R.string.location_denied)
+
+                LaunchedEffect(Unit) {
+                    viewModel.errorMessage.collectLatest {
+                        scaffoldState.snackbarHostState.showSnackbar(locationDeniedMessage)
+                    }
+                }
+
                 ButtonSearchScreen(
                     {
-                        val onLocationPermissionDenied = {
-//                            scaffoldState.snackbarHostState.showSnackbar(locationDeniedMessage)
-                        }
-
                         (context as? FragmentActivity)?.constructLocationPermissionRequest(
                             LocationPermission.FINE,
                             onShowRationale = ::onGetLocationRationale,
-                            onPermissionDenied = { onLocationPermissionDenied() },
+                            onPermissionDenied = { viewModel.setErrorMessage() },
                             requiresPermission = {
                                 navigator.navigateToGPSScreen(
                                     units,
