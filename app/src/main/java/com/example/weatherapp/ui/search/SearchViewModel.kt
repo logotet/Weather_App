@@ -5,8 +5,7 @@ import com.example.weatherapp.interactors.localcalls.citynames.GetRecentCityName
 import com.example.weatherapp.models.local.City
 import com.example.weatherapp.ui.utils.ObservableViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,6 +17,9 @@ class SearchViewModel @Inject constructor(
     private var _cityNames = MutableStateFlow(emptyList<City>())
     val cityNames: StateFlow<List<City>> = _cityNames
 
+    private var _errorMessage = MutableSharedFlow<Unit>()
+    val errorMessage: SharedFlow<Unit> = _errorMessage.asSharedFlow()
+
     init {
         getRecentCityNames()
     }
@@ -27,6 +29,12 @@ class SearchViewModel @Inject constructor(
             getRecentCityNames.getRecentCityNames().collect {
                 _cityNames.value = it
             }
+        }
+    }
+
+    fun setErrorMessage() {
+        viewModelScope.launch {
+            _errorMessage.emit(Unit)
         }
     }
 }
