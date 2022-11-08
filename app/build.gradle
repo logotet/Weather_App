@@ -4,7 +4,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-    id 'com.google.gms.google-services'
     id("androidx.navigation.safeargs.kotlin")
     id 'com.google.devtools.ksp' version '1.7.0-1.0.6'
 }
@@ -24,7 +23,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.example.weatherapp"
+        applicationId "com.logotet.weatherapp"
         minSdk 24
         targetSdk 32
         versionCode 1
@@ -60,6 +59,7 @@ android {
     dataBinding {
         enabled = true
     }
+    namespace 'com.example.weatherapp'
 }
 
 
