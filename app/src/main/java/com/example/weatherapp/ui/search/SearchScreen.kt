@@ -286,7 +286,7 @@ private fun searchLocation(
     if (locationNameText.text.isNotEmpty())
         navigator.navigate(
             ForecastScreenDestination.invoke(
-                locationNameText.text, unit
+                locationNameText.text.trim(), unit
             )
         )
     else
