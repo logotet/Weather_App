@@ -39,9 +39,9 @@ class ForecastViewModel @Inject constructor(
     private val getCurrentCityWeather: GetCurrentCityWeather,
     private val getLocationHours: GetLocationHours,
     private val getFavoriteLocationByName: GetFavoriteLocationByName,
-    private val insertSavedLocation: InsertSavedLocation,
+    private val insertSavedLocation: InsertSavedLocation
 ) : ObservableViewModel() {
-    var savedState by mutableStateOf(false)
+    var savedLocationState by mutableStateOf(false)
 
     var weatherModelState by mutableStateOf<CurrentWeatherModel?>(null)
 
@@ -131,7 +131,7 @@ class ForecastViewModel @Inject constructor(
         viewModelScope.launch {
             name?.let {
                 getFavoriteLocationByName.getSavedLocation(it).collect { savedName ->
-                    savedState = savedName != null
+                    savedLocationState = savedName != null
                 }
             }
         }
